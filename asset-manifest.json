@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/Likhavat/static/css/main.073c9b0a.css",
+    "main.js": "/Likhavat/static/js/main.101fa188.js",
+    "static/js/787.c37c4d56.chunk.js": "/Likhavat/static/js/787.c37c4d56.chunk.js",
+    "static/media/logo.svg": "/Likhavat/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
+    "index.html": "/Likhavat/index.html",
+    "main.073c9b0a.css.map": "/Likhavat/static/css/main.073c9b0a.css.map",
+    "main.101fa188.js.map": "/Likhavat/static/js/main.101fa188.js.map",
+    "787.c37c4d56.chunk.js.map": "/Likhavat/static/js/787.c37c4d56.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.073c9b0a.css",
+    "static/js/main.101fa188.js"
+  ]
+}
