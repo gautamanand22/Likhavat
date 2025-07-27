@@ -8,20 +8,21 @@
   <!-- Mobile Metas -->
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <!-- Site Metas -->
-  <meta name="keywords" content="" />
-  <meta name="description" content="" />
-  <meta name="author" content="" />
-  <link rel="shortcut icon" href="images/favicon.png" type="">
+  <meta name="keywords" content="healthcare, ENT, medical services, CETMED" />
+  <meta name="description"
+    content="CETMED OPAL HEALTHCARE provides top-tier medical services with a focus on ENT care, offering advanced treatments and compassionate care." />
+  <meta name="author" content="CETMED OPAL HEALTHCARE" />
+  <link rel="shortcut icon" href="images/favicon.png" type="image/png">
 
-  <title> CETMED OPAL HEALTHCARE </title>
+  <title>CETMED OPAL HEALTHCARE</title>
 
   <!-- bootstrap core css -->
   <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
 
   <!-- fonts style -->
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <!--owl slider stylesheet -->
+  <!-- owl slider stylesheet -->
   <link rel="stylesheet" type="text/css"
     href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
 
@@ -33,14 +34,454 @@
   <!-- responsive style -->
   <link href="css/responsive.css" rel="stylesheet" />
 
+  <!-- New custom styles -->
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      color: #333;
+    }
+
+    /* About Section */
+    .about_section {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      padding: 80px 0;
+    }
+
+    .about_section .heading_container h2 {
+      font-size: 2.5rem;
+      font-weight: 600;
+      color: #1a3c6d;
+      margin-bottom: 20px;
+    }
+
+    .about_section .heading_container h2 span {
+      color: #00aaff;
+    }
+
+    .about_section .detail-box p {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #555;
+      margin-bottom: 30px;
+    }
+
+    .about_section .detail-box a {
+      background-color: #00aaff;
+      color: #fff;
+      padding: 12px 30px;
+      border-radius: 25px;
+      text-transform: uppercase;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .about_section .detail-box a:hover {
+      background-color: #0088cc;
+      transform: translateY(-2px);
+    }
+
+    .about_section .img-box img {
+      border-radius: 15px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+      transition: transform 0.3s ease;
+    }
+
+    .about_section .img-box img:hover {
+      transform: scale(1.05);
+    }
+
+    /* Services Section */
+    .services-bg-dark {
+      position: relative;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      padding: 80px 0;
+      overflow: hidden;
+    }
+
+    .services-bg-dark::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      z-index: 2;
+    }
+
+    .services-bg-dark>.container-fluid {
+      position: relative;
+      z-index: 3;
+    }
+
+    .services-bg-dark .heading_container h2 {
+      font-size: 2.5rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 20px;
+    }
+
+    .services-bg-dark .heading_container p {
+      color: #e0e0e0;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      margin-bottom: 40px;
+    }
+
+    .services-bg-dark .box {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 15px;
+      padding: 20px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .services-bg-dark .box:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .services-bg-dark .box h5 {
+      color: #00aaff;
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+
+    .services-bg-dark .box p {
+      color: #e0e0e0;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .services-bg-dark .img-box img {
+      max-width: 60px;
+      filter: brightness(0) invert(1);
+    }
+
+    .services-bg-dark .btn-box a {
+      background-color: #00aaff;
+      color: #fff;
+      padding: 12px 30px;
+      border-radius: 25px;
+      text-transform: uppercase;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .services-bg-dark .btn-box a:hover {
+      background-color: #0088cc;
+      transform: translateY(-2px);
+    }
+
+    /* Doctor Section */
+    .doctor_section {
+      padding: 80px 0;
+      background-color: #fff;
+    }
+
+    .doctor_section .heading_container h2 {
+      font-size: 2.5rem;
+      font-weight: 600;
+      color: #1a3c6d;
+      margin-bottom: 20px;
+    }
+
+    .doctor_section .heading_container p {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #555;
+      margin-bottom: 40px;
+    }
+
+    .doctor_section .box {
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .doctor_section .box:hover {
+      transform: translateY(-10px);
+    }
+
+    .doctor_section .img-box img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+    }
+
+    .doctor_section .detail-box {
+      padding: 20px;
+      text-align: center;
+    }
+
+    .doctor_section .detail-box h5 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #1a3c6d;
+      margin-bottom: 10px;
+    }
+
+    .doctor_section .detail-box h6 {
+      font-size: 1rem;
+      color: #00aaff;
+    }
+
+    .doctor_section .social_box {
+      margin-bottom: 15px;
+    }
+
+    .doctor_section .social_box a {
+      color: #00aaff;
+      font-size: 1.2rem;
+      margin: 0 10px;
+      transition: color 0.3s ease;
+    }
+
+    .doctor_section .social_box a:hover {
+      color: #0088cc;
+    }
+
+    .doctor_section .btn-box a {
+      background-color: #00aaff;
+      color: #fff;
+      padding: 12px 30px;
+      border-radius: 25px;
+      text-transform: uppercase;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .doctor_section .btn-box a:hover {
+      background-color: #0088cc;
+      transform: translateY(-2px);
+    }
+
+    /* Contact Section */
+    .contact_section {
+      padding: 80px 0;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+
+    .contact_section .heading_container h2 {
+      font-size: 2.5rem;
+      font-weight: 600;
+      color: #1a3c6d;
+      margin-bottom: 20px;
+    }
+
+    .contact_section .form_container input,
+    .contact_section .form_container textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .contact_section .form_container textarea {
+      resize: vertical;
+      min-height: 150px;
+    }
+
+    .contact_section .form_container button {
+      background-color: #00aaff;
+      color: #fff;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 25px;
+      text-transform: uppercase;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .contact_section .form_container button:hover {
+      background-color: #0088cc;
+      transform: translateY(-2px);
+    }
+
+    .contact_section .map_container {
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .contact_section .map_container #googleMap {
+      height: 400px;
+    }
+
+    /* Client Section */
+    .client_section {
+      padding: 80px 0;
+      background-color: #fff;
+    }
+
+    .client_section .heading_container h2 {
+      font-size: 2.5rem;
+      font-weight: 600;
+      color: #1a3c6d;
+      margin-bottom: 20px;
+    }
+
+    .client_section .box {
+      background: #f8f9fa;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .client_section .box:hover {
+      transform: translateY(-10px);
+    }
+
+    .client_section .img-box img {
+      border-radius: 50%;
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      margin-right: 20px;
+    }
+
+    .client_section .detail-box h6 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #1a3c6d;
+      margin-bottom: 10px;
+    }
+
+    .client_section .detail-box p {
+      font-size: 1rem;
+      line-height: 1.8;
+      color: #555;
+    }
+
+    .client_section .detail-box i {
+      color: #00aaff;
+      font-size: 2rem;
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      opacity: 0.2;
+    }
+
+    .client_section .carousel-control-prev,
+    .client_section .carousel-control-next {
+      width: 50px;
+      height: 50px;
+      background-color: #00aaff;
+      border-radius: 50%;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 0.8;
+    }
+
+    .client_section .carousel-control-prev:hover,
+    .client_section .carousel-control-next:hover {
+      opacity: 1;
+    }
+
+    .client_section .carousel-control-prev i,
+    .client_section .carousel-control-next i {
+      color: #fff;
+      font-size: 1.2rem;
+    }
+
+    /* Footer Section */
+    .footer_section {
+      background-color: #1a3c6d;
+      color: #fff;
+      padding: 80px 0 30px;
+    }
+
+    .footer_section h4 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #00aaff;
+    }
+
+    .footer_section .contact_link_box a,
+    .footer_section .footer_links a {
+      color: #e0e0e0;
+      font-size: 1rem;
+      margin-bottom: 10px;
+      display: block;
+      transition: color 0.3s ease;
+    }
+
+    .footer_section .contact_link_box a:hover,
+    .footer_section .footer_links a:hover {
+      color: #00aaff;
+    }
+
+    .footer_section .footer_social a {
+      color: #fff;
+      font-size: 1.2rem;
+      margin: 0 10px;
+      transition: color 0.3s ease;
+    }
+
+    .footer_section .footer_social a:hover {
+      color: #00aaff;
+    }
+
+    .footer_section .footer_detail p {
+      font-size: 1rem;
+      line-height: 1.8;
+      color: #e0e0e0;
+    }
+
+    .footer_section form input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    .footer_section form button {
+      background-color: #00aaff;
+      color: #fff;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 25px;
+      text-transform: uppercase;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .footer_section form button:hover {
+      background-color: #0088cc;
+      transform: translateY(-2px);
+    }
+
+    .footer_section .footer-info p {
+      font-size: 0.9rem;
+      color: #e0e0e0;
+      margin-top: 40px;
+    }
+
+    .footer_section .footer-info a {
+      color: #00aaff;
+      text-decoration: none;
+    }
+
+    .footer_section .footer-info a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 
 <body>
-
   <div class="hero_area">
-
     <div class="hero_bg_box">
-      <img src="images/hero-bg.png" alt="">
+      <img src="images/mainimage.jpeg" alt="">
     </div>
 
     <!-- header section strats -->
@@ -52,12 +493,10 @@
               CETMED OPAL HEALTHCARE
             </span>
           </a>
-
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class=""> </span>
           </button>
-
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav">
               <li class="nav-item active">
@@ -76,7 +515,7 @@
                 <a class="nav-link" href="contact.html">Contact Us</a>
               </li>
               <form class="form-inline">
-                <button class="btn  my-2 my-sm-0 nav_search-btn" type="submit">
+                <button class="btn my-2 my-sm-0 nav_search-btn" type="submit">
                   <i class="fa fa-search" aria-hidden="true"></i>
                 </button>
               </form>
@@ -88,330 +527,212 @@
     <!-- end header section -->
     <!-- slider section -->
     <section class="slider_section ">
-      <div id="customCarousel1" class="carousel slide" data-ride="carousel">
-        <div class="carousel-inner">
-          <div class="carousel-item active">
-            <div class="container ">
-              <div class="row">
-                <div class="col-md-7">
-                  <div class="detail-box">
-                    <h1>
-                      We Provide Best Healthcare
-                    </h1>
-                    <p>
-                      Explicabo esse amet tempora quibusdam laudantium, laborum eaque magnam fugiat hic? Esse dicta
-                      aliquid error repudiandae earum suscipit fugiat molestias, veniam, vel architecto veritatis
-                      delectus repellat modi impedit sequi.
-                    </p>
-                    <div class="btn-box">
-                      <a href="" class="btn1">
-                        Read More
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="carousel-item ">
-            <div class="container ">
-              <div class="row">
-                <div class="col-md-7">
-                  <div class="detail-box">
-                    <h1>
-                      We Provide Best Healthcare
-                    </h1>
-                    <p>
-                      Explicabo esse amet tempora quibusdam laudantium, laborum eaque magnam fugiat hic? Esse dicta
-                      aliquid error repudiandae earum suscipit fugiat molestias, veniam, vel architecto veritatis
-                      delectus repellat modi impedit sequi.
-                    </p>
-                    <div class="btn-box">
-                      <a href="" class="btn1">
-                        Read More
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="carousel-item">
-            <div class="container ">
-              <div class="row">
-                <div class="col-md-7">
-                  <div class="detail-box">
-                    <h1>
-                      We Provide Best Healthcare
-                    </h1>
-                    <p>
-                      Explicabo esse amet tempora quibusdam laudantium, laborum eaque magnam fugiat hic? Esse dicta
-                      aliquid error repudiandae earum suscipit fugiat molestias, veniam, vel architecto veritatis
-                      delectus repellat modi impedit sequi.
-                    </p>
-                    <div class="btn-box">
-                      <a href="" class="btn1">
-                        Read More
-                      </a>
-                    </div>
-                  </div>
-                </div>
+      <div class="container ">
+        <div class="row">
+          <div class="col-md-7">
+            <div class="detail-box">
+              <h1>
+                We Provide Best Healthcare
+              </h1>
+              <p>
+                Explicabo esse amet tempora quibusdam laudantium, laborum eaque magnam fugiat hic? Esse dicta aliquid
+                error repudiandae earum suscipit fugiat molestias, veniam, vel architecto veritatis delectus repellat
+                modi impedit sequi.
+              </p>
+              <div class="btn-box">
+                <a href="" class="btn1">
+                  Read More
+                </a>
               </div>
             </div>
           </div>
         </div>
-        <ol class="carousel-indicators">
-          <li data-target="#customCarousel1" data-slide-to="0" class="active"></li>
-          <li data-target="#customCarousel1" data-slide-to="1"></li>
-          <li data-target="#customCarousel1" data-slide-to="2"></li>
-        </ol>
       </div>
-
     </section>
     <!-- end slider section -->
   </div>
 
-
-  <!-- department section -->
-
-  <section class="department_section layout_padding">
-    <div class="department_container">
-      <div class="container ">
-        <div class="heading_container heading_center">
-          <h2>
-            Our Departments
-          </h2>
-          <p>
-            Asperiores sunt consectetur impedit nulla molestiae delectus repellat laborum dolores doloremque accusantium
-          </p>
-        </div>
-        <div class="row">
-          <div class="col-md-3">
-            <div class="box ">
-              <div class="img-box">
-                <img src="images/s1.png" alt="">
-              </div>
-              <div class="detail-box">
-                <h5>
-                  Cardiology
-                </h5>
-                <p>
-                  fact that a reader will be distracted by the readable page when looking at its layout.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="box ">
-              <div class="img-box">
-                <img src="images/s2.png" alt="">
-              </div>
-              <div class="detail-box">
-                <h5>
-                  Diagnosis
-                </h5>
-                <p>
-                  fact that a reader will be distracted by the readable page when looking at its layout.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="box ">
-              <div class="img-box">
-                <img src="images/s3.png" alt="">
-              </div>
-              <div class="detail-box">
-                <h5>
-                  Surgery
-                </h5>
-                <p>
-                  fact that a reader will be distracted by the readable page when looking at its layout.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="box ">
-              <div class="img-box">
-                <img src="images/s4.png" alt="">
-              </div>
-              <div class="detail-box">
-                <h5>
-                  First Aid
-                </h5>
-                <p>
-                  fact that a reader will be distracted by the readable page when looking at its layout.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="btn-box">
-          <a href="">
-            View All
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- end department section -->
-
   <!-- about section -->
-
-  <section class="about_section layout_margin-bottom">
-    <div class="container  ">
-      <div class="row">
-        <div class="col-md-6 ">
+  <section class="about_section">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6">
           <div class="img-box">
-            <img src="images/about-img.jpg" alt="">
+            <img src="images/about-img.jpg" alt="About CETMED OPAL HEALTHCARE">
           </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-lg-6">
           <div class="detail-box">
             <div class="heading_container">
-              <h2>
-                About <span>Us</span>
-              </h2>
+              <h2>About <span>Us</span></h2>
             </div>
             <p>
-              There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration
-              in some form, by injected humour, or randomised words which don't look even slightly believable. If you
-              are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in
-              the middle of text. All
+              At CETMED OPAL HEALTHCARE, we are dedicated to providing exceptional medical care with a focus on ear,
+              nose, and throat (ENT) specialties. Our team of experienced professionals uses state-of-the-art technology
+              to deliver personalized treatment plans, ensuring the best outcomes for our patients. With a commitment to
+              compassion and excellence, we strive to improve the health and well-being of our community.
             </p>
-            <a href="">
-              Read More
-            </a>
+            <a href="about.html">Read More</a>
           </div>
         </div>
       </div>
     </div>
   </section>
-
   <!-- end about section -->
 
-  <!-- doctor section -->
+  <!-- services section -->
+  <section class="department_section services-bg-dark" style="background-image: url('images/ear.jpeg');">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-6"></div>
+        <div class="col-lg-6 d-flex align-items-center">
+          <div class="department_container py-5 px-4">
+            <div class="heading_container heading_center">
+              <h2>Our Specialized ENT Services</h2>
+              <p>
+                Comprehensive care for all conditions of the ear, nose, and throat, using the latest technology and
+                techniques.
+              </p>
+            </div>
+            <div class="row">
+              <div class="col-md-6 d-flex justify-content-center p-3">
+                <div class="box">
+                  <div class="img-box p-3">
+                    <img src="images/s1.png" alt="Hearing and Balance">
+                  </div>
+                  <div class="detail-box">
+                    <h5>Hearing & Balance</h5>
+                    <p>
+                      Expert diagnosis and treatment for hearing loss, tinnitus, and balance disorders.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 d-flex justify-content-center p-3">
+                <div class="box">
+                  <div class="img-box p-3">
+                    <img src="images/s2.png" alt="Nasal and Sinus">
+                  </div>
+                  <div class="detail-box">
+                    <h5>Nasal & Sinus</h5>
+                    <p>
+                      Advanced solutions for chronic sinusitis, allergies, and nasal obstruction.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 d-flex justify-content-center p-3">
+                <div class="box">
+                  <div class="img-box p-3">
+                    <img src="images/s3.png" alt="Throat and Voice">
+                  </div>
+                  <div class="detail-box">
+                    <h5>Throat & Voice</h5>
+                    <p>
+                      Specialized care for voice disorders, swallowing difficulties, and throat conditions.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 d-flex justify-content-center p-3">
+                <div class="box">
+                  <div class="img-box p-3">
+                    <img src="images/s4.png" alt="Pediatric ENT">
+                  </div>
+                  <div class="detail-box">
+                    <h5>Pediatric ENT</h5>
+                    <p>
+                      Gentle and effective treatment for common childhood ENT problems.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="btn-box mt-4">
+              <a href="departments.html">View All Services</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- end services section -->
 
-  <section class="doctor_section layout_padding">
+  <!-- doctor section -->
+  <section class="doctor_section">
     <div class="container">
       <div class="heading_container heading_center">
-        <h2>
-          Our Doctors
-        </h2>
+        <h2>Our Doctors</h2>
         <p class="col-md-10 mx-auto px-0">
-          Incilint sapiente illo quo praesentium officiis laudantium nostrum, ad adipisci cupiditate sit, quisquam
-          aliquid. Officiis laudantium fuga ad voluptas aspernatur error fugiat quos facilis saepe quas fugit, beatae id
-          quisquam.
+          Meet our team of highly skilled and dedicated ENT specialists, committed to providing exceptional care with
+          compassion and expertise.
         </p>
       </div>
       <div class="row">
         <div class="col-sm-6 col-lg-4 mx-auto">
           <div class="box">
             <div class="img-box">
-              <img src="images/d1.jpg" alt="">
+              <img src="images/d1.jpg" alt="Dr. Elina Josh">
             </div>
             <div class="detail-box">
               <div class="social_box">
-                <a href="">
-                  <i class="fa fa-facebook" aria-hidden="true"></i>
-                </a>
-                <a href="">
-                  <i class="fa fa-twitter" aria-hidden="true"></i>
-                </a>
-                <a href="">
-                  <i class="fa fa-youtube" aria-hidden="true"></i>
-                </a>
-                <a href="">
-                  <i class="fa fa-linkedin" aria-hidden="true"></i>
-                </a>
+                <a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+                <a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+                <a href="#"><i class="fa fa-youtube" aria-hidden="true"></i></a>
+                <a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
               </div>
-              <h5>
-                Elina Josh
-              </h5>
-              <h6 class="">
-                Doctor
-              </h6>
+              <h5>Dr. Elina Josh</h5>
+              <h6>ENT Specialist</h6>
             </div>
           </div>
         </div>
         <div class="col-sm-6 col-lg-4 mx-auto">
           <div class="box">
             <div class="img-box">
-              <img src="images/d2.jpg" alt="">
+              <img src="images/d2.jpg" alt="Dr. Adam View">
             </div>
             <div class="detail-box">
               <div class="social_box">
-                <a href="">
-                  <i class="fa fa-facebook" aria-hidden="true"></i>
-                </a>
-                <a href="">
-                  <i class="fa fa-twitter" aria-hidden="true"></i>
-                </a>
-                <a href="">
-                  <i class="fa fa-youtube" aria-hidden="true"></i>
-                </a>
-                <a href="">
-                  <i class="fa fa-linkedin" aria-hidden="true"></i>
-                </a>
+                <a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+                <a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+                <a href="#"><i class="fa fa-youtube" aria-hidden="true"></i></a>
+                <a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
               </div>
-              <h5>
-                Adam View
-              </h5>
-              <h6 class="">
-                Doctor
-              </h6>
+              <h5>Dr. Adam View</h5>
+              <h6>ENT Specialist</h6>
             </div>
           </div>
         </div>
         <div class="col-sm-6 col-lg-4 mx-auto">
           <div class="box">
             <div class="img-box">
-              <img src="images/d3.jpg" alt="">
+              <img src="images/d3.jpg" alt="Dr. Mia Mike">
             </div>
             <div class="detail-box">
               <div class="social_box">
-                <a href="">
-                  <i class="fa fa-facebook" aria-hidden="true"></i>
-                </a>
-                <a href="">
-                  <i class="fa fa-twitter" aria-hidden="true"></i>
-                </a>
-                <a href="">
-                  <i class="fa fa-youtube" aria-hidden="true"></i>
-                </a>
-                <a href="">
-                  <i class="fa fa-linkedin" aria-hidden="true"></i>
-                </a>
+                <a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+                <a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+                <a href="#"><i class="fa fa-youtube" aria-hidden="true"></i></a>
+                <a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
               </div>
-              <h5>
-                Mia Mike
-              </h5>
-              <h6 class="">
-                Doctor
-              </h6>
+              <h5>Dr. Mia Mike</h5>
+              <h6>ENT Specialist</h6>
             </div>
           </div>
         </div>
       </div>
       <div class="btn-box">
-        <a href="">
-          View All
-        </a>
+        <a href="doctors.html">View All</a>
       </div>
     </div>
   </section>
-
   <!-- end doctor section -->
 
   <!-- contact section -->
-  <section class="contact_section layout_padding">
+  <section class="contact_section">
     <div class="container">
-      <div class="heading_container">
-        <h2>
-          Get In Touch
-        </h2>
+      <div class="heading_container heading_center">
+        <h2>Get In Touch</h2>
       </div>
       <div class="row">
         <div class="col-md-6">
@@ -419,35 +740,27 @@
             <form action="">
               <div class="form-row">
                 <div class="col-lg-6">
-                  <div>
-                    <input type="text" placeholder="Your Name" />
-                  </div>
+                  <input type="text" placeholder="Your Name" />
                 </div>
                 <div class="col-lg-6">
-                  <div>
-                    <input type="text" placeholder="Phone Number" />
-                  </div>
+                  <input type="text" placeholder="Phone Number" />
                 </div>
               </div>
               <div>
                 <input type="email" placeholder="Email" />
               </div>
               <div>
-                <input type="text" class="message-box" placeholder="Message" />
+                <textarea class="message-box" placeholder="Message"></textarea>
               </div>
               <div class="btn_box">
-                <button>
-                  SEND
-                </button>
+                <button type="submit">SEND</button>
               </div>
             </form>
           </div>
         </div>
         <div class="col-md-6">
           <div class="map_container">
-            <div class="map">
-              <div id="googleMap"></div>
-            </div>
+            <div id="googleMap"></div>
           </div>
         </div>
       </div>
@@ -456,13 +769,10 @@
   <!-- end contact section -->
 
   <!-- client section -->
-
-  <section class="client_section layout_padding-bottom">
+  <section class="client_section">
     <div class="container">
-      <div class="heading_container heading_center ">
-        <h2>
-          Testimonial
-        </h2>
+      <div class="heading_container heading_center">
+        <h2>Testimonial</h2>
       </div>
       <div id="carouselExample2Controls" class="carousel slide" data-ride="carousel">
         <div class="carousel-inner">
@@ -471,18 +781,16 @@
               <div class="col-md-11 col-lg-10 mx-auto">
                 <div class="box">
                   <div class="img-box">
-                    <img src="images/client.jpg" alt="" />
+                    <img src="images/client.jpg" alt="Alan Emerson" />
                   </div>
                   <div class="detail-box">
                     <div class="name">
-                      <h6>
-                        Alan Emerson
-                      </h6>
+                      <h6>Alan Emerson</h6>
                     </div>
                     <p>
-                      Enim consequatur odio assumenda voluptas voluptatibus esse nobis officia. Magnam, aspernatur
-                      nostrum explicabo, distinctio laudantium delectus deserunt quia quidem magni corporis earum
-                      inventore totam consectetur corrupti! Corrupti, nihil sunt? Natus.
+                      The care I received at CETMED OPAL HEALTHCARE was exceptional. The team was professional,
+                      compassionate, and highly skilled. My treatment was thorough, and I felt supported every step of
+                      the way.
                     </p>
                     <i class="fa fa-quote-left" aria-hidden="true"></i>
                   </div>
@@ -495,18 +803,15 @@
               <div class="col-md-11 col-lg-10 mx-auto">
                 <div class="box">
                   <div class="img-box">
-                    <img src="images/client.jpg" alt="" />
+                    <img src="images/client.jpg" alt="Sarah Johnson" />
                   </div>
                   <div class="detail-box">
                     <div class="name">
-                      <h6>
-                        Alan Emerson
-                      </h6>
+                      <h6>Sarah Johnson</h6>
                     </div>
                     <p>
-                      Enim consequatur odio assumenda voluptas voluptatibus esse nobis officia. Magnam, aspernatur
-                      nostrum explicabo, distinctio laudantium delectus deserunt quia quidem magni corporis earum
-                      inventore totam consectetur corrupti! Corrupti, nihil sunt? Natus.
+                      I was impressed by the advanced technology and expertise at CETMED. The doctors took the time to
+                      explain everything clearly, and I’m thrilled with the results of my treatment.
                     </p>
                     <i class="fa fa-quote-left" aria-hidden="true"></i>
                   </div>
@@ -519,18 +824,15 @@
               <div class="col-md-11 col-lg-10 mx-auto">
                 <div class="box">
                   <div class="img-box">
-                    <img src="images/client.jpg" alt="" />
+                    <img src="images/client.jpg" alt="Michael Brown" />
                   </div>
                   <div class="detail-box">
                     <div class="name">
-                      <h6>
-                        Alan Emerson
-                      </h6>
+                      <h6>Michael Brown</h6>
                     </div>
                     <p>
-                      Enim consequatur odio assumenda voluptas voluptatibus esse nobis officia. Magnam, aspernatur
-                      nostrum explicabo, distinctio laudantium delectus deserunt quia quidem magni corporis earum
-                      inventore totam consectetur corrupti! Corrupti, nihil sunt? Natus.
+                      From the moment I walked in, I felt welcomed and cared for. The staff at CETMED OPAL HEALTHCARE
+                      truly goes above and beyond to ensure patient comfort and satisfaction.
                     </p>
                     <i class="fa fa-quote-left" aria-hidden="true"></i>
                   </div>
@@ -552,7 +854,6 @@
       </div>
     </div>
   </section>
-
   <!-- end client section -->
 
   <!-- footer section -->
@@ -561,123 +862,84 @@
       <div class="row">
         <div class="col-md-6 col-lg-3 footer_col">
           <div class="footer_contact">
-            <h4>
-              Reach at..
-            </h4>
+            <h4>Reach at..</h4>
             <div class="contact_link_box">
-              <a href="">
+              <a href="#">
                 <i class="fa fa-map-marker" aria-hidden="true"></i>
-                <span>
-                  Location
-                </span>
+                <span>123 Health St, Medical City</span>
               </a>
-              <a href="">
+              <a href="#">
                 <i class="fa fa-phone" aria-hidden="true"></i>
-                <span>
-                  Call +01 1234567890
-                </span>
+                <span>Call +01 1234567890</span>
               </a>
-              <a href="">
+              <a href="#">
                 <i class="fa fa-envelope" aria-hidden="true"></i>
-                <span>
-                  demo@gmail.com
-                </span>
+                <span>info@cetmedopal.com</span>
               </a>
             </div>
           </div>
           <div class="footer_social">
-            <a href="">
-              <i class="fa fa-facebook" aria-hidden="true"></i>
-            </a>
-            <a href="">
-              <i class="fa fa-twitter" aria-hidden="true"></i>
-            </a>
-            <a href="">
-              <i class="fa fa-linkedin" aria-hidden="true"></i>
-            </a>
-            <a href="">
-              <i class="fa fa-instagram" aria-hidden="true"></i>
-            </a>
+            <a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+            <a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+            <a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+            <a href="#"><i class="fa fa-instagram" aria-hidden="true"></i></a>
           </div>
         </div>
         <div class="col-md-6 col-lg-3 footer_col">
           <div class="footer_detail">
-            <h4>
-              About
-            </h4>
+            <h4>About</h4>
             <p>
-              Beatae provident nobis mollitia magnam voluptatum, unde dicta facilis minima veniam corporis laudantium
-              alias tenetur eveniet illum reprehenderit fugit a delectus officiis blanditiis ea.
+              CETMED OPAL HEALTHCARE is a leading provider of ENT care, offering advanced treatments and compassionate
+              service to improve patient outcomes.
             </p>
           </div>
         </div>
         <div class="col-md-6 col-lg-2 mx-auto footer_col">
           <div class="footer_link_box">
-            <h4>
-              Links
-            </h4>
+            <h4>Links</h4>
             <div class="footer_links">
-              <a class="active" href="index.html">
-                Home
-              </a>
-              <a class="" href="about.html">
-                About
-              </a>
-              <a class="" href="departments.html">
-                Departments
-              </a>
-              <a class="" href="doctors.html">
-                Doctors
-              </a>
-              <a class="" href="contact.html">
-                Contact Us
-              </a>
+              <a class="active" href="index.html">Home</a>
+              <a href="about.html">About</a>
+              <a href="departments.html">Departments</a>
+              <a href="doctors.html">Doctors</a>
+              <a href="contact.html">Contact Us</a>
             </div>
           </div>
         </div>
-        <div class="col-md-6 col-lg-3 footer_col ">
-          <h4>
-            Newsletter
-          </h4>
+        <div class="col-md-6 col-lg-3 footer_col">
+          <h4>Newsletter</h4>
           <form action="#">
             <input type="email" placeholder="Enter email" />
-            <button type="submit">
-              Subscribe
-            </button>
+            <button type="submit">Subscribe</button>
           </form>
         </div>
       </div>
       <div class="footer-info">
         <p>
           &copy; <span id="displayYear"></span> All Rights Reserved
-          <!-- <a href="https://html.design/">Free Html Templates<br><br></a> -->
-          <!-- &copy; <span id="displayYear"></span> Distributed By
-          <a href="https://themewagon.com/">ThemeWagon</a> -->
         </p>
-
       </div>
     </div>
   </footer>
   <!-- footer section -->
 
-  <!-- jQery -->
+  <!-- jQuery -->
   <script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
   <!-- popper js -->
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
-    </script>
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"></script>
   <!-- bootstrap js -->
   <script type="text/javascript" src="js/bootstrap.js"></script>
   <!-- owl slider -->
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js">
-  </script>
+  <script type="text/javascript"
+    src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
   <!-- custom js -->
   <script type="text/javascript" src="js/custom.js"></script>
   <!-- Google Map -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCh39n5U-4IoWpsVGUHWdqB6puEkhRLdmI&callback=myMap">
-  </script>
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCh39n5U-4IoWpsVGUHWdqB6puEkhRLdmI&callback=myMap"></script>
   <!-- End Google Map -->
-
 </body>
 
 </html>
