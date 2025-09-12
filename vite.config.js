@@ -7,5 +7,25 @@ export default defineConfig({
   css: {
     postcss: './postcss.config.js',
   },
-  base: './',
+  // Set base to '/' for custom domain deployment
+  base: '/',
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    sourcemap: false,
+    minify: 'terser',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          gsap: ['gsap', '@gsap/react'],
+          animations: ['@studio-freight/lenis', 'locomotive-scroll']
+        }
+      }
+    }
+  },
+  server: {
+    port: 3000,
+    open: true
+  }
 })

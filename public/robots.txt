@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://cetmeds.com/sitemap.xml
