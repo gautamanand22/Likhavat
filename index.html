@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="vite.svg" />
+  <link rel="alternate icon" href="favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Likhavat Printing Press - Quality Prints, Customized for You</title>
+  
+  <!-- INLINE CRITICAL CSS for instant rendering -->
+  <style>
+    /* ULTRA-CRITICAL CSS */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; }
+    body { background: #fff; color: #333; overflow-x: hidden; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    .hero-container { position: relative; width: 100vw; height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+    .hero-video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; -o-object-fit: cover; object-fit: cover; z-index: 0; }
+    .hero-overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.3); z-index: 10; }
+    .hero-content { position: relative; z-index: 20; text-align: center; color: white; padding: 1rem; }
+    .hero-title { font-size: clamp(2rem, 8vw, 6rem); font-weight: 200; letter-spacing: -0.01em; margin-bottom: 1rem; line-height: 1.1; }
+    .ultra-image { display: block; width: 100%; height: auto; opacity: 0; transition: opacity 0.3s ease; }
+    .ultra-image.loaded { opacity: 1; }
+    .image-placeholder { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+    @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+    .w-full { width: 100%; } .h-full { height: 100%; } .h-screen { height: 100vh; } .flex { display: flex; } .items-center { align-items: center; } .justify-center { justify-content: center; } .text-center { text-align: center; } .relative { position: relative; } .absolute { position: absolute; } .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+  </style>
+  <meta name="description"
+    content="Likhavat Printing Press delivers premium printing, branding, catalog, merchandise and design solutions." />
+  <meta name="keywords" content="medical solutions, printing, design, catalog, healthcare" />
+  <meta name="author" content="Likhavat Printing Press" />
+  <link rel="canonical" href="https://likhavatprintingpress.com/" />
+
+  <!-- Preload critical resources -->
+  <link rel="preload" href="/assets/videos/banner-video%20(online-video-cutter.com).mp4-CjD-J18J.mp4" as="video"
+    type="video/mp4">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- CDN Preconnections for faster image loading -->
+  <link rel="preconnect" href="https://images.unsplash.com">
+  <link rel="preconnect" href="https://ik.imagekit.io">
+  <link rel="dns-prefetch" href="https://images.unsplash.com">
+
+  <!-- Preload critical above-fold images -->
+  <link rel="preload"
+    href="https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?q=80&w=800&auto=format,compress&fm=webp" as="image"
+    type="image/webp">
+
+  <!-- EXTREME PERFORMANCE OPTIMIZATIONS -->
+  <meta http-equiv="x-dns-prefetch-control" content="on">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="theme-color" content="#000000">
+  
+  <!-- Critical resource hints for MAXIMUM speed -->
+  <link rel="preload" href="https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=800&q=70&auto=format,compress&fm=webp&cs=srgb&dpr=2" as="image" type="image/webp" crossorigin>
+  <link rel="preload" href="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=70&auto=format,compress&fm=webp&cs=srgb&dpr=2" as="image" type="image/webp" crossorigin>
+  <link rel="preload" href="https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=1000&q=70&auto=format,compress&fm=webp&cs=srgb&dpr=2" as="image" type="image/webp" crossorigin>
+  
+  <!-- Aggressive prefetching for instant navigation -->
+  <link rel="prefetch" href="https://images.unsplash.com/photo-1544377193-33dcf4d68fb5?w=800&q=70&auto=format,compress&fm=webp" crossorigin>
+  <link rel="prefetch" href="https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=600&q=70&auto=format,compress&fm=webp" crossorigin>
+  <link rel="prefetch" href="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&q=70&auto=format,compress&fm=webp" crossorigin>
+  
+  <!-- Multiple CDN connections for redundancy -->
+  <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
+  <link rel="preconnect" href="https://source.unsplash.com" crossorigin>
+  <link rel="dns-prefetch" href="https://picsum.photos">
+  <link rel="dns-prefetch" href="//i.imgur.com">
+  
+  <!-- Performance API hints -->
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  
+  <!-- Experimental performance features -->
+  <script>
+    // Enable experimental features for maximum performance
+    if ('serviceWorker' in navigator) {
+      // Pre-register service worker for caching
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+    
+    // Aggressive image preloading
+    (function() {
+      const criticalImages = [
+        'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&q=60&auto=format,compress&fm=webp',
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=60&auto=format,compress&fm=webp',
+        'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=600&q=60&auto=format,compress&fm=webp'
+      ];
+      
+      criticalImages.forEach(function(src) {
+        const img = new Image();
+        img.loading = 'eager';
+        img.decoding = 'async';
+        img.src = src;
+      });
+    })();
+  </script>  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://likhavatprintingpress.com/" />
+  <meta property="og:title" content="Likhavat Printing Press - Premium Printing & Branding Solutions" />
+  <meta property="og:description"
+    content="High quality printing, catalogs, merchandise, packaging and branding services." />
+  <meta property="og:image" content="https://likhavatprintingpress.com/images/logo.png" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://likhavatprintingpress.com/" />
+  <meta name="twitter:title" content="Likhavat Printing Press - Premium Printing & Branding Solutions" />
+  <meta name="twitter:description"
+    content="High quality printing, catalogs, merchandise, packaging and branding services." />
+  <meta name="twitter:image" content="https://likhavatprintingpress.com/images/logo.png" />
+  <script type="module" crossorigin src="/assets/index-Ci233HZ9.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/vendor-B3jHkv5H.js">
+  <link rel="modulepreload" crossorigin href="/assets/router-DXpffOYI.js">
+  <link rel="modulepreload" crossorigin href="/assets/utils-CZzKBk4v.js">
+  <link rel="stylesheet" crossorigin href="/assets/index-DMlM1CWk.css">
+</head>
+
+<body>
+  <div id="root"></div>
+  <noscript>You need to enable JavaScript to run this app.</noscript>
+  <script>
+    (function () {
+      try {
+        var redirect = sessionStorage.getItem('spa-github-redirect');
+        if (redirect) {
+          sessionStorage.removeItem('spa-github-redirect');
+          var locationData = JSON.parse(redirect);
+          var dest = locationData.pathname + (locationData.search || '') + (locationData.hash || '');
+          if (dest && dest !== window.location.pathname) {
+            window.history.replaceState(null, null, dest);
+          }
+        }
+      } catch (e) { /* silent */ }
+    })();
+  </script>
+</body>
+
+</html>
