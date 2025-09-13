@@ -7,8 +7,8 @@ export default defineConfig({
   css: {
     postcss: './postcss.config.js',
   },
-  // Set base to '/' for custom domain deployment
-  base: '/',
+  // Use relative base so it works on both custom domain root and GitHub project subpath
+  base: './',
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
