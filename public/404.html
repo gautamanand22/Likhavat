@@ -4,19 +4,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CETMEDS - Premium Medical Solutions</title>
+    <title>Likhavat Printing Press</title>
     <script type="text/javascript">
         // Single Page Apps for GitHub Pages
         // https://github.com/rafgraph/spa-github-pages
-        var pathSegmentsToKeep = 0;
-        var l = window.location;
-        l.replace(
-            l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
-            l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?/' +
-            l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
-            (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
-            l.hash
-        );
+                (function() {
+                    // Improved SPA redirect for GitHub Pages + React Router
+                    var redirect = sessionStorage.getItem('spa-github-redirect');
+                    if (redirect) {
+                        sessionStorage.removeItem('spa-github-redirect');
+                        var location = JSON.parse(redirect);
+                        var dest = location.pathname + location.search + location.hash;
+                        window.history.replaceState(null, null, dest);
+                    } else {
+                        var l = window.location;
+                        var path = l.pathname;
+                        // Store the original path so index.html can restore it
+                        sessionStorage.setItem('spa-github-redirect', JSON.stringify({
+                            pathname: path,
+                            search: l.search,
+                            hash: l.hash
+                        }));
+                        // Redirect to root so index.html loads
+                        window.location.replace('/');
+                    }
+                })();
     </script>
 </head>
 

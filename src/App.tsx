@@ -39,8 +39,8 @@ function App() {
         <Route path="*" element={<NotFound />} />
         <Route path="/about-us" element={<AboutUsPage />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/portfolio" element={<Portfolio />} />
-        <Route path='/carrer' element={<CareersPage />} />
+  <Route path="/portfolio" element={<Portfolio />} />
+  <Route path='/careers' element={<CareersPage />} />
       </Routes>
     </Router>
   );
