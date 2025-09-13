@@ -34,18 +34,18 @@
   <div id="root"></div>
   <noscript>You need to enable JavaScript to run this app.</noscript>
   <script>
-    (function() {
+    (function () {
       try {
         var redirect = sessionStorage.getItem('spa-github-redirect');
         if (redirect) {
           sessionStorage.removeItem('spa-github-redirect');
           var locationData = JSON.parse(redirect);
-          var dest = locationData.pathname + (locationData.search||'') + (locationData.hash||'');
+          var dest = locationData.pathname + (locationData.search || '') + (locationData.hash || '');
           if (dest && dest !== window.location.pathname) {
             window.history.replaceState(null, null, dest);
           }
         }
-      } catch(e) { /* silent */ }
+      } catch (e) { /* silent */ }
     })();
   </script>
   <script type="module" src="./src/main.tsx"></script>

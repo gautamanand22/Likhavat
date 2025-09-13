@@ -4,8 +4,8 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   css: { postcss: './postcss.config.js' },
-  // Relative base supports GitHub Pages project subpath & custom domain root.
-  base: './',
+  // Set base to '/' for custom domain deployment
+  base: '/',
   build: {
     outDir: 'dist',
     assetsDir: 'assets',

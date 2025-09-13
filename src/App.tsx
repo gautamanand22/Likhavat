@@ -23,8 +23,8 @@ function HomePage() {
       <HeroBanner />
       <AboutUsSection />
       <CatalogSection />
-  <StatsSection />
-  <ProcessSection />
+      <StatsSection />
+      <ProcessSection />
       <Footer />
     </>
   );
@@ -38,10 +38,10 @@ function App() {
         {/* You can add more routes like below */}
         {/* <Route path="/services" element={<ServicesPage />} /> */}
         <Route path="*" element={<NotFound />} />
-  <Route path="/about-us" element={<Layout><AboutUsPage /></Layout>} />
-  <Route path="/contact" element={<Layout><Contact /></Layout>} />
-  <Route path="/portfolio" element={<Layout><Portfolio /></Layout>} />
-  <Route path='/careers' element={<Layout><CareersPage /></Layout>} />
+        <Route path="/about-us" element={<Layout><AboutUsPage /></Layout>} />
+        <Route path="/contact" element={<Layout><Contact /></Layout>} />
+        <Route path="/portfolio" element={<Layout><Portfolio /></Layout>} />
+        <Route path='/careers' element={<Layout><CareersPage /></Layout>} />
       </Routes>
     </Router>
   );
