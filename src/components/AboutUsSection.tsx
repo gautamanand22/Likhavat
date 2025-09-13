@@ -1,4 +1,5 @@
 import React from 'react';
+import LazyImage from './LazyImage';
 import imgABout from '../assets/img/about.jpg';
 
 const AboutUsSection: React.FC = () => {
@@ -31,7 +32,7 @@ const AboutUsSection: React.FC = () => {
 
         {/* Right Image */}
         <div className="h-full w-full">
-          <img
+          <LazyImage
             src={imgABout}
             alt="Founder"
             className="w-full h-full object-cover object-center"

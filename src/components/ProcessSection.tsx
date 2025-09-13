@@ -1,4 +1,5 @@
 import React from "react";
+import LazyImage from "./LazyImage";
 import img1 from "../assets/img/design.jpg";
 import img2 from "../assets/img/pay.avif";
 import img3 from "../assets/img/delivery.avif";
@@ -42,7 +43,7 @@ Just 3 Easy Steps
 
           return (
             <div key={index} className={` ${verticalOffset}`}>
-              <img
+              <LazyImage
                 src={service.image}
                 alt={service.title}
                 className={`w-full object-cover mb-4 rounded-sm ${imageHeight}`}

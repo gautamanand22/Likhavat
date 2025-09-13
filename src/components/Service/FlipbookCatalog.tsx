@@ -1,5 +1,6 @@
 import React from 'react';
 import HTMLFlipBook from 'react-pageflip';
+import LazyImage from '../LazyImage';
 
 type FlipbookCatalogProps = {
   pages: {
@@ -30,14 +31,22 @@ const FlipbookCatalog: React.FC<FlipbookCatalogProps> = ({ pages }) => {
           clickEventForward={true}
           usePortrait={false}
           startPage={0}
+          autoSize={false}
+          maxShadowOpacity={0.5}
+          style={{}}
+          startZIndex={0}
+          swipeDistance={30}
+          showPageCorners={true}
+          disableFlipByClick={false}
           className="flipbook"
         >
           {pages.map((page, idx) => (
             <div key={idx} className="relative w-full h-full overflow-hidden">
-              <img
+              <LazyImage
                 src={page.src}
                 alt={`Page ${idx + 1}`}
                 className="w-full h-full object-cover"
+                priority={idx < 2}
               />
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-30 text-white text-center px-6">
                 <h3 className="text-2xl font-semibold drop-shadow mb-10">
@@ -62,10 +71,11 @@ const FlipbookCatalog: React.FC<FlipbookCatalogProps> = ({ pages }) => {
             key={idx}
             className="relative w-full rounded-lg overflow-hidden shadow-lg"
           >
-            <img
+            <LazyImage
               src={page.src}
               alt={`Page ${idx + 1}`}
               className="w-full h-auto object-cover"
+              priority={idx < 2}
             />
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-30 text-white text-center px-4 py-6">
               <h3 className="text-xl font-semibold drop-shadow mb-3">

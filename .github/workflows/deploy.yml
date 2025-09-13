@@ -42,9 +42,15 @@ jobs:
         env:
           CI: false
           
+      - name: Compress static assets
+        run: |
+          cd dist
+          find . -type f \( -name "*.js" -o -name "*.css" -o -name "*.html" -o -name "*.svg" \) -exec gzip -9 -k {} \;
+          
       - name: Add security headers
         run: |
           echo "/* /index.html 200" > dist/_redirects
+          echo "/*    /index.html   200" >> dist/_redirects
           
       - name: Verify build output
         run: |
