@@ -10,6 +10,7 @@ import StatsSection from "./components/StatsSection";
 import NotFound from "./components/NotFound"; // If you want a 404 page
 import ProcessSection from "./components/ProcessSection";
 import Footer from "./components/Footer";
+import Layout from "./components/Layout";
 import AboutUsPage from "./pages/About";
 import Contact from "./pages/Contact";
 import Portfolio from "./pages/Portfolio";
@@ -22,8 +23,8 @@ function HomePage() {
       <HeroBanner />
       <AboutUsSection />
       <CatalogSection />
-      <StatsSection />
-      <ProcessSection/>
+  <StatsSection />
+  <ProcessSection />
       <Footer />
     </>
   );
@@ -37,10 +38,10 @@ function App() {
         {/* You can add more routes like below */}
         {/* <Route path="/services" element={<ServicesPage />} /> */}
         <Route path="*" element={<NotFound />} />
-        <Route path="/about-us" element={<AboutUsPage />} />
-        <Route path="/contact" element={<Contact />} />
-  <Route path="/portfolio" element={<Portfolio />} />
-  <Route path='/careers' element={<CareersPage />} />
+  <Route path="/about-us" element={<Layout><AboutUsPage /></Layout>} />
+  <Route path="/contact" element={<Layout><Contact /></Layout>} />
+  <Route path="/portfolio" element={<Layout><Portfolio /></Layout>} />
+  <Route path='/careers' element={<Layout><CareersPage /></Layout>} />
       </Routes>
     </Router>
   );

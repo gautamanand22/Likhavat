@@ -1,13 +1,10 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  css: {
-    postcss: './postcss.config.js',
-  },
-  // Use relative base so it works on both custom domain root and GitHub project subpath
+  css: { postcss: './postcss.config.js' },
+  // Relative base supports GitHub Pages project subpath & custom domain root.
   base: './',
   build: {
     outDir: 'dist',
@@ -24,8 +21,5 @@ export default defineConfig({
       }
     }
   },
-  server: {
-    port: 3000,
-    open: true
-  }
+  server: { port: 3000, open: true }
 })

@@ -33,7 +33,6 @@ const Header = () => {
         } shadow-lg`}
       >
         <div className="flex justify-between items-center px-4 py-4 border-b">
-       
           <FaTimes
             className="text-2xl cursor-pointer"
             onClick={() => setMenuOpen(false)}
@@ -46,7 +45,6 @@ const Header = () => {
           <Link to="/careers" onClick={() => setMenuOpen(false)}>Careers</Link>
           <Link to="/portfolio" onClick={() => setMenuOpen(false)}>Portfolio</Link>
           <Link to="/contact" onClick={() => setMenuOpen(false)}>Contact Us</Link>
-        
 
           <hr />
 
