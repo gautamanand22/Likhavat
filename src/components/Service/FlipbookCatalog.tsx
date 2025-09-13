@@ -1,6 +1,6 @@
 import React from 'react';
 import HTMLFlipBook from 'react-pageflip';
-import LazyImage from '../LazyImage';
+import FastImage from '../FastImage';
 
 type FlipbookCatalogProps = {
   pages: {
@@ -42,11 +42,14 @@ const FlipbookCatalog: React.FC<FlipbookCatalogProps> = ({ pages }) => {
         >
           {pages.map((page, idx) => (
             <div key={idx} className="relative w-full h-full overflow-hidden">
-              <LazyImage
+              <FastImage
                 src={page.src}
                 alt={`Page ${idx + 1}`}
                 className="w-full h-full object-cover"
                 priority={idx < 2}
+                responsive={false}
+                width={550}
+                height={700}
               />
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-30 text-white text-center px-6">
                 <h3 className="text-2xl font-semibold drop-shadow mb-10">
@@ -71,11 +74,13 @@ const FlipbookCatalog: React.FC<FlipbookCatalogProps> = ({ pages }) => {
             key={idx}
             className="relative w-full rounded-lg overflow-hidden shadow-lg"
           >
-            <LazyImage
+            <FastImage
               src={page.src}
               alt={`Page ${idx + 1}`}
               className="w-full h-auto object-cover"
               priority={idx < 2}
+              width={400}
+              height={300}
             />
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-30 text-white text-center px-4 py-6">
               <h3 className="text-xl font-semibold drop-shadow mb-3">

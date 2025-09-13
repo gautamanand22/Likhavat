@@ -1,5 +1,5 @@
 import React from "react";
-import LazyImage from "./LazyImage";
+import FastImage from "./FastImage";
 import img1 from "../assets/img/design.jpg";
 import img2 from "../assets/img/pay.avif";
 import img3 from "../assets/img/delivery.avif";
@@ -24,17 +24,17 @@ const ServicesOverview = () => {
         "Pick up your finished product from our shop—or let us deliver it to your doorstep.",
       image: img3,
     },
- 
+
   ];
 
   return (
     <div className="max-w-7xl mx-auto px-4 pb-16 pt-6">
       <h2 className="font-georgia text-3xl md:text-4xl  font-light text-center mb-12 leading-snug">
-      PROCESS <br />
-Just 3 Easy Steps
+        PROCESS <br />
+        Just 3 Easy Steps
       </h2>
-      
- 
+
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-14">
         {services.map((service, index) => {
           const isTall = index === 0 || index === 2;
@@ -43,10 +43,13 @@ Just 3 Easy Steps
 
           return (
             <div key={index} className={` ${verticalOffset}`}>
-              <LazyImage
+              <FastImage
                 src={service.image}
                 alt={service.title}
                 className={`w-full object-cover mb-4 rounded-sm ${imageHeight}`}
+                width={400}
+                height={isTall ? 420 : 240}
+                priority={index === 0}
               />
               <h3 className="text-2xl  font-semibold mb-2">
                 {service.title}
