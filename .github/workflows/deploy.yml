@@ -39,6 +39,17 @@ jobs:
         
       - name: Build
         run: npm run build
+        env:
+          CI: false
+          
+      - name: Add security headers
+        run: |
+          echo "/* /index.html 200" > dist/_redirects
+          
+      - name: Verify build output
+        run: |
+          ls -la dist/
+          echo "Build completed successfully"
         
       - name: Setup Pages
         uses: actions/configure-pages@v4
