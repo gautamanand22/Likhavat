@@ -47,7 +47,6 @@ const FlipbookCatalog: React.FC<FlipbookCatalogProps> = ({ pages }) => {
                 alt={`Page ${idx + 1}`}
                 className="w-full h-full object-cover"
                 priority={idx < 2}
-                responsive={false}
                 width={550}
                 height={700}
               />

@@ -44,7 +44,7 @@ const VisitingCardDesigner: React.FC = () => {
         name: 'John Doe',
         title: 'Senior Manager',
         company: 'Your Company Name',
-        phone: '+91 98765 43210',
+        phone: '+91 79798 31185',
         email: 'john.doe@company.com',
         address: '123 Business Street, City - 400001',
         website: 'www.yourcompany.com',
@@ -71,7 +71,7 @@ const VisitingCardDesigner: React.FC = () => {
     const [letterPadData, setLetterPadData] = useState<LetterPadData>({
         companyName: 'Your Company Name',
         address: '123 Business Street, City - 400001',
-        phone: '+91 98765 43210',
+        phone: '+91 79798 31185',
         email: 'info@company.com',
         website: 'www.yourcompany.com',
         fax: '+91 11 2345 6789',
@@ -215,7 +215,7 @@ const VisitingCardDesigner: React.FC = () => {
         {
             id: 'phone',
             type: 'text',
-            content: '📞 +91 98765 43210',
+            content: '📞 +91 79798 31185',
             position: { x: 24, y: 134 },
             size: { width: 200, height: 18 },
             style: { fontSize: 12, color: '#333333' },
@@ -631,7 +631,7 @@ const VisitingCardDesigner: React.FC = () => {
             case 'corporate':
                 return {
                     ...baseStyle,
-                    background: `linear-gradient(180deg, ${data.accentColor} 0%, ${data.accentColor}15 100%), ${data.bgColor}`,
+                    backgroundColor: '#f8f8f8', // Solid off-white background
                 };
             case 'modern':
                 return {
@@ -2208,8 +2208,8 @@ const VisitingCardDesigner: React.FC = () => {
                                         key={template.id}
                                         onClick={() => setLetterPadData(prev => ({ ...prev, template: template.id as any }))}
                                         className={`group relative overflow-hidden rounded-lg border-2 transition-all duration-300 w-full transform hover:scale-105 ${letterPadData.template === template.id
-                                                ? 'border-blue-500 shadow-xl ring-2 ring-blue-200 scale-105'
-                                                : 'border-gray-200 hover:border-blue-300 hover:shadow-lg'
+                                            ? 'border-blue-500 shadow-xl ring-2 ring-blue-200 scale-105'
+                                            : 'border-gray-200 hover:border-blue-300 hover:shadow-lg'
                                             }`}
                                         style={{ aspectRatio: '210/297' }} // A4 ratio
                                     >
@@ -2583,9 +2583,9 @@ const VisitingCardDesigner: React.FC = () => {
                                                                 />
                                                             </div>
                                                             <div>
-                                                                <label className="block text-xs text-gray-600 mb-1">Font Size</label>
+                                                                <label className="block text-xs text-gray-600 mb-1">Font Size: {element.style.fontSize || 14}px</label>
                                                                 <input
-                                                                    type="number"
+                                                                    type="range"
                                                                     value={element.style.fontSize || 14}
                                                                     onChange={(e) => {
                                                                         setLetterPadElements(prev =>
@@ -2596,9 +2596,51 @@ const VisitingCardDesigner: React.FC = () => {
                                                                             )
                                                                         );
                                                                     }}
-                                                                    className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
+                                                                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                                                                     min="8"
                                                                     max="72"
+                                                                />
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Element Size Controls */}
+                                                        <div className="space-y-3">
+                                                            <div>
+                                                                <label className="block text-xs text-gray-600 mb-1">Width: {element.size.width}px</label>
+                                                                <input
+                                                                    type="range"
+                                                                    value={element.size.width}
+                                                                    onChange={(e) => {
+                                                                        setLetterPadElements(prev =>
+                                                                            prev.map(el =>
+                                                                                el.id === element.id
+                                                                                    ? { ...el, size: { ...el.size, width: parseInt(e.target.value) } }
+                                                                                    : el
+                                                                            )
+                                                                        );
+                                                                    }}
+                                                                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                                                    min="20"
+                                                                    max="500"
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <label className="block text-xs text-gray-600 mb-1">Height: {element.size.height}px</label>
+                                                                <input
+                                                                    type="range"
+                                                                    value={element.size.height}
+                                                                    onChange={(e) => {
+                                                                        setLetterPadElements(prev =>
+                                                                            prev.map(el =>
+                                                                                el.id === element.id
+                                                                                    ? { ...el, size: { ...el.size, height: parseInt(e.target.value) } }
+                                                                                    : el
+                                                                            )
+                                                                        );
+                                                                    }}
+                                                                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                                                    min="10"
+                                                                    max="200"
                                                                 />
                                                             </div>
                                                         </div>
@@ -2829,6 +2871,48 @@ const VisitingCardDesigner: React.FC = () => {
                                                                 </button>
                                                             </div>
                                                         )}
+
+                                                        {/* Element Size Controls */}
+                                                        <div className="space-y-3">
+                                                            <div>
+                                                                <label className="block text-xs text-gray-600 mb-1">Width: {element.size.width}px</label>
+                                                                <input
+                                                                    type="range"
+                                                                    value={element.size.width}
+                                                                    onChange={(e) => {
+                                                                        setLetterPadElements(prev =>
+                                                                            prev.map(el =>
+                                                                                el.id === element.id
+                                                                                    ? { ...el, size: { ...el.size, width: parseInt(e.target.value) } }
+                                                                                    : el
+                                                                            )
+                                                                        );
+                                                                    }}
+                                                                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                                                    min="20"
+                                                                    max="300"
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <label className="block text-xs text-gray-600 mb-1">Height: {element.size.height}px</label>
+                                                                <input
+                                                                    type="range"
+                                                                    value={element.size.height}
+                                                                    onChange={(e) => {
+                                                                        setLetterPadElements(prev =>
+                                                                            prev.map(el =>
+                                                                                el.id === element.id
+                                                                                    ? { ...el, size: { ...el.size, height: parseInt(e.target.value) } }
+                                                                                    : el
+                                                                            )
+                                                                        );
+                                                                    }}
+                                                                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                                                    min="20"
+                                                                    max="300"
+                                                                />
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 )}
                                             </>
@@ -2898,8 +2982,8 @@ const VisitingCardDesigner: React.FC = () => {
                                                                 setCustomQuantity('');
                                                             }}
                                                             className={`px-3 py-1 text-xs rounded border transition-colors ${quantity === qty
-                                                                    ? 'bg-orange-500 text-white border-orange-500'
-                                                                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                                                                ? 'bg-orange-500 text-white border-orange-500'
+                                                                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
                                                                 }`}
                                                         >
                                                             {qty}
@@ -2936,8 +3020,8 @@ const VisitingCardDesigner: React.FC = () => {
                                         <div className="bg-orange-50 p-3 rounded border border-orange-200">
                                             <div className="text-sm font-medium text-orange-800 mb-2">📞 Get Detailed Quote</div>
                                             <div className="text-sm text-orange-700">
-                                                Call us at <span className="font-semibold">+91 98765 43210</span> or email
-                                                <span className="font-semibold"> info@likhavat.com</span> for custom pricing on large orders.
+                                                Call us at <span className="font-semibold">+91 79798 31185</span> or email
+                                                <span className="font-semibold"> rudra.org1@gmail.com</span> for custom pricing on large orders.
                                             </div>
                                         </div>
                                     </div>
@@ -3025,8 +3109,9 @@ const VisitingCardDesigner: React.FC = () => {
                                                     <>
                                                         {/* Delete button */}
                                                         <button
-                                                            className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full text-xs opacity-80 hover:opacity-100 transition-opacity z-20 flex items-center justify-center"
+                                                            className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full text-xs opacity-90 hover:opacity-100 transition-opacity z-30 flex items-center justify-center cursor-pointer shadow-lg"
                                                             onClick={(e) => {
+                                                                e.preventDefault();
                                                                 e.stopPropagation();
                                                                 if (element.id === 'logo_placeholder') {
                                                                     // Reset logo to placeholder
@@ -3060,8 +3145,9 @@ const VisitingCardDesigner: React.FC = () => {
                                                         </button>
                                                         {/* Done button */}
                                                         <button
-                                                            className="absolute -top-2 -left-2 w-5 h-5 bg-green-500 text-white rounded-full text-xs opacity-80 hover:opacity-100 transition-opacity z-20 flex items-center justify-center"
+                                                            className="absolute -top-2 -left-2 w-6 h-6 bg-green-500 text-white rounded-full text-xs opacity-90 hover:opacity-100 transition-opacity z-30 flex items-center justify-center cursor-pointer shadow-lg"
                                                             onClick={(e) => {
+                                                                e.preventDefault();
                                                                 e.stopPropagation();
                                                                 setSelectedLetterPadElement(null);
                                                             }}
