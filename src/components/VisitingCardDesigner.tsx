@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 interface CardData {
   name: string;
@@ -42,11 +42,88 @@ const VisitingCardDesigner: React.FC = () => {
   });
 
   const [currentView, setCurrentView] = useState<'front' | 'back'>('front');
-  const [cardElements, setCardElements] = useState<CardElement[]>([]);
   const [selectedElement, setSelectedElement] = useState<CardElement | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [dragStartPos, setDragStartPos] = useState({ x: 0, y: 0 });
+  const [mouseDownTime, setMouseDownTime] = useState(0);
   const cardRef = useRef<HTMLDivElement>(null);
+
+  // Initialize with default elements that can be edited/removed
+  const [cardElements, setCardElements] = useState<CardElement[]>([
+    {
+      id: 'name',
+      type: 'text',
+      content: 'John Doe',
+      position: { x: 0, y: 0 },
+      size: { width: 200, height: 24 },
+      style: { fontSize: 18, fontWeight: 'bold', color: '#333333' },
+      side: 'front'
+    },
+    {
+      id: 'title',
+      type: 'text',
+      content: 'Senior Manager',
+      position: { x: 0, y: 28 },
+      size: { width: 180, height: 20 },
+      style: { fontSize: 14, color: '#666666' },
+      side: 'front'
+    },
+    {
+      id: 'company',
+      type: 'text',
+      content: 'Your Company Name',
+      position: { x: 0, y: 52 },
+      size: { width: 220, height: 22 },
+      style: { fontSize: 16, fontWeight: 'bold', color: '#007bff' },
+      side: 'front'
+    },
+    {
+      id: 'phone',
+      type: 'text',
+      content: '📞 +91 98765 43210',
+      position: { x: 0, y: 110 },
+      size: { width: 200, height: 18 },
+      style: { fontSize: 12, color: '#333333' },
+      side: 'front'
+    },
+    {
+      id: 'email',
+      type: 'text',
+      content: '✉️ john.doe@company.com',
+      position: { x: 0, y: 132 },
+      size: { width: 250, height: 18 },
+      style: { fontSize: 12, color: '#333333' },
+      side: 'front'
+    },
+    {
+      id: 'website',
+      type: 'text',
+      content: '🌐 www.yourcompany.com',
+      position: { x: 0, y: 154 },
+      size: { width: 220, height: 18 },
+      style: { fontSize: 12, color: '#333333' },
+      side: 'front'
+    },
+    {
+      id: 'company-back',
+      type: 'text',
+      content: 'Your Company Name',
+      position: { x: 30, y: 40 },
+      size: { width: 250, height: 24 },
+      style: { fontSize: 18, fontWeight: 'bold', color: '#333333' },
+      side: 'back'
+    },
+    {
+      id: 'address',
+      type: 'text',
+      content: '123 Business Street, City - 400001',
+      position: { x: 30, y: 100 },
+      size: { width: 270, height: 40 },
+      style: { fontSize: 12, color: '#666666' },
+      side: 'back'
+    }
+  ]);
 
   const templates = [
     { id: 'modern', name: 'Modern', preview: '🌟', desc: 'Clean lines with gradient accent' },
@@ -73,19 +150,69 @@ const VisitingCardDesigner: React.FC = () => {
     setCardData(prev => ({ ...prev, [field]: value }));
   };
 
-  const addElement = (type: CardElement['type']) => {
+  const addElement = (type: CardElement['type'], content?: string, customStyle?: Partial<React.CSSProperties>) => {
     const newElement: CardElement = {
       id: `${type}_${Date.now()}`,
       type,
-      content: type === 'text' ? 'New Text' : type === 'qr' ? 'QR Code' : type,
-      position: { x: 50, y: 50 },
+      content: content || (type === 'text' ? 'New Text' : type === 'qr' ? 'QR Code' : type),
+      position: { x: 20, y: 20 }, // Safe position within content area
       size: { width: type === 'qr' ? 60 : 100, height: type === 'qr' ? 60 : 30 },
-      style: { color: cardData.textColor, fontSize: 14 },
+      style: { color: cardData.textColor, fontSize: 14, ...customStyle },
       side: currentView
     };
     setCardElements(prev => [...prev, newElement]);
     setSelectedElement(newElement);
   };
+
+  const getTemplateTextColors = (template: string) => {
+    switch (template) {
+      case 'classic': return { primary: '#2c3e50', secondary: '#34495e', accent: '#3498db' };
+      case 'minimal': return { primary: '#333333', secondary: '#666666', accent: '#007bff' };
+      case 'elegant': return { primary: '#2c3e50', secondary: '#7f8c8d', accent: '#9b59b6' };
+      case 'creative': return { primary: 'white', secondary: 'rgba(255,255,255,0.9)', accent: 'rgba(255,255,255,0.8)' };
+      case 'corporate': return { primary: '#ffffff', secondary: '#ecf0f1', accent: '#3498db' };
+      case 'gradient': return { primary: 'white', secondary: 'rgba(255,255,255,0.9)', accent: 'rgba(255,255,255,0.8)' };
+      case 'dark': return { primary: '#ffffff', secondary: '#bdc3c7', accent: '#00ff88' };
+      case 'colorful': return { primary: '#2c3e50', secondary: '#34495e', accent: '#e74c3c' };
+      case 'professional': return { primary: '#495057', secondary: '#6c757d', accent: '#007bff' };
+      case 'artistic': return { primary: 'white', secondary: 'rgba(255,255,255,0.9)', accent: 'rgba(255,255,255,0.8)' };
+      case 'tech': return { primary: '#00ff88', secondary: '#00cc70', accent: '#ffffff' };
+      case 'luxury': return { primary: '#8b4513', secondary: '#a0522d', accent: '#b8860b' };
+      case 'geometric': return { primary: '#2c3e50', secondary: '#34495e', accent: '#667eea' };
+      case 'nature': return { primary: '#2d5016', secondary: '#558b2f', accent: '#7cb342' };
+      case 'bold': return { primary: 'white', secondary: 'rgba(255,255,255,0.9)', accent: 'rgba(255,255,255,0.8)' };
+      case 'vintage': return { primary: '#5d4037', secondary: '#6d4c41', accent: '#8d6e63' };
+      case 'futuristic': return { primary: '#00ffff', secondary: '#00cccc', accent: '#ffffff' };
+      default: return { primary: '#333333', secondary: '#666666', accent: '#007bff' };
+    }
+  };
+
+  const applyTemplateToElements = (template: string) => {
+    const colors = getTemplateTextColors(template);
+    setCardElements(prev => prev.map(element => {
+      const updatedStyle = { ...element.style };
+      
+      // Apply colors based on element type and content
+      if (element.id === 'name') {
+        updatedStyle.color = colors.primary;
+        updatedStyle.fontWeight = 'bold';
+      } else if (element.id === 'title') {
+        updatedStyle.color = colors.secondary;
+      } else if (element.id === 'company' || element.id === 'company-back') {
+        updatedStyle.color = colors.accent;
+        updatedStyle.fontWeight = 'bold';
+      } else {
+        updatedStyle.color = colors.primary;
+      }
+      
+      return { ...element, style: updatedStyle };
+    }));
+  };
+
+  // Apply template colors when template changes
+  React.useEffect(() => {
+    applyTemplateToElements(cardData.template);
+  }, [cardData.template]);
 
   const updateElement = (id: string, updates: Partial<CardElement>) => {
     setCardElements(prev => prev.map(el => el.id === id ? { ...el, ...updates } : el));
@@ -104,26 +231,43 @@ const VisitingCardDesigner: React.FC = () => {
   const handleMouseDown = (e: React.MouseEvent, element: CardElement) => {
     e.preventDefault();
     e.stopPropagation();
-    setSelectedElement(element);
-    setIsDragging(true);
     
-    const rect = e.currentTarget.getBoundingClientRect();
-    setDragOffset({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
-    });
+    setSelectedElement(element);
+    setMouseDownTime(Date.now());
+    setDragStartPos({ x: e.clientX, y: e.clientY });
+    
+    // Calculate offset relative to element position
+    const cardRect = cardRef.current?.getBoundingClientRect();
+    
+    if (cardRect) {
+      setDragOffset({
+        x: e.clientX - cardRect.left - element.position.x,
+        y: e.clientY - cardRect.top - element.position.y
+      });
+    }
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging || !selectedElement || !cardRef.current) return;
+    if (!selectedElement || !cardRef.current) return;
+    
+    // Only start dragging if mouse has moved significantly and some time has passed
+    const timeDiff = Date.now() - mouseDownTime;
+    const mouseDiff = Math.abs(e.clientX - dragStartPos.x) + Math.abs(e.clientY - dragStartPos.y);
+    
+    if (timeDiff > 100 || mouseDiff > 5) {
+      setIsDragging(true);
+    }
+    
+    if (!isDragging) return;
     
     const cardRect = cardRef.current.getBoundingClientRect();
     const newX = e.clientX - cardRect.left - dragOffset.x;
     const newY = e.clientY - cardRect.top - dragOffset.y;
     
-    // Keep element within card bounds
-    const maxX = 384 - selectedElement.size.width; // Card width minus element width
-    const maxY = 224 - selectedElement.size.height; // Card height minus element height
+    // Keep element within card bounds (account for 24px padding on all sides)
+    const cardPadding = 24; // p-6 = 24px
+    const maxX = 384 - (cardPadding * 2) - selectedElement.size.width; // Available width minus element width
+    const maxY = 224 - (cardPadding * 2) - selectedElement.size.height; // Available height minus element height
     
     const constrainedX = Math.max(0, Math.min(newX, maxX));
     const constrainedY = Math.max(0, Math.min(newY, maxY));
@@ -135,6 +279,7 @@ const VisitingCardDesigner: React.FC = () => {
 
   const handleMouseUp = () => {
     setIsDragging(false);
+    setMouseDownTime(0);
   };
 
   const renderQRCode = () => {
@@ -171,16 +316,19 @@ const VisitingCardDesigner: React.FC = () => {
       case 'text':
         return (
           <div 
-            className="w-full h-full flex items-center"
+            className="w-full h-full flex items-start leading-tight"
             style={{
               fontSize: `${element.style.fontSize || 14}px`,
               color: element.style.color || cardData.textColor,
               fontWeight: element.style.fontWeight || 'normal',
               fontStyle: element.style.fontStyle || 'normal',
               textDecoration: element.style.textDecoration || 'none',
+              lineHeight: '1.2',
+              wordWrap: 'break-word',
+              overflow: 'visible'
             }}
           >
-            {element.content}
+            <span className="block w-full">{element.content}</span>
           </div>
         );
       case 'qr':
@@ -203,80 +351,100 @@ const VisitingCardDesigner: React.FC = () => {
           ...baseStyle,
           background: `linear-gradient(135deg, ${cardData.bgColor} 0%, ${cardData.accentColor}20 100%)`,
           borderLeft: `4px solid ${cardData.accentColor}`,
+          color: cardData.textColor,
+          fontFamily: 'system-ui, -apple-system, sans-serif',
         };
       case 'classic':
         return {
           ...baseStyle,
-          border: `2px solid ${cardData.textColor}`,
+          backgroundColor: '#f8f8f8',
+          border: `2px solid #2c3e50`,
           borderRadius: '0px',
-          fontFamily: 'serif',
+          fontFamily: 'Georgia, serif',
+          color: '#2c3e50',
         };
       case 'minimal':
         return {
           ...baseStyle,
+          backgroundColor: '#ffffff',
           border: `1px solid ${cardData.accentColor}40`,
           boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+          color: '#333333',
+          fontFamily: 'Helvetica, Arial, sans-serif',
         };
       case 'elegant':
         return {
           ...baseStyle,
-          background: `linear-gradient(135deg, ${cardData.bgColor} 0%, ${cardData.accentColor}10 100%)`,
+          background: `linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)`,
           border: `1px solid ${cardData.accentColor}30`,
           boxShadow: `0 6px 20px ${cardData.accentColor}15`,
+          color: '#2c3e50',
+          fontFamily: 'Times, serif',
         };
       case 'creative':
         return {
           ...baseStyle,
-          background: `conic-gradient(from 45deg, ${cardData.accentColor}, ${cardData.textColor}, ${cardData.bgColor})`,
+          background: `linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4)`,
           color: 'white',
-          borderRadius: '50% 10% 50% 10%',
+          borderRadius: '15px 5px 15px 5px',
+          fontFamily: 'Arial, sans-serif',
+          fontWeight: 'bold',
+          textShadow: '1px 1px 2px rgba(0,0,0,0.3)',
         };
       case 'corporate':
         return {
           ...baseStyle,
-          background: `linear-gradient(135deg, ${cardData.accentColor} 0%, ${cardData.textColor} 100%)`,
-          color: 'white',
-          border: `2px solid ${cardData.accentColor}`,
+          background: `linear-gradient(135deg, #2c3e50 0%, #34495e 100%)`,
+          color: '#ffffff',
+          border: `2px solid #3498db`,
+          fontFamily: 'Calibri, sans-serif',
+          boxShadow: '0 4px 15px rgba(52, 73, 94, 0.3)',
         };
       case 'gradient':
         return {
           ...baseStyle,
-          background: `linear-gradient(135deg, ${cardData.accentColor}, ${cardData.textColor})`,
+          background: `linear-gradient(135deg, #667eea 0%, #764ba2 100%)`,
           color: 'white',
           border: 'none',
-          boxShadow: `0 5px 15px ${cardData.accentColor}30`,
+          boxShadow: `0 5px 15px rgba(102, 126, 234, 0.4)`,
+          fontFamily: 'Arial, sans-serif',
         };
       case 'dark':
         return {
           ...baseStyle,
-          background: `linear-gradient(135deg, #1a1a1a, #2d2d2d)`,
+          background: `linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)`,
           color: '#ffffff',
           border: `1px solid ${cardData.accentColor}`,
           boxShadow: `0 0 12px ${cardData.accentColor}40`,
+          fontFamily: 'Consolas, monospace',
         };
       case 'colorful':
         return {
           ...baseStyle,
-          background: `linear-gradient(45deg, ${cardData.accentColor}, #ff6b6b, #4ecdc4, #45b7d1)`,
-          color: 'white',
-          borderRadius: '8px',
-          boxShadow: `0 8px 25px ${cardData.accentColor}30`,
+          background: `linear-gradient(45deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%)`,
+          color: '#2c3e50',
+          borderRadius: '20px',
+          boxShadow: `0 8px 25px rgba(255, 154, 158, 0.3)`,
+          fontFamily: 'Comic Sans MS, cursive',
         };
       case 'professional':
         return {
           ...baseStyle,
-          background: `linear-gradient(135deg, #2c3e50 0%, #34495e 100%)`,
-          color: '#ecf0f1',
-          border: '2px solid #34495e',
-          boxShadow: '0 6px 20px rgba(44, 62, 80, 0.3)',
+          background: `linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)`,
+          color: '#495057',
+          border: '2px solid #6c757d',
+          boxShadow: '0 6px 20px rgba(108, 117, 125, 0.2)',
+          fontFamily: 'Arial, sans-serif',
         };
       case 'artistic':
         return {
           ...baseStyle,
-          background: `radial-gradient(circle at 30% 70%, ${cardData.accentColor}, #4ecdc4, #45b7d1)`,
+          background: `radial-gradient(circle at 30% 70%, #ff7eb3, #ff758c, #ff7eb3)`,
           color: 'white',
-          borderRadius: '20% 5% 20% 5%',
+          borderRadius: '25px 5px 25px 5px',
           transform: 'rotate(-1deg)',
+          fontFamily: 'Brush Script MT, cursive',
+          textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
         };
       case 'tech':
         return {
@@ -286,58 +454,69 @@ const VisitingCardDesigner: React.FC = () => {
           border: '1px solid #00ff88',
           borderRadius: '2px',
           boxShadow: '0 0 15px rgba(0,255,136,0.3)',
+          fontFamily: 'Courier New, monospace',
         };
       case 'luxury':
         return {
           ...baseStyle,
-          background: `linear-gradient(135deg, #ffd700 0%, ${cardData.bgColor} 30%, #ffd700 100%)`,
-          border: '2px solid #ffd700',
-          color: '#333',
+          background: `linear-gradient(135deg, #ffd700 0%, #fff8dc 30%, #ffd700 100%)`,
+          border: '3px solid #b8860b',
+          color: '#8b4513',
           boxShadow: '0 6px 18px rgba(255,215,0,0.4)',
+          fontFamily: 'Palatino, serif',
         };
       case 'geometric':
         return {
           ...baseStyle,
-          background: `linear-gradient(45deg, transparent 30%, ${cardData.accentColor} 30%, ${cardData.accentColor} 70%, transparent 70%), linear-gradient(-45deg, transparent 30%, #00d4aa 30%, #00d4aa 70%, transparent 70%)`,
-          backgroundColor: cardData.bgColor,
-          border: `1px solid ${cardData.accentColor}`,
+          background: `linear-gradient(45deg, #667eea 25%, transparent 25%, transparent 75%, #667eea 75%), linear-gradient(-45deg, #764ba2 25%, transparent 25%, transparent 75%, #764ba2 75%)`,
+          backgroundColor: '#f8f9fa',
+          backgroundSize: '20px 20px',
+          border: `2px solid #667eea`,
+          color: '#2c3e50',
+          fontFamily: 'Helvetica, sans-serif',
         };
       case 'nature':
         return {
           ...baseStyle,
-          background: `linear-gradient(135deg, #667eea 0%, #764ba2 50%, #84fab0 100%)`,
-          color: 'white',
-          borderRadius: '15px 5px',
-          boxShadow: '0 8px 25px rgba(132, 250, 176, 0.3)',
+          background: `linear-gradient(135deg, #a8e6cf 0%, #dcedc1 50%, #ffd3a5 100%)`,
+          color: '#2d5016',
+          borderRadius: '15px',
+          border: '2px solid #7cb342',
+          boxShadow: '0 8px 25px rgba(124, 179, 66, 0.3)',
+          fontFamily: 'Verdana, sans-serif',
         };
       case 'bold':
         return {
           ...baseStyle,
-          background: `linear-gradient(135deg, #ff416c, #ff4b2b)`,
+          background: `linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%)`,
           color: 'white',
-          border: '3px solid #ff416c',
-          borderRadius: '0px',
+          border: '4px solid #ff1744',
+          borderRadius: '8px',
           fontWeight: 'bold',
+          fontFamily: 'Impact, sans-serif',
           boxShadow: '0 8px 25px rgba(255, 65, 108, 0.4)',
+          textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
         };
       case 'vintage':
         return {
           ...baseStyle,
           background: `linear-gradient(135deg, #d2b48c 0%, #deb887 100%)`,
-          color: '#8b4513',
-          border: '3px double #8b4513',
+          color: '#5d4037',
+          border: '4px double #8d6e63',
           borderRadius: '8px',
-          fontFamily: 'serif',
-          boxShadow: '0 6px 20px rgba(139, 69, 19, 0.2)',
+          fontFamily: 'Times New Roman, serif',
+          boxShadow: '0 6px 20px rgba(141, 110, 99, 0.3)',
         };
       case 'futuristic':
         return {
           ...baseStyle,
           background: `linear-gradient(135deg, #667eea 0%, #764ba2 100%)`,
           color: '#00ffff',
-          border: '1px solid #00ffff',
+          border: '2px solid #00ffff',
           borderRadius: '0px',
-          boxShadow: '0 0 20px rgba(0, 255, 255, 0.3), inset 0 0 20px rgba(0, 255, 255, 0.1)',
+          fontFamily: 'Orbitron, sans-serif',
+          boxShadow: '0 0 20px rgba(0, 255, 255, 0.5)',
+          textShadow: '0 0 10px rgba(0, 255, 255, 0.8)',
         };
       default:
         return baseStyle;
@@ -560,112 +739,45 @@ const VisitingCardDesigner: React.FC = () => {
   const renderCardContent = (side: 'front' | 'back') => {
     const sideElements = cardElements.filter(el => el.side === side);
     
-    if (side === 'front') {
-      return (
-        <div 
-          className="h-full flex flex-col justify-between relative"
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
-        >
-          <div className="text-center">
-            <h2 className="text-xl font-bold mb-1" style={{ color: cardData.textColor }}>{cardData.name}</h2>
-            <p className="text-sm opacity-80 mb-2" style={{ color: cardData.textColor }}>{cardData.title}</p>
-            <p className="text-lg font-semibold" style={{ color: cardData.accentColor }}>{cardData.company}</p>
+    return (
+      <div 
+        className="h-full relative"
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        onClick={() => setSelectedElement(null)} // Deselect when clicking on empty space
+      >
+        {/* All elements are now draggable - no static content */}
+        {sideElements.map(element => (
+          <div
+            key={element.id}
+            className={`absolute select-none transition-all duration-200 ${
+              selectedElement?.id === element.id ? 'ring-2 ring-blue-500 z-10' : 'z-0'
+            } ${isDragging && selectedElement?.id === element.id ? 'opacity-75 cursor-grabbing' : 'cursor-pointer hover:shadow-sm'}`}
+            style={{
+              left: `${element.position.x}px`,
+              top: `${element.position.y}px`,
+              width: `${element.size.width}px`,
+              height: `${element.size.height}px`,
+            }}
+            onMouseDown={(e) => handleMouseDown(e, element)}
+          >
+            {renderElement(element)}
+            {selectedElement?.id === element.id && (
+              <button
+                className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full text-xs opacity-80 hover:opacity-100 transition-opacity z-20 flex items-center justify-center"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  deleteElement(element.id);
+                }}
+              >
+                ×
+              </button>
+            )}
           </div>
-          
-          <div className="text-sm space-y-1" style={{ color: cardData.textColor }}>
-            <p>📞 {cardData.phone}</p>
-            <p>✉️ {cardData.email}</p>
-            <p>🌐 {cardData.website}</p>
-          </div>
-
-          {sideElements.map(element => (
-            <div
-              key={element.id}
-              className={`absolute cursor-move select-none ${
-                selectedElement?.id === element.id ? 'ring-2 ring-blue-500 z-10' : 'z-0'
-              } ${isDragging && selectedElement?.id === element.id ? 'opacity-75' : ''}`}
-              style={{
-                left: `${element.position.x}px`,
-                top: `${element.position.y}px`,
-                width: `${element.size.width}px`,
-                height: `${element.size.height}px`,
-              }}
-              onMouseDown={(e) => handleMouseDown(e, element)}
-              onClick={(e) => {
-                e.stopPropagation();
-                setSelectedElement(element);
-              }}
-            >
-              {renderElement(element)}
-              {selectedElement?.id === element.id && (
-                <button
-                  className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full text-xs opacity-80 hover:opacity-100 transition-opacity z-20"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteElement(element.id);
-                  }}
-                >
-                  ×
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
-      );
-    } else {
-      return (
-        <div 
-          className="h-full flex flex-col justify-center items-center relative"
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
-        >
-          <div className="text-center">
-            <h3 className="text-lg font-bold mb-4" style={{ color: cardData.textColor }}>{cardData.company}</h3>
-            <div className="text-sm space-y-2" style={{ color: cardData.textColor }}>
-              <p>{cardData.address}</p>
-              <p>📞 {cardData.phone}</p>
-              <p>✉️ {cardData.email}</p>
-            </div>
-          </div>
-
-          {sideElements.map(element => (
-            <div
-              key={element.id}
-              className={`absolute cursor-move select-none ${
-                selectedElement?.id === element.id ? 'ring-2 ring-blue-500 z-10' : 'z-0'
-              } ${isDragging && selectedElement?.id === element.id ? 'opacity-75' : ''}`}
-              style={{
-                left: `${element.position.x}px`,
-                top: `${element.position.y}px`,
-                width: `${element.size.width}px`,
-                height: `${element.size.height}px`,
-              }}
-              onMouseDown={(e) => handleMouseDown(e, element)}
-              onClick={(e) => {
-                e.stopPropagation();
-                setSelectedElement(element);
-              }}
-            >
-              {renderElement(element)}
-              {selectedElement?.id === element.id && (
-                <button
-                  className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full text-xs opacity-80 hover:opacity-100 transition-opacity z-20"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteElement(element.id);
-                  }}
-                >
-                  ×
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
-      );
-    }
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -721,52 +833,100 @@ const VisitingCardDesigner: React.FC = () => {
           {/* Center Panel - Controls */}
           <div className="w-80 bg-white border-r border-gray-200 p-4 overflow-y-auto">
             
-            {/* Card Information */}
+            {/* Element Management */}
             <div className="mb-6">
-              <h3 className="text-sm font-semibold text-gray-800 mb-3">Card Information</h3>
-              <div className="space-y-3">
-                <input
-                  type="text"
-                  placeholder="Full Name"
-                  value={cardData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                />
-                <input
-                  type="text"
-                  placeholder="Job Title"
-                  value={cardData.title}
-                  onChange={(e) => handleInputChange('title', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                />
-                <input
-                  type="text"
-                  placeholder="Company Name"
-                  value={cardData.company}
-                  onChange={(e) => handleInputChange('company', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                />
-                <input
-                  type="text"
-                  placeholder="Phone Number"
-                  value={cardData.phone}
-                  onChange={(e) => handleInputChange('phone', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                />
-                <input
-                  type="email"
-                  placeholder="Email Address"
-                  value={cardData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                />
-                <input
-                  type="text"
-                  placeholder="Website"
-                  value={cardData.website}
-                  onChange={(e) => handleInputChange('website', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                />
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="text-sm font-semibold text-gray-800">Manage Elements</h3>
+                <button
+                  onClick={() => setCardElements([])}
+                  className="px-3 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600 transition-colors"
+                >
+                  Clear All
+                </button>
+              </div>
+              
+              {/* Quick Add Default Elements */}
+              <div className="mb-4">
+                <h4 className="text-xs font-medium text-gray-600 mb-2">Quick Add</h4>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <button
+                    onClick={() => addElement('text', 'Name', { fontSize: 18, fontWeight: 'bold' })}
+                    className="p-2 bg-gray-100 hover:bg-gray-200 rounded border text-gray-700"
+                  >
+                    + Name
+                  </button>
+                  <button
+                    onClick={() => addElement('text', 'Job Title', { fontSize: 14, color: '#666' })}
+                    className="p-2 bg-gray-100 hover:bg-gray-200 rounded border text-gray-700"
+                  >
+                    + Title
+                  </button>
+                  <button
+                    onClick={() => addElement('text', 'Company Name', { fontSize: 16, fontWeight: 'bold', color: '#007bff' })}
+                    className="p-2 bg-gray-100 hover:bg-gray-200 rounded border text-gray-700"
+                  >
+                    + Company
+                  </button>
+                  <button
+                    onClick={() => addElement('text', '📞 Phone', { fontSize: 12 })}
+                    className="p-2 bg-gray-100 hover:bg-gray-200 rounded border text-gray-700"
+                  >
+                    + Phone
+                  </button>
+                  <button
+                    onClick={() => addElement('text', '✉️ Email', { fontSize: 12 })}
+                    className="p-2 bg-gray-100 hover:bg-gray-200 rounded border text-gray-700"
+                  >
+                    + Email
+                  </button>
+                  <button
+                    onClick={() => addElement('text', '🌐 Website', { fontSize: 12 })}
+                    className="p-2 bg-gray-100 hover:bg-gray-200 rounded border text-gray-700"
+                  >
+                    + Website
+                  </button>
+                </div>
+              </div>
+
+              {/* Current Elements List */}
+              <div className="space-y-2">
+                <h4 className="text-xs font-medium text-gray-600">Current Elements ({cardElements.filter(el => el.side === currentView).length})</h4>
+                {cardElements.filter(el => el.side === currentView).map((element, index) => (
+                  <div
+                    key={element.id}
+                    className={`p-2 rounded border text-xs cursor-pointer transition-colors ${
+                      selectedElement?.id === element.id 
+                        ? 'bg-blue-100 border-blue-300' 
+                        : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                    }`}
+                    onClick={() => setSelectedElement(element)}
+                  >
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center space-x-2">
+                        <span className="font-medium">
+                          {element.type === 'qr' ? '📱' : '📝'} 
+                        </span>
+                        <span className="truncate max-w-24">
+                          {element.type === 'qr' ? 'QR Code' : element.content}
+                        </span>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteElement(element.id);
+                        }}
+                        className="text-red-500 hover:text-red-700 font-bold"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                {cardElements.filter(el => el.side === currentView).length === 0 && (
+                  <p className="text-xs text-gray-500 italic py-4 text-center">
+                    No elements on this side. Add some elements to get started!
+                  </p>
+                )}
               </div>
             </div>
 
