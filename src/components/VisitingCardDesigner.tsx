@@ -3407,16 +3407,16 @@ const VisitingCardDesigner: React.FC = () => {
 
                             <div className="space-y-3">
                                 {[
-                                    { 
-                                        id: 'white', 
-                                        name: 'White T-Shirt', 
+                                    {
+                                        id: 'white',
+                                        name: 'White T-Shirt',
                                         frontImage: '/src/assets/whitefrontt.png',
                                         backImage: '/src/assets/whitebackt.png',
                                         color: '#ffffff'
                                     },
-                                    { 
-                                        id: 'red', 
-                                        name: 'Red T-Shirt', 
+                                    {
+                                        id: 'red',
+                                        name: 'Red T-Shirt',
                                         frontImage: '/src/assets/redt.png',
                                         backImage: '/src/assets/redtb.png',
                                         color: '#dc2626'
@@ -3435,17 +3435,17 @@ const VisitingCardDesigner: React.FC = () => {
                                             <div className="w-full h-full rounded-md relative overflow-hidden bg-white flex items-center justify-center">
                                                 {/* Realistic T-Shirt Shape using actual image */}
                                                 <div className="relative w-20 h-24 flex items-center justify-center">
-                                                    <img 
-                                                        src={template.frontImage} 
+                                                    <img
+                                                        src={template.frontImage}
                                                         alt={`${template.name} Template`}
                                                         className="w-full h-full object-contain"
                                                     />
-                                                    
+
                                                     {/* Logo Preview Area */}
                                                     <div className="absolute inset-0 flex items-center justify-center" style={{ top: '35%', left: '25%', width: '25%', height: '20%' }}>
-                                                        <div 
+                                                        <div
                                                             className="text-xs font-bold text-center bg-gray-100 border border-dashed border-gray-300 rounded flex items-center justify-center"
-                                                            style={{ 
+                                                            style={{
                                                                 color: '#666666',
                                                                 fontSize: '5px',
                                                                 width: '100%',
@@ -3511,7 +3511,7 @@ const VisitingCardDesigner: React.FC = () => {
                                 {/* Quick Add Default Elements */}
                                 <div className="mb-4">
                                     <h4 className="text-xs font-medium text-gray-600 mb-2">Quick Add</h4>
-                                    
+
                                     {/* Logo Upload */}
                                     <div className="mb-3">
                                         <input
@@ -3524,10 +3524,10 @@ const VisitingCardDesigner: React.FC = () => {
                                                     const reader = new FileReader();
                                                     reader.onload = (e) => {
                                                         // Find logo for current view
-                                                        const logoElement = tshirtElements.find(el => 
+                                                        const logoElement = tshirtElements.find(el =>
                                                             el.type === 'logo' && el.side === currentView
                                                         );
-                                                        
+
                                                         if (logoElement) {
                                                             // Update existing logo
                                                             const updatedElement = {
@@ -3540,7 +3540,7 @@ const VisitingCardDesigner: React.FC = () => {
                                                                     border: 'none'
                                                                 }
                                                             };
-                                                            setTshirtElements(prev => 
+                                                            setTshirtElements(prev =>
                                                                 prev.map(el => el.id === logoElement.id ? updatedElement : el)
                                                             );
                                                         } else {
@@ -3584,13 +3584,13 @@ const VisitingCardDesigner: React.FC = () => {
                                                     id: value === 'logo' ? `logo_placeholder_${currentView}` : `element_${Date.now()}`,
                                                     type: value === 'text' ? 'text' : value === 'logo' ? 'logo' : 'image',
                                                     content: value === 'text' ? 'Sample Text' : value === 'logo' ? 'LOGO' : 'Design',
-                                                    position: { 
-                                                        x: value === 'logo' ? (currentView === 'front' ? 120 : 200) : value === 'text' ? 150 : 180, 
-                                                        y: value === 'logo' ? (currentView === 'front' ? 180 : 220) : value === 'text' ? 300 : 280 
+                                                    position: {
+                                                        x: value === 'logo' ? (currentView === 'front' ? 120 : 200) : value === 'text' ? 150 : 180,
+                                                        y: value === 'logo' ? (currentView === 'front' ? 180 : 220) : value === 'text' ? 300 : 280
                                                     },
-                                                    size: { 
-                                                        width: value === 'logo' ? 60 : value === 'text' ? 150 : 80, 
-                                                        height: value === 'logo' ? 60 : value === 'text' ? 30 : 60 
+                                                    size: {
+                                                        width: value === 'logo' ? 60 : value === 'text' ? 150 : 80,
+                                                        height: value === 'logo' ? 60 : value === 'text' ? 30 : 60
                                                     },
                                                     style: {
                                                         fontSize: value === 'logo' ? 10 : value === 'text' ? 20 : 10,
@@ -3664,7 +3664,7 @@ const VisitingCardDesigner: React.FC = () => {
                                             </div>
                                         </div>
                                     ))}
-                                    
+
                                     {/* Show message when no elements on current side */}
                                     {tshirtElements.filter(el => el.side === currentView).length === 0 && (
                                         <div className="text-center text-gray-400 text-xs py-4 border-2 border-dashed border-gray-200 rounded">
@@ -3788,16 +3788,16 @@ const VisitingCardDesigner: React.FC = () => {
                                                     const ratio = element.size.width / element.size.height;
                                                     const newHeight = newSize;
                                                     const newWidth = newSize * ratio;
-                                                    
+
                                                     setTshirtElements(prev =>
                                                         prev.map(el =>
                                                             el.id === element.id
-                                                                ? { 
-                                                                    ...el, 
-                                                                    size: { 
-                                                                        width: Math.max(20, Math.min(400, newWidth)), 
+                                                                ? {
+                                                                    ...el,
+                                                                    size: {
+                                                                        width: Math.max(20, Math.min(400, newWidth)),
                                                                         height: Math.max(20, Math.min(300, newHeight))
-                                                                    } 
+                                                                    }
                                                                 }
                                                                 : el
                                                         )
@@ -4114,152 +4114,151 @@ const VisitingCardDesigner: React.FC = () => {
                                                 1:1
                                             </button>
                                         </div>
-                                        
+
                                         <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200 overflow-hidden" style={{ transform: `scale(${tshirtZoom})`, transformOrigin: 'center', transition: 'transform 0.2s ease' }}>
-                                        <div
-                                            ref={tshirtRef}
-                                            className="relative mx-auto bg-white rounded-lg overflow-hidden cursor-default"
-                                            style={{
-                                                width: '500px',
-                                                height: '600px',
-                                            }}
-                                            onMouseMove={handleTshirtMouseMove}
-                                            onMouseUp={handleTshirtMouseUp}
-                                            onMouseLeave={handleTshirtMouseUp}
-                                        >
-                                            {/* T-Shirt Background using actual image */}
-                                            <div className="absolute inset-0 flex items-center justify-center">
-                                                <div className="relative w-full h-full flex items-center justify-center">
-                                                    <img 
-                                                        src={currentView === 'front' 
-                                                            ? (selectedTshirtTemplate === 'red' ? "/src/assets/redt.png" : "/src/assets/whitefrontt.png")
-                                                            : (selectedTshirtTemplate === 'red' ? "/src/assets/redtb.png" : "/src/assets/whitebackt.png")
-                                                        }
-                                                        alt="T-Shirt Template"
-                                                        className="max-w-full max-h-full object-contain"
-                                                        style={{
-                                                            width: 'auto',
-                                                            height: 'auto',
-                                                            maxWidth: '450px',
-                                                            maxHeight: '550px'
-                                                        }}
-                                                    />
+                                            <div
+                                                ref={tshirtRef}
+                                                className="relative mx-auto bg-white rounded-lg overflow-hidden cursor-default"
+                                                style={{
+                                                    width: '500px',
+                                                    height: '600px',
+                                                }}
+                                                onMouseMove={handleTshirtMouseMove}
+                                                onMouseUp={handleTshirtMouseUp}
+                                                onMouseLeave={handleTshirtMouseUp}
+                                            >
+                                                {/* T-Shirt Background using actual image */}
+                                                <div className="absolute inset-0 flex items-center justify-center">
+                                                    <div className="relative w-full h-full flex items-center justify-center">
+                                                        <img
+                                                            src={currentView === 'front'
+                                                                ? (selectedTshirtTemplate === 'red' ? "/src/assets/redt.png" : "/src/assets/whitefrontt.png")
+                                                                : (selectedTshirtTemplate === 'red' ? "/src/assets/redtb.png" : "/src/assets/whitebackt.png")
+                                                            }
+                                                            alt="T-Shirt Template"
+                                                            className="max-w-full max-h-full object-contain"
+                                                            style={{
+                                                                width: 'auto',
+                                                                height: 'auto',
+                                                                maxWidth: '450px',
+                                                                maxHeight: '550px'
+                                                            }}
+                                                        />
+                                                    </div>
                                                 </div>
+
+                                                {/* Editable Elements */}
+                                                {tshirtElements
+                                                    .filter(element => element.side === currentView)
+                                                    .map((element) => (
+                                                        <div
+                                                            key={element.id}
+                                                            className={`absolute group transition-all duration-200 ${selectedTshirtElement === element.id
+                                                                    ? 'ring-2 ring-blue-400 ring-offset-1 shadow-lg'
+                                                                    : 'hover:ring-1 hover:ring-blue-200'
+                                                                }`}
+                                                            style={{
+                                                                left: `${element.position.x}px`,
+                                                                top: `${element.position.y}px`,
+                                                                width: `${element.size.width}px`,
+                                                                height: `${element.size.height}px`,
+                                                                zIndex: selectedTshirtElement === element.id ? 20 : 10,
+                                                                cursor: isDraggingTshirt ? 'grabbing' : 'grab'
+                                                            }}
+                                                            onMouseDown={(e) => {
+                                                                if (!isDraggingTshirt) {
+                                                                    handleTshirtMouseDown(e, element);
+                                                                }
+                                                            }}
+                                                            onClick={(e) => handleTshirtElementClick(e, element)}
+                                                        >
+                                                            {renderTshirtElement(element)}
+
+                                                            {/* Selection outline when hovered or selected */}
+                                                            {(selectedTshirtElement === element.id || element.id === 'logo_placeholder') && (
+                                                                <div className="absolute inset-0 border-2 border-dashed border-blue-400 opacity-50 pointer-events-none"></div>
+                                                            )}
+
+                                                            {selectedTshirtElement === element.id && (
+                                                                <>
+                                                                    {/* Done button (Green checkmark) */}
+                                                                    <button
+                                                                        className="absolute -top-3 -left-3 w-7 h-7 bg-green-500 text-white rounded-full text-sm font-bold hover:bg-green-600 transition-all duration-200 z-30 flex items-center justify-center cursor-pointer shadow-lg hover:scale-110"
+                                                                        onClick={(e) => {
+                                                                            e.preventDefault();
+                                                                            e.stopPropagation();
+                                                                            setSelectedTshirtElement(null);
+                                                                        }}
+                                                                        title="Done editing"
+                                                                    >
+                                                                        ✓
+                                                                    </button>
+
+                                                                    {/* Delete button */}
+                                                                    <button
+                                                                        className="absolute -top-3 -right-3 w-7 h-7 bg-red-500 text-white rounded-full text-sm font-bold hover:bg-red-600 transition-all duration-200 z-30 flex items-center justify-center cursor-pointer shadow-lg hover:scale-110"
+                                                                        onClick={(e) => {
+                                                                            e.preventDefault();
+                                                                            e.stopPropagation();
+                                                                            // Remove any element including logo placeholder
+                                                                            setTshirtElements(prev => prev.filter(el => el.id !== element.id));
+                                                                            setSelectedTshirtElement(null);
+                                                                        }}
+                                                                        title="Delete element"
+                                                                    >
+                                                                        ×
+                                                                    </button>
+
+                                                                    {/* Corner resize handles with better visibility */}
+                                                                    <div
+                                                                        className="absolute -top-2 -left-2 w-4 h-4 bg-blue-500 border-2 border-white rounded-full cursor-nw-resize hover:bg-blue-600 hover:scale-125 transition-all duration-200 shadow-md"
+                                                                        title="Resize corner"
+                                                                    ></div>
+                                                                    <div
+                                                                        className="absolute -top-2 -right-2 w-4 h-4 bg-blue-500 border-2 border-white rounded-full cursor-ne-resize hover:bg-blue-600 hover:scale-125 transition-all duration-200 shadow-md"
+                                                                        title="Resize corner"
+                                                                    ></div>
+                                                                    <div
+                                                                        className="absolute -bottom-2 -left-2 w-4 h-4 bg-blue-500 border-2 border-white rounded-full cursor-sw-resize hover:bg-blue-600 hover:scale-125 transition-all duration-200 shadow-md"
+                                                                        title="Resize corner"
+                                                                    ></div>
+                                                                    <div
+                                                                        className="absolute -bottom-2 -right-2 w-4 h-4 bg-blue-500 border-2 border-white rounded-full cursor-se-resize hover:bg-blue-600 hover:scale-125 transition-all duration-200 shadow-md"
+                                                                        title="Resize corner"
+                                                                    ></div>
+
+                                                                    {/* Side resize handles */}
+                                                                    <div
+                                                                        className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-green-500 border-2 border-white rounded-full cursor-n-resize hover:bg-green-600 hover:scale-125 transition-all duration-200 shadow-md"
+                                                                        title="Resize height"
+                                                                    ></div>
+                                                                    <div
+                                                                        className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-green-500 border-2 border-white rounded-full cursor-s-resize hover:bg-green-600 hover:scale-125 transition-all duration-200 shadow-md"
+                                                                        title="Resize height"
+                                                                    ></div>
+                                                                    <div
+                                                                        className="absolute -left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-green-500 border-2 border-white rounded-full cursor-w-resize hover:bg-green-600 hover:scale-125 transition-all duration-200 shadow-md"
+                                                                        title="Resize width"
+                                                                    ></div>
+                                                                    <div
+                                                                        className="absolute -right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-green-500 border-2 border-white rounded-full cursor-e-resize hover:bg-green-600 hover:scale-125 transition-all duration-200 shadow-md"
+                                                                        title="Resize width"
+                                                                    ></div>
+
+                                                                    {/* Center move handle */}
+                                                                    <div
+                                                                        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-yellow-500 border-2 border-white rounded-full cursor-move hover:bg-yellow-600 hover:scale-110 transition-all duration-200 shadow-md flex items-center justify-center"
+                                                                        title="Move element"
+                                                                    >
+                                                                        <div className="w-2 h-2 bg-white rounded-full"></div>
+                                                                    </div>
+                                                                </>
+                                                            )}
+                                                        </div>
+                                                    ))}
                                             </div>
-
-                                            {/* Editable Elements */}
-                                            {tshirtElements
-                                                .filter(element => element.side === currentView)
-                                                .map((element) => (
-                                                <div
-                                                    key={element.id}
-                                                    className={`absolute group transition-all duration-200 ${
-                                                        selectedTshirtElement === element.id 
-                                                            ? 'ring-2 ring-blue-400 ring-offset-1 shadow-lg' 
-                                                            : 'hover:ring-1 hover:ring-blue-200'
-                                                    }`}
-                                                    style={{
-                                                        left: `${element.position.x}px`,
-                                                        top: `${element.position.y}px`,
-                                                        width: `${element.size.width}px`,
-                                                        height: `${element.size.height}px`,
-                                                        zIndex: selectedTshirtElement === element.id ? 20 : 10,
-                                                        cursor: isDraggingTshirt ? 'grabbing' : 'grab'
-                                                    }}
-                                                    onMouseDown={(e) => {
-                                                        if (!isDraggingTshirt) {
-                                                            handleTshirtMouseDown(e, element);
-                                                        }
-                                                    }}
-                                                    onClick={(e) => handleTshirtElementClick(e, element)}
-                                                >
-                                                    {renderTshirtElement(element)}
-
-                                                    {/* Selection outline when hovered or selected */}
-                                                    {(selectedTshirtElement === element.id || element.id === 'logo_placeholder') && (
-                                                        <div className="absolute inset-0 border-2 border-dashed border-blue-400 opacity-50 pointer-events-none"></div>
-                                                    )}
-
-                                                    {selectedTshirtElement === element.id && (
-                                                        <>
-                                                            {/* Done button (Green checkmark) */}
-                                                            <button
-                                                                className="absolute -top-3 -left-3 w-7 h-7 bg-green-500 text-white rounded-full text-sm font-bold hover:bg-green-600 transition-all duration-200 z-30 flex items-center justify-center cursor-pointer shadow-lg hover:scale-110"
-                                                                onClick={(e) => {
-                                                                    e.preventDefault();
-                                                                    e.stopPropagation();
-                                                                    setSelectedTshirtElement(null);
-                                                                }}
-                                                                title="Done editing"
-                                                            >
-                                                                ✓
-                                                            </button>
-
-                                                            {/* Delete button */}
-                                                            <button
-                                                                className="absolute -top-3 -right-3 w-7 h-7 bg-red-500 text-white rounded-full text-sm font-bold hover:bg-red-600 transition-all duration-200 z-30 flex items-center justify-center cursor-pointer shadow-lg hover:scale-110"
-                                                                onClick={(e) => {
-                                                                    e.preventDefault();
-                                                                    e.stopPropagation();
-                                                                    // Remove any element including logo placeholder
-                                                                    setTshirtElements(prev => prev.filter(el => el.id !== element.id));
-                                                                    setSelectedTshirtElement(null);
-                                                                }}
-                                                                title="Delete element"
-                                                            >
-                                                                ×
-                                                            </button>
-
-                                                            {/* Corner resize handles with better visibility */}
-                                                            <div 
-                                                                className="absolute -top-2 -left-2 w-4 h-4 bg-blue-500 border-2 border-white rounded-full cursor-nw-resize hover:bg-blue-600 hover:scale-125 transition-all duration-200 shadow-md"
-                                                                title="Resize corner"
-                                                            ></div>
-                                                            <div 
-                                                                className="absolute -top-2 -right-2 w-4 h-4 bg-blue-500 border-2 border-white rounded-full cursor-ne-resize hover:bg-blue-600 hover:scale-125 transition-all duration-200 shadow-md"
-                                                                title="Resize corner"
-                                                            ></div>
-                                                            <div 
-                                                                className="absolute -bottom-2 -left-2 w-4 h-4 bg-blue-500 border-2 border-white rounded-full cursor-sw-resize hover:bg-blue-600 hover:scale-125 transition-all duration-200 shadow-md"
-                                                                title="Resize corner"
-                                                            ></div>
-                                                            <div 
-                                                                className="absolute -bottom-2 -right-2 w-4 h-4 bg-blue-500 border-2 border-white rounded-full cursor-se-resize hover:bg-blue-600 hover:scale-125 transition-all duration-200 shadow-md"
-                                                                title="Resize corner"
-                                                            ></div>
-
-                                                            {/* Side resize handles */}
-                                                            <div 
-                                                                className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-green-500 border-2 border-white rounded-full cursor-n-resize hover:bg-green-600 hover:scale-125 transition-all duration-200 shadow-md"
-                                                                title="Resize height"
-                                                            ></div>
-                                                            <div 
-                                                                className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-green-500 border-2 border-white rounded-full cursor-s-resize hover:bg-green-600 hover:scale-125 transition-all duration-200 shadow-md"
-                                                                title="Resize height"
-                                                            ></div>
-                                                            <div 
-                                                                className="absolute -left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-green-500 border-2 border-white rounded-full cursor-w-resize hover:bg-green-600 hover:scale-125 transition-all duration-200 shadow-md"
-                                                                title="Resize width"
-                                                            ></div>
-                                                            <div 
-                                                                className="absolute -right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-green-500 border-2 border-white rounded-full cursor-e-resize hover:bg-green-600 hover:scale-125 transition-all duration-200 shadow-md"
-                                                                title="Resize width"
-                                                            ></div>
-
-                                                            {/* Center move handle */}
-                                                            <div 
-                                                                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-yellow-500 border-2 border-white rounded-full cursor-move hover:bg-yellow-600 hover:scale-110 transition-all duration-200 shadow-md flex items-center justify-center"
-                                                                title="Move element"
-                                                            >
-                                                                <div className="w-2 h-2 bg-white rounded-full"></div>
-                                                            </div>
-                                                        </>
-                                                    )}
-                                                </div>
-                                            ))}
                                         </div>
                                     </div>
-                                </div>
                                 </div>
                             </div>
                         </div>
