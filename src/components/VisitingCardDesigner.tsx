@@ -48,6 +48,9 @@ const VisitingCardDesigner: React.FC = () => {
     const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
     const [dragStartPos, setDragStartPos] = useState({ x: 0, y: 0 });
     const [mouseDownTime, setMouseDownTime] = useState(0);
+    const [showQuote, setShowQuote] = useState(false);
+    const [quantity, setQuantity] = useState(100);
+    const [customQuantity, setCustomQuantity] = useState('');
     const cardRef = useRef<HTMLDivElement>(null);
 
     // Initialize with default elements that can be edited/removed
@@ -182,9 +185,9 @@ const VisitingCardDesigner: React.FC = () => {
             type,
             content: content || (type === 'text' ? 'New Text' : type === 'qr' ? 'QR Code' : type === 'image' ? 'Image' : type),
             position: { x: 44, y: 44 }, // Default position with visual padding (24px + 20px margin)
-            size: { 
-                width: type === 'qr' ? 60 : type === 'image' ? 80 : 100, 
-                height: type === 'qr' ? 60 : type === 'image' ? 60 : 30 
+            size: {
+                width: type === 'qr' ? 60 : type === 'image' ? 80 : 100,
+                height: type === 'qr' ? 60 : type === 'image' ? 60 : 30
             },
             style: { color: cardData.textColor, fontSize: 14, ...customStyle },
             side: currentView
@@ -249,7 +252,7 @@ const VisitingCardDesigner: React.FC = () => {
 
         // Card dimensions: 384px (w-96) x 224px (h-56)
         // Safe area with padding: 336px x 176px (24px padding on each side)
-        
+
         switch (templateId) {
             case 'modern':
                 newLayout = [
@@ -446,15 +449,15 @@ const VisitingCardDesigner: React.FC = () => {
                     size: layoutUpdate.size || element.size,
                     style: { ...element.style, ...layoutUpdate.style }
                 };
-                
+
                 // Constrain to card bounds with margin
                 const margin = 4; // 4px margin from edges
                 const maxX = 384 - newElement.size.width - margin;
                 const maxY = 224 - newElement.size.height - margin;
-                
+
                 newElement.position.x = Math.max(margin, Math.min(newElement.position.x, maxX));
                 newElement.position.y = Math.max(margin, Math.min(newElement.position.y, maxY));
-                
+
                 return newElement;
             }
             return element;
@@ -471,11 +474,11 @@ const VisitingCardDesigner: React.FC = () => {
                 y: Math.max(0, Math.min(newPosition.y, 224 - element.size.height))
             };
         }
-        
+
         // Constraint against full card area (no padding since we removed p-6)
         const maxX = cardRect.width - element.size.width;
         const maxY = cardRect.height - element.size.height;
-        
+
         return {
             x: Math.max(0, Math.min(newPosition.x, maxX)),
             y: Math.max(0, Math.min(newPosition.y, maxY))
@@ -493,7 +496,7 @@ const VisitingCardDesigner: React.FC = () => {
         if (updates.position && !isDragging) {
             updatedElement.position = constrainElementPosition(updatedElement, updatedElement.position);
         }
-        
+
         setCardElements(prev => prev.map(el => el.id === id ? updatedElement : el));
         if (selectedElement?.id === id) {
             setSelectedElement(updatedElement);
@@ -522,7 +525,7 @@ const VisitingCardDesigner: React.FC = () => {
             // Use full card coordinates (no padding since we removed p-6)
             const cardX = e.clientX - cardRect.left;
             const cardY = e.clientY - cardRect.top;
-            
+
             setDragOffset({
                 x: cardX - element.position.x,
                 y: cardY - element.position.y
@@ -545,11 +548,11 @@ const VisitingCardDesigner: React.FC = () => {
         if (!isDragging) return;
 
         const cardRect = cardRef.current.getBoundingClientRect();
-        
+
         // Calculate position relative to full card area
         const cardX = e.clientX - cardRect.left;
         const cardY = e.clientY - cardRect.top;
-        
+
         const newX = cardX - dragOffset.x;
         const newY = cardY - dragOffset.y;
 
@@ -1122,8 +1125,8 @@ const VisitingCardDesigner: React.FC = () => {
                                     key={template.id}
                                     onClick={() => handleInputChange('template', template.id)}
                                     className={`group relative overflow-hidden rounded-lg border-2 transition-all duration-300 w-full transform hover:scale-105 ${cardData.template === template.id
-                                            ? 'border-blue-500 shadow-xl ring-2 ring-blue-200 scale-105'
-                                            : 'border-gray-200 hover:border-blue-300 hover:shadow-lg'
+                                        ? 'border-blue-500 shadow-xl ring-2 ring-blue-200 scale-105'
+                                        : 'border-gray-200 hover:border-blue-300 hover:shadow-lg'
                                         }`}
                                     style={{ aspectRatio: '3.5/2' }}
                                 >
@@ -1223,8 +1226,8 @@ const VisitingCardDesigner: React.FC = () => {
                                     <div
                                         key={element.id}
                                         className={`p-2 rounded border text-xs cursor-pointer transition-colors ${selectedElement?.id === element.id
-                                                ? 'bg-blue-100 border-blue-300'
-                                                : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                                            ? 'bg-blue-100 border-blue-300'
+                                            : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
                                             }`}
                                         onClick={() => setSelectedElement(element)}
                                     >
@@ -1404,7 +1407,7 @@ const VisitingCardDesigner: React.FC = () => {
                                                 <span className="text-xs text-gray-500">{selectedElement.style.fontSize || 16}px</span>
                                             </div>
                                         </div>
-                                        
+
                                         {/* Element Size Controls */}
                                         <div className="grid grid-cols-2 gap-2">
                                             <div>
@@ -1498,7 +1501,7 @@ const VisitingCardDesigner: React.FC = () => {
                                                 </div>
                                             </div>
                                         </div>
-                                        
+
                                         {/* Manual Size Input for QR */}
                                         <div className="border-t pt-2">
                                             <label className="block text-xs text-gray-600 mb-1">Manual Size</label>
@@ -1529,9 +1532,9 @@ const VisitingCardDesigner: React.FC = () => {
                                             <label className="block text-xs text-gray-600 mb-1">Image</label>
                                             {selectedElement.imageData ? (
                                                 <div className="space-y-2">
-                                                    <img 
-                                                        src={selectedElement.imageData} 
-                                                        alt="Preview" 
+                                                    <img
+                                                        src={selectedElement.imageData}
+                                                        alt="Preview"
                                                         className="w-full h-20 object-cover rounded border border-gray-300"
                                                     />
                                                     <label className="block w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors text-sm cursor-pointer text-center">
@@ -1544,9 +1547,9 @@ const VisitingCardDesigner: React.FC = () => {
                                                                 if (file) {
                                                                     const reader = new FileReader();
                                                                     reader.onload = (event) => {
-                                                                        updateElement(selectedElement.id, { 
+                                                                        updateElement(selectedElement.id, {
                                                                             imageData: event.target?.result as string,
-                                                                            content: file.name 
+                                                                            content: file.name
                                                                         });
                                                                     };
                                                                     reader.readAsDataURL(file);
@@ -1568,9 +1571,9 @@ const VisitingCardDesigner: React.FC = () => {
                                                             if (file) {
                                                                 const reader = new FileReader();
                                                                 reader.onload = (event) => {
-                                                                    updateElement(selectedElement.id, { 
+                                                                    updateElement(selectedElement.id, {
                                                                         imageData: event.target?.result as string,
-                                                                        content: file.name 
+                                                                        content: file.name
                                                                     });
                                                                 };
                                                                 reader.readAsDataURL(file);
@@ -1589,11 +1592,11 @@ const VisitingCardDesigner: React.FC = () => {
                                                 min="0"
                                                 max="50"
                                                 value={parseInt(selectedElement.style.borderRadius) || 4}
-                                                onChange={(e) => updateElement(selectedElement.id, { 
-                                                    style: { 
-                                                        ...selectedElement.style, 
-                                                        borderRadius: `${e.target.value}px` 
-                                                    } 
+                                                onChange={(e) => updateElement(selectedElement.id, {
+                                                    style: {
+                                                        ...selectedElement.style,
+                                                        borderRadius: `${e.target.value}px`
+                                                    }
                                                 })}
                                                 className="w-full"
                                             />
@@ -1633,7 +1636,7 @@ const VisitingCardDesigner: React.FC = () => {
                                             />
                                         </div>
                                     </div>
-                                    
+
                                     {/* Manual Size Controls for All Elements */}
                                     {selectedElement.type !== 'qr' && selectedElement.type !== 'image' && (
                                         <div className="grid grid-cols-2 gap-2 text-xs mt-2">
@@ -1690,8 +1693,8 @@ const VisitingCardDesigner: React.FC = () => {
                                         <button
                                             onClick={() => setCurrentView('front')}
                                             className={`px-4 py-2 rounded-md transition-all text-sm ${currentView === 'front'
-                                                    ? 'bg-blue-500 text-white shadow-md'
-                                                    : 'text-gray-600 hover:bg-white'
+                                                ? 'bg-blue-500 text-white shadow-md'
+                                                : 'text-gray-600 hover:bg-white'
                                                 }`}
                                         >
                                             Front
@@ -1699,8 +1702,8 @@ const VisitingCardDesigner: React.FC = () => {
                                         <button
                                             onClick={() => setCurrentView('back')}
                                             className={`px-4 py-2 rounded-md transition-all text-sm ${currentView === 'back'
-                                                    ? 'bg-blue-500 text-white shadow-md'
-                                                    : 'text-gray-600 hover:bg-white'
+                                                ? 'bg-blue-500 text-white shadow-md'
+                                                : 'text-gray-600 hover:bg-white'
                                                 }`}
                                         >
                                             Back
@@ -1732,11 +1735,82 @@ const VisitingCardDesigner: React.FC = () => {
                                         <span className="mr-2">🖨️</span>
                                         Print
                                     </button>
-                                    <button className="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors flex items-center text-sm shadow-md">
+                                    <button
+                                        onClick={() => setShowQuote(!showQuote)}
+                                        className="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors flex items-center text-sm shadow-md"
+                                    >
                                         <span className="mr-2">💰</span>
                                         Get Quote
                                     </button>
                                 </div>
+
+                                {/* Pricing Section */}
+                                {showQuote && (
+                                    <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                                        <h4 className="text-lg font-semibold text-gray-800 mb-4">Get Your Quote</h4>
+
+                                        {/* Horizontal Layout for Quantity and Pricing */}
+                                        <div className="grid grid-cols-2 gap-4 mb-4">
+                                            {/* Left: Quantity Controls */}
+                                            <div>
+                                                <div className="flex items-center space-x-3 mb-3">
+                                                    <label className="text-sm font-medium text-gray-700 min-w-fit">Quantity:</label>
+                                                    <input
+                                                        type="number"
+                                                        value={customQuantity || quantity}
+                                                        onChange={(e) => {
+                                                            const value = e.target.value;
+                                                            setCustomQuantity(value);
+                                                            if (value) {
+                                                                setQuantity(parseInt(value) || 100);
+                                                            }
+                                                        }}
+                                                        className="w-20 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                                                        placeholder="100"
+                                                        min="1"
+                                                    />
+                                                    <button className="relative">
+                                                        <select
+                                                            value={quantity}
+                                                            onChange={(e) => {
+                                                                const value = parseInt(e.target.value);
+                                                                setQuantity(value);
+                                                                setCustomQuantity('');
+                                                            }}
+                                                            className="opacity-0 absolute inset-0 w-6 h-6 cursor-pointer"
+                                                        >
+                                                            <option value={100}>100</option>
+                                                            <option value={200}>200</option>
+                                                            <option value={500}>500</option>
+                                                            <option value={1000}>1000</option>
+                                                        </select>
+                                                        <div className="w-6 h-6 bg-gray-200 hover:bg-gray-300 rounded border border-gray-300 flex items-center justify-center transition-colors">
+                                                            <span className="text-xs text-gray-600">▼</span>
+                                                        </div>
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            {/* Right: Pricing Summary */}
+                                            <div className="bg-white p-3 border border-gray-200 rounded">
+                                                <div className="flex justify-between items-center text-sm mb-1">
+                                                    <span className="text-gray-600">{quantity} cards</span>
+                                                    <span className="font-medium">₹{quantity >= 1000 ? '8' : quantity >= 500 ? '10' : quantity >= 200 ? '12' : '15'}/card</span>
+                                                </div>
+                                                <div className="border-t border-gray-200 pt-1 flex justify-between items-center">
+                                                    <span className="text-sm font-semibold text-gray-800">Total:</span>
+                                                    <span className="text-lg font-bold text-orange-600">₹{quantity * (quantity >= 1000 ? 8 : quantity >= 500 ? 10 : quantity >= 200 ? 12 : 15)}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="text-center">
+                                            <button className="px-8 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-semibold text-sm shadow-lg">
+                                                Place Order
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
