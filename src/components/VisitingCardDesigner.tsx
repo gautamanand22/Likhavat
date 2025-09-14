@@ -1,5 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 
+// Import T-shirt template images
+import whiteFrontImg from '../assets/whitefrontt.png';
+import whiteBackImg from '../assets/whitebackt.png';
+import redFrontImg from '../assets/redt.png';
+import redBackImg from '../assets/redtb.png';
+
 interface CardData {
     name: string;
     title: string;
@@ -233,7 +239,7 @@ const VisitingCardDesigner: React.FC = () => {
     const [tshirtDragOffset, setTshirtDragOffset] = useState({ x: 0, y: 0 });
     const [tshirtDragStartPos, setTshirtDragStartPos] = useState({ x: 0, y: 0 });
     const [tshirtMouseDownTime, setTshirtMouseDownTime] = useState(0);
-    const [tshirtZoom, setTshirtZoom] = useState(1);
+    const [tshirtZoom, setTshirtZoom] = useState(1.4);
     const [selectedTshirtTemplate, setSelectedTshirtTemplate] = useState('white');
     const tshirtRef = useRef<HTMLDivElement>(null);
 
@@ -3410,15 +3416,15 @@ const VisitingCardDesigner: React.FC = () => {
                                     {
                                         id: 'white',
                                         name: 'White T-Shirt',
-                                        frontImage: '/src/assets/whitefrontt.png',
-                                        backImage: '/src/assets/whitebackt.png',
+                                        frontImage: whiteFrontImg,
+                                        backImage: whiteBackImg,
                                         color: '#ffffff'
                                     },
                                     {
                                         id: 'red',
                                         name: 'Red T-Shirt',
-                                        frontImage: '/src/assets/redt.png',
-                                        backImage: '/src/assets/redtb.png',
+                                        frontImage: redFrontImg,
+                                        backImage: redBackImg,
                                         color: '#dc2626'
                                     }
                                 ].map((template) => (
@@ -3432,30 +3438,13 @@ const VisitingCardDesigner: React.FC = () => {
                                         style={{ aspectRatio: '1/1.2' }} // T-shirt ratio
                                     >
                                         <div className="w-full h-full p-3">
-                                            <div className="w-full h-full rounded-md relative overflow-hidden bg-white flex items-center justify-center">
-                                                {/* Realistic T-Shirt Shape using actual image */}
-                                                <div className="relative w-20 h-24 flex items-center justify-center">
-                                                    <img
-                                                        src={template.frontImage}
-                                                        alt={`${template.name} Template`}
-                                                        className="w-full h-full object-contain"
-                                                    />
-
-                                                    {/* Logo Preview Area */}
-                                                    <div className="absolute inset-0 flex items-center justify-center" style={{ top: '35%', left: '25%', width: '25%', height: '20%' }}>
-                                                        <div
-                                                            className="text-xs font-bold text-center bg-gray-100 border border-dashed border-gray-300 rounded flex items-center justify-center"
-                                                            style={{
-                                                                color: '#666666',
-                                                                fontSize: '5px',
-                                                                width: '100%',
-                                                                height: '100%'
-                                                            }}
-                                                        >
-                                                            LOGO
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                            <div className="w-full h-full rounded-md relative overflow-hidden bg-white">
+                                                {/* Realistic T-Shirt Shape using actual image - Full Size */}
+                                                <img
+                                                    src={template.frontImage}
+                                                    alt={`${template.name} Template`}
+                                                    className="w-full h-full object-cover rounded-md"
+                                                />
                                             </div>
                                         </div>
                                         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
@@ -4090,24 +4079,24 @@ const VisitingCardDesigner: React.FC = () => {
                                         {/* Zoom Controls - Positioned in upper right */}
                                         <div className="absolute top-4 right-4 z-30 flex items-center space-x-2 bg-white/90 backdrop-blur-sm p-2 rounded-lg shadow-lg border border-gray-200">
                                             <button
-                                                onClick={() => setTshirtZoom(prev => Math.max(0.5, prev - 0.1))}
+                                                onClick={() => setTshirtZoom(prev => Math.max(0.7, prev - 0.14))}
                                                 className="w-7 h-7 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center transition-colors"
                                                 title="Zoom Out"
                                             >
                                                 <span className="text-sm font-bold">-</span>
                                             </button>
                                             <span className="text-xs font-medium min-w-[40px] text-center text-gray-700">
-                                                {Math.round(tshirtZoom * 100)}%
+                                                {Math.round((tshirtZoom / 1.4) * 100)}%
                                             </span>
                                             <button
-                                                onClick={() => setTshirtZoom(prev => Math.min(2, prev + 0.1))}
+                                                onClick={() => setTshirtZoom(prev => Math.min(2.8, prev + 0.14))}
                                                 className="w-7 h-7 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center transition-colors"
                                                 title="Zoom In"
                                             >
                                                 <span className="text-sm font-bold">+</span>
                                             </button>
                                             <button
-                                                onClick={() => setTshirtZoom(1)}
+                                                onClick={() => setTshirtZoom(1.4)}
                                                 className="px-2 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded text-xs transition-colors"
                                                 title="Reset Zoom"
                                             >
@@ -4132,8 +4121,8 @@ const VisitingCardDesigner: React.FC = () => {
                                                     <div className="relative w-full h-full flex items-center justify-center">
                                                         <img
                                                             src={currentView === 'front'
-                                                                ? (selectedTshirtTemplate === 'red' ? "/src/assets/redt.png" : "/src/assets/whitefrontt.png")
-                                                                : (selectedTshirtTemplate === 'red' ? "/src/assets/redtb.png" : "/src/assets/whitebackt.png")
+                                                                ? (selectedTshirtTemplate === 'red' ? redFrontImg : whiteFrontImg)
+                                                                : (selectedTshirtTemplate === 'red' ? redBackImg : whiteBackImg)
                                                             }
                                                             alt="T-Shirt Template"
                                                             className="max-w-full max-h-full object-contain"
@@ -4154,8 +4143,8 @@ const VisitingCardDesigner: React.FC = () => {
                                                         <div
                                                             key={element.id}
                                                             className={`absolute group transition-all duration-200 ${selectedTshirtElement === element.id
-                                                                    ? 'ring-2 ring-blue-400 ring-offset-1 shadow-lg'
-                                                                    : 'hover:ring-1 hover:ring-blue-200'
+                                                                ? 'ring-2 ring-blue-400 ring-offset-1 shadow-lg'
+                                                                : 'hover:ring-1 hover:ring-blue-200'
                                                                 }`}
                                                             style={{
                                                                 left: `${element.position.x}px`,
