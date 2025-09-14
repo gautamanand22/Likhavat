@@ -1,0 +1,163 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <!-- Gradients for realistic fabric effect -->
+    <linearGradient id="fabricShadow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:rgba(0,0,0,0.1);stop-opacity:1" />
+      <stop offset="50%" style="stop-color:rgba(0,0,0,0.05);stop-opacity:1" />
+      <stop offset="100%" style="stop-color:rgba(0,0,0,0.15);stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="fabricHighlight" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:rgba(255,255,255,0.2);stop-opacity:1" />
+      <stop offset="30%" style="stop-color:rgba(255,255,255,0.1);stop-opacity:1" />
+      <stop offset="100%" style="stop-color:rgba(255,255,255,0);stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Filter for soft shadow -->
+    <filter id="dropshadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+      <feOffset dx="2" dy="4" result="offset"/>
+      <feFlood flood-color="rgba(0,0,0,0.2)"/>
+      <feComposite in2="offset" operator="in"/>
+      <feMerge> 
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/> 
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Main T-shirt Body -->
+  <path d="M 80 60 
+           L 80 30 
+           Q 80 15 95 15 
+           L 305 15 
+           Q 320 15 320 30 
+           L 320 60 
+           L 365 85 
+           L 365 115 
+           Q 365 125 355 125 
+           L 340 125 
+           L 340 470 
+           Q 340 485 325 485 
+           L 75 485 
+           Q 60 485 60 470 
+           L 60 125 
+           L 45 125 
+           Q 35 125 35 115 
+           L 35 85 
+           Z" 
+        fill="currentColor" 
+        filter="url(#dropshadow)"/>
+
+  <!-- Left Sleeve -->
+  <path d="M 80 60 
+           L 35 85 
+           L 35 115 
+           Q 35 125 45 125 
+           Q 35 135 35 145 
+           L 35 170 
+           Q 35 185 50 185 
+           L 75 175 
+           Q 85 170 85 160 
+           L 85 120 
+           Z" 
+        fill="currentColor"/>
+
+  <!-- Right Sleeve -->
+  <path d="M 320 60 
+           L 365 85 
+           L 365 115 
+           Q 365 125 355 125 
+           Q 365 135 365 145 
+           L 365 170 
+           Q 365 185 350 185 
+           L 325 175 
+           Q 315 170 315 160 
+           L 315 120 
+           Z" 
+        fill="currentColor"/>
+
+  <!-- Round Neckline -->
+  <ellipse cx="200" cy="35" rx="60" ry="25" 
+           fill="none" 
+           stroke="rgba(0,0,0,0.2)" 
+           stroke-width="2"/>
+
+  <!-- Inner neckline for depth -->
+  <ellipse cx="200" cy="32" rx="50" ry="20" 
+           fill="rgba(0,0,0,0.1)"/>
+
+  <!-- Fabric shadow overlay for realistic depth -->
+  <path d="M 80 60 
+           L 80 30 
+           Q 80 15 95 15 
+           L 305 15 
+           Q 320 15 320 30 
+           L 320 60 
+           L 365 85 
+           L 365 115 
+           Q 365 125 355 125 
+           L 340 125 
+           L 340 470 
+           Q 340 485 325 485 
+           L 75 485 
+           Q 60 485 60 470 
+           L 60 125 
+           L 45 125 
+           Q 35 125 35 115 
+           L 35 85 
+           Z" 
+        fill="url(#fabricShadow)" 
+        opacity="0.6"/>
+
+  <!-- Highlight overlay for realistic lighting -->
+  <path d="M 95 15 
+           L 150 15 
+           Q 80 20 80 30 
+           L 80 60 
+           L 35 85 
+           L 35 100" 
+        fill="none" 
+        stroke="url(#fabricHighlight)" 
+        stroke-width="3"/>
+
+  <!-- Shoulder seam lines -->
+  <line x1="80" y1="60" x2="320" y2="60" 
+        stroke="rgba(0,0,0,0.1)" 
+        stroke-width="1"/>
+
+  <!-- Side seams -->
+  <line x1="75" y1="125" x2="70" y2="470" 
+        stroke="rgba(0,0,0,0.08)" 
+        stroke-width="1"/>
+  <line x1="325" y1="125" x2="330" y2="470" 
+        stroke="rgba(0,0,0,0.08)" 
+        stroke-width="1"/>
+
+  <!-- Bottom hem -->
+  <line x1="75" y1="485" x2="325" y2="485" 
+        stroke="rgba(0,0,0,0.15)" 
+        stroke-width="3"/>
+
+  <!-- Sleeve hems -->
+  <ellipse cx="50" cy="175" rx="25" ry="8" 
+           fill="none" 
+           stroke="rgba(0,0,0,0.1)" 
+           stroke-width="1"/>
+  <ellipse cx="350" cy="175" rx="25" ry="8" 
+           fill="none" 
+           stroke="rgba(0,0,0,0.1)" 
+           stroke-width="1"/>
+
+  <!-- Subtle fabric texture lines -->
+  <g opacity="0.05">
+    <line x1="100" y1="100" x2="300" y2="100" stroke="rgba(255,255,255,0.5)" stroke-width="0.5"/>
+    <line x1="90" y1="150" x2="310" y2="150" stroke="rgba(255,255,255,0.5)" stroke-width="0.5"/>
+    <line x1="85" y1="200" x2="315" y2="200" stroke="rgba(255,255,255,0.5)" stroke-width="0.5"/>
+    <line x1="80" y1="250" x2="320" y2="250" stroke="rgba(255,255,255,0.5)" stroke-width="0.5"/>
+    <line x1="75" y1="300" x2="325" y2="300" stroke="rgba(255,255,255,0.5)" stroke-width="0.5"/>
+    <line x1="75" y1="350" x2="325" y2="350" stroke="rgba(255,255,255,0.5)" stroke-width="0.5"/>
+    <line x1="75" y1="400" x2="325" y2="400" stroke="rgba(255,255,255,0.5)" stroke-width="0.5"/>
+    <line x1="75" y1="450" x2="325" y2="450" stroke="rgba(255,255,255,0.5)" stroke-width="0.5"/>
+  </g>
+</svg>

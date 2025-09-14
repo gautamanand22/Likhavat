@@ -28,6 +28,19 @@ interface LetterPadData {
     template: 'corporate' | 'modern' | 'classic' | 'minimal' | 'professional';
 }
 
+interface TShirtData {
+    brandName: string;
+    slogan: string;
+    design: string;
+    size: string;
+    color: string;
+    material: string;
+    bgColor: string;
+    textColor: string;
+    accentColor: string;
+    template: 'casual' | 'sports' | 'vintage' | 'modern' | 'artistic';
+}
+
 interface CardElement {
     id: string;
     type: 'text' | 'qr' | 'logo' | 'icon' | 'shape' | 'image' | 'line';
@@ -182,6 +195,47 @@ const VisitingCardDesigner: React.FC = () => {
     const [letterPadDragStartPos, setLetterPadDragStartPos] = useState({ x: 0, y: 0 });
     const [letterPadMouseDownTime, setLetterPadMouseDownTime] = useState(0);
     const letterPadRef = useRef<HTMLDivElement>(null);
+
+    // TShirt state
+    const [tshirtData, setTshirtData] = useState<TShirtData>({
+        brandName: 'Your Brand',
+        slogan: 'Your Slogan Here',
+        design: 'Custom Design',
+        size: 'M',
+        color: 'Black',
+        material: 'Cotton',
+        bgColor: '#ffffff',
+        textColor: '#000000',
+        accentColor: '#FF6B35',
+        template: 'casual'
+    });
+
+    const [tshirtElements, setTshirtElements] = useState<CardElement[]>([
+        {
+            id: 'logo_placeholder_front',
+            type: 'logo',
+            content: 'LOGO',
+            position: { x: 120, y: 180 }, // Left chest area below collar
+            size: { width: 60, height: 60 },
+            style: {
+                fontSize: 10,
+                fontWeight: 'bold',
+                color: '#666666',
+                textAlign: 'center',
+                backgroundColor: '#f3f4f6',
+                border: '2px dashed #d1d5db'
+            },
+            side: 'front'
+        }
+    ]);
+    const [selectedTshirtElement, setSelectedTshirtElement] = useState<string | null>(null);
+    const [isDraggingTshirt, setIsDraggingTshirt] = useState(false);
+    const [tshirtDragOffset, setTshirtDragOffset] = useState({ x: 0, y: 0 });
+    const [tshirtDragStartPos, setTshirtDragStartPos] = useState({ x: 0, y: 0 });
+    const [tshirtMouseDownTime, setTshirtMouseDownTime] = useState(0);
+    const [tshirtZoom, setTshirtZoom] = useState(1);
+    const [selectedTshirtTemplate, setSelectedTshirtTemplate] = useState('white');
+    const tshirtRef = useRef<HTMLDivElement>(null);
 
     // Initialize with default elements that can be edited/removed
     const [cardElements, setCardElements] = useState<CardElement[]>([
@@ -661,6 +715,56 @@ const VisitingCardDesigner: React.FC = () => {
         }
     };
 
+    // TShirt template function
+    const getTshirtTemplateStyle = (template: string, data: TShirtData) => {
+        const baseStyle = {
+            backgroundColor: data.bgColor,
+            color: data.textColor,
+            fontFamily: '"Proxima Nova", Arial, sans-serif',
+            position: 'relative' as const,
+            margin: '0 auto',
+            boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+            border: '1px solid #e5e7eb',
+            borderRadius: '12px'
+        };
+
+        switch (template) {
+            case 'casual':
+                return {
+                    ...baseStyle,
+                    backgroundColor: '#f3f4f6',
+                    background: 'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)',
+                };
+            case 'sports':
+                return {
+                    ...baseStyle,
+                    backgroundColor: '#dbeafe',
+                    background: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)',
+                };
+            case 'vintage':
+                return {
+                    ...baseStyle,
+                    backgroundColor: '#fef2f2',
+                    background: 'linear-gradient(135deg, #fef2f2 0%, #fecaca 100%)',
+                };
+            case 'modern':
+                return {
+                    ...baseStyle,
+                    backgroundColor: '#ffffff',
+                    background: 'linear-gradient(135deg, #ffffff 0%, #f9fafb 100%)',
+                    color: '#000000'
+                };
+            case 'artistic':
+                return {
+                    ...baseStyle,
+                    backgroundColor: '#faf5ff',
+                    background: 'linear-gradient(135deg, #faf5ff 0%, #e9d5ff 100%)',
+                };
+            default:
+                return baseStyle;
+        }
+    };
+
     const updateElement = (id: string, updates: Partial<CardElement>) => {
         const element = cardElements.find(el => el.id === id);
         if (!element) return;
@@ -818,6 +922,60 @@ const VisitingCardDesigner: React.FC = () => {
         setSelectedLetterPadElement(element.id);
     };
 
+    // TShirt mouse handlers
+    const handleTshirtMouseDown = (e: React.MouseEvent, element: CardElement) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        setSelectedTshirtElement(element.id);
+        setTshirtMouseDownTime(Date.now());
+        setTshirtDragStartPos({ x: e.clientX, y: e.clientY });
+
+        const tshirtRect = tshirtRef.current?.getBoundingClientRect();
+        if (tshirtRect) {
+            const tshirtX = e.clientX - tshirtRect.left;
+            const tshirtY = e.clientY - tshirtRect.top;
+
+            setTshirtDragOffset({
+                x: tshirtX - element.position.x,
+                y: tshirtY - element.position.y
+            });
+        }
+    };
+
+    const handleTshirtMouseMove = (e: React.MouseEvent) => {
+        if (!selectedTshirtElement || !tshirtRef.current || tshirtMouseDownTime === 0) return;
+
+        const timeDiff = Date.now() - tshirtMouseDownTime;
+        const mouseDiff = Math.abs(e.clientX - tshirtDragStartPos.x) + Math.abs(e.clientY - tshirtDragStartPos.y);
+
+        if (timeDiff > 100 && mouseDiff > 5) {
+            setIsDraggingTshirt(true);
+            const tshirtRect = tshirtRef.current.getBoundingClientRect();
+            const newX = e.clientX - tshirtRect.left - tshirtDragOffset.x;
+            const newY = e.clientY - tshirtRect.top - tshirtDragOffset.y;
+
+            setTshirtElements(prev =>
+                prev.map(el =>
+                    el.id === selectedTshirtElement
+                        ? { ...el, position: { x: Math.max(0, Math.min(newX, 400 - el.size.width)), y: Math.max(0, Math.min(newY, 500 - el.size.height)) } }
+                        : el
+                )
+            );
+        }
+    };
+
+    const handleTshirtMouseUp = () => {
+        setIsDraggingTshirt(false);
+        setTshirtMouseDownTime(0);
+    };
+
+    const handleTshirtElementClick = (e: React.MouseEvent, element: CardElement) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setSelectedTshirtElement(element.id);
+    };
+
     const renderLetterPadElement = (element: CardElement) => {
         switch (element.type) {
             case 'text':
@@ -900,6 +1058,82 @@ const VisitingCardDesigner: React.FC = () => {
                 );
             default:
                 return <div>{element.content}</div>;
+        }
+    };
+
+    const renderTshirtElement = (element: CardElement) => {
+        switch (element.type) {
+            case 'text':
+                return (
+                    <div
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e) => {
+                            setTshirtElements(prev =>
+                                prev.map(el =>
+                                    el.id === element.id
+                                        ? { ...el, content: e.target.textContent || '' }
+                                        : el
+                                )
+                            );
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="w-full h-full outline-none resize-none border-none bg-transparent flex items-center justify-center leading-tight"
+                        style={{
+                            fontSize: `${element.style.fontSize || 14}px`,
+                            color: element.style.color || '#000000',
+                            fontWeight: element.style.fontWeight || 'normal',
+                            fontStyle: element.style.fontStyle || 'normal',
+                            textDecoration: element.style.textDecoration || 'none',
+                            textAlign: element.style.textAlign || 'center',
+                            lineHeight: '1.2',
+                            wordWrap: 'break-word',
+                            overflow: 'visible',
+                            cursor: 'text',
+                            pointerEvents: 'auto'
+                        }}
+                    >
+                        {element.content}
+                    </div>
+                );
+            case 'logo':
+                return !element.imageData ? (
+                    <div
+                        className="w-full h-full flex items-center justify-center rounded border-2 cursor-pointer hover:bg-opacity-80 transition-all"
+                        style={{
+                            borderColor: tshirtData.accentColor,
+                            backgroundColor: tshirtData.accentColor + '20',
+                            color: '#000000',
+                            fontSize: '12px',
+                            fontWeight: 'bold'
+                        }}
+                        title="Click to upload logo"
+                    >
+                        {element.content}
+                    </div>
+                ) : (
+                    <img
+                        src={element.imageData}
+                        alt="Logo"
+                        className="w-full h-full object-cover rounded pointer-events-none"
+                        draggable={false}
+                    />
+                );
+            case 'image':
+                return element.imageData ? (
+                    <img
+                        src={element.imageData}
+                        alt="Custom Image"
+                        className="w-full h-full object-cover rounded pointer-events-none"
+                        draggable={false}
+                    />
+                ) : (
+                    <div className="w-full h-full bg-gray-700 border-2 border-dashed border-gray-400 flex items-center justify-center text-black text-xs">
+                        🖼️ Design
+                    </div>
+                );
+            default:
+                return <div className="text-black">{element.content}</div>;
         }
     };
 
@@ -3170,36 +3404,862 @@ const VisitingCardDesigner: React.FC = () => {
                         {/* Left Panel - Templates */}
                         <div className="w-80 bg-white border-r border-gray-200 p-4 overflow-y-auto">
                             <h3 className="text-lg font-semibold text-gray-800 mb-4">Choose T-Shirt Template</h3>
+
                             <div className="space-y-3">
-                                <div className="p-8 border-2 border-dashed border-gray-300 rounded-lg text-center text-gray-500">
-                                    <div className="text-4xl mb-2">👕</div>
-                                    <p className="text-sm">T-Shirt templates</p>
-                                    <p className="text-xs">Coming soon...</p>
-                                </div>
+                                {[
+                                    { 
+                                        id: 'white', 
+                                        name: 'White T-Shirt', 
+                                        frontImage: '/src/assets/whitefrontt.png',
+                                        backImage: '/src/assets/whitebackt.png',
+                                        color: '#ffffff'
+                                    },
+                                    { 
+                                        id: 'red', 
+                                        name: 'Red T-Shirt', 
+                                        frontImage: '/src/assets/redt.png',
+                                        backImage: '/src/assets/redtb.png',
+                                        color: '#dc2626'
+                                    }
+                                ].map((template) => (
+                                    <button
+                                        key={template.id}
+                                        onClick={() => setSelectedTshirtTemplate(template.id)}
+                                        className={`group relative overflow-hidden rounded-lg border-2 transition-all duration-300 w-full transform hover:scale-105 ${selectedTshirtTemplate === template.id
+                                            ? 'border-blue-500 shadow-xl ring-2 ring-blue-200 scale-105'
+                                            : 'border-gray-200 hover:border-blue-300 hover:shadow-lg'
+                                            }`}
+                                        style={{ aspectRatio: '1/1.2' }} // T-shirt ratio
+                                    >
+                                        <div className="w-full h-full p-3">
+                                            <div className="w-full h-full rounded-md relative overflow-hidden bg-white flex items-center justify-center">
+                                                {/* Realistic T-Shirt Shape using actual image */}
+                                                <div className="relative w-20 h-24 flex items-center justify-center">
+                                                    <img 
+                                                        src={template.frontImage} 
+                                                        alt={`${template.name} Template`}
+                                                        className="w-full h-full object-contain"
+                                                    />
+                                                    
+                                                    {/* Logo Preview Area */}
+                                                    <div className="absolute inset-0 flex items-center justify-center" style={{ top: '35%', left: '25%', width: '25%', height: '20%' }}>
+                                                        <div 
+                                                            className="text-xs font-bold text-center bg-gray-100 border border-dashed border-gray-300 rounded flex items-center justify-center"
+                                                            style={{ 
+                                                                color: '#666666',
+                                                                fontSize: '5px',
+                                                                width: '100%',
+                                                                height: '100%'
+                                                            }}
+                                                        >
+                                                            LOGO
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                                            <div className="text-white text-xs font-semibold truncate">{template.name}</div>
+                                        </div>
+                                        {selectedTshirtTemplate === template.id && (
+                                            <div className="absolute top-2 right-2 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center shadow-lg">
+                                                <span className="text-white text-xs font-bold">✓</span>
+                                            </div>
+                                        )}
+                                    </button>
+                                ))}
                             </div>
                         </div>
 
                         {/* Center Panel - Controls */}
                         <div className="w-80 bg-white border-r border-gray-200 p-4 overflow-y-auto">
-                            <h3 className="text-lg font-semibold text-gray-800 mb-4">T-Shirt Controls</h3>
-                            <div className="space-y-4">
-                                <div className="p-6 border-2 border-dashed border-gray-300 rounded-lg text-center text-gray-500">
-                                    <div className="text-3xl mb-2">🎨</div>
-                                    <p className="text-sm">Design controls</p>
-                                    <p className="text-xs">Coming soon...</p>
+
+                            {/* Element Management */}
+                            <div className="mb-6">
+                                <div className="flex justify-between items-center mb-3">
+                                    <h3 className="text-sm font-semibold text-gray-800">Manage Elements</h3>
+                                    <button
+                                        onClick={() => {
+                                            // Reset to default state with logo placeholder on front
+                                            setTshirtElements([
+                                                {
+                                                    id: 'logo_placeholder_front',
+                                                    type: 'logo',
+                                                    content: 'LOGO',
+                                                    position: { x: 120, y: 180 },
+                                                    size: { width: 60, height: 60 },
+                                                    style: {
+                                                        fontSize: 10,
+                                                        fontWeight: 'bold',
+                                                        color: '#666666',
+                                                        textAlign: 'center',
+                                                        backgroundColor: '#f3f4f6',
+                                                        border: '2px dashed #d1d5db'
+                                                    },
+                                                    side: 'front'
+                                                }
+                                            ]);
+                                            setSelectedTshirtElement(null);
+                                            setCurrentView('front'); // Switch to front view
+                                        }}
+                                        className="px-3 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600 transition-colors"
+                                    >
+                                        Reset to Default
+                                    </button>
+                                </div>
+
+                                {/* Quick Add Default Elements */}
+                                <div className="mb-4">
+                                    <h4 className="text-xs font-medium text-gray-600 mb-2">Quick Add</h4>
+                                    
+                                    {/* Logo Upload */}
+                                    <div className="mb-3">
+                                        <input
+                                            type="file"
+                                            id="tshirt-logo-upload"
+                                            accept="image/*"
+                                            onChange={(e) => {
+                                                const file = e.target.files?.[0];
+                                                if (file) {
+                                                    const reader = new FileReader();
+                                                    reader.onload = (e) => {
+                                                        // Find logo for current view
+                                                        const logoElement = tshirtElements.find(el => 
+                                                            el.type === 'logo' && el.side === currentView
+                                                        );
+                                                        
+                                                        if (logoElement) {
+                                                            // Update existing logo
+                                                            const updatedElement = {
+                                                                ...logoElement,
+                                                                imageData: e.target?.result as string,
+                                                                content: 'Logo',
+                                                                style: {
+                                                                    ...logoElement.style,
+                                                                    backgroundColor: 'transparent',
+                                                                    border: 'none'
+                                                                }
+                                                            };
+                                                            setTshirtElements(prev => 
+                                                                prev.map(el => el.id === logoElement.id ? updatedElement : el)
+                                                            );
+                                                        } else {
+                                                            // Create new logo for current view
+                                                            const newLogoElement: CardElement = {
+                                                                id: `logo_placeholder_${currentView}`,
+                                                                type: 'logo',
+                                                                content: 'Logo',
+                                                                position: { x: currentView === 'front' ? 120 : 200, y: currentView === 'front' ? 180 : 220 },
+                                                                size: { width: 60, height: 60 },
+                                                                style: {
+                                                                    fontSize: 10,
+                                                                    fontWeight: 'bold',
+                                                                    color: '#000000',
+                                                                    textAlign: 'center'
+                                                                },
+                                                                side: currentView,
+                                                                imageData: e.target?.result as string
+                                                            };
+                                                            setTshirtElements(prev => [...prev, newLogoElement]);
+                                                        }
+                                                    };
+                                                    reader.readAsDataURL(file);
+                                                }
+                                            }}
+                                            className="hidden"
+                                        />
+                                        <label
+                                            htmlFor="tshirt-logo-upload"
+                                            className="w-full px-3 py-2 bg-blue-500 text-white rounded-md text-sm cursor-pointer hover:bg-blue-600 transition-colors flex items-center justify-center"
+                                        >
+                                            📁 Upload Logo
+                                        </label>
+                                    </div>
+
+                                    <select
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            if (value) {
+                                                const newElement: CardElement = {
+                                                    id: value === 'logo' ? `logo_placeholder_${currentView}` : `element_${Date.now()}`,
+                                                    type: value === 'text' ? 'text' : value === 'logo' ? 'logo' : 'image',
+                                                    content: value === 'text' ? 'Sample Text' : value === 'logo' ? 'LOGO' : 'Design',
+                                                    position: { 
+                                                        x: value === 'logo' ? (currentView === 'front' ? 120 : 200) : value === 'text' ? 150 : 180, 
+                                                        y: value === 'logo' ? (currentView === 'front' ? 180 : 220) : value === 'text' ? 300 : 280 
+                                                    },
+                                                    size: { 
+                                                        width: value === 'logo' ? 60 : value === 'text' ? 150 : 80, 
+                                                        height: value === 'logo' ? 60 : value === 'text' ? 30 : 60 
+                                                    },
+                                                    style: {
+                                                        fontSize: value === 'logo' ? 10 : value === 'text' ? 20 : 10,
+                                                        color: value === 'logo' ? '#666666' : '#000000',
+                                                        fontWeight: value === 'text' ? 'bold' : value === 'logo' ? 'bold' : 'normal',
+                                                        textAlign: 'center',
+                                                        backgroundColor: value === 'logo' ? '#f3f4f6' : undefined,
+                                                        border: value === 'logo' ? '2px dashed #d1d5db' : undefined
+                                                    },
+                                                    side: currentView
+                                                };
+                                                setTshirtElements(prev => [...prev, newElement]);
+                                                e.target.value = '';
+                                            }
+                                        }}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="">Add Element...</option>
+                                        <option value="logo">Logo</option>
+                                        <option value="text">Text</option>
+                                        <option value="image">Design</option>
+                                    </select>
+                                </div>
+
+                                {/* Element List */}
+                                <div className="space-y-2 max-h-40 overflow-y-auto">
+                                    <h4 className="text-xs font-medium text-gray-600 mb-2">
+                                        Current Elements ({tshirtElements.filter(el => el.side === currentView).length}) - {currentView === 'front' ? 'Front' : 'Back'} Side
+                                    </h4>
+                                    {tshirtElements.filter(el => el.side === currentView).map((element) => (
+                                        <div
+                                            key={element.id}
+                                            className={`p-2 border rounded cursor-pointer transition-colors ${selectedTshirtElement === element.id
+                                                ? 'border-blue-500 bg-blue-50'
+                                                : 'border-gray-200 hover:border-gray-300'
+                                                }`}
+                                            onClick={() => setSelectedTshirtElement(element.id)}
+                                        >
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center space-x-2">
+                                                    {/* Status indicator */}
+                                                    <div className="flex items-center">
+                                                        {element.imageData || (element.type === 'text' && element.content !== 'Sample Text' && element.content !== 'LOGO') ? (
+                                                            <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                                                                <span className="text-white text-xs">✓</span>
+                                                            </div>
+                                                        ) : (
+                                                            <div className="w-4 h-4 bg-gray-300 rounded-full"></div>
+                                                        )}
+                                                    </div>
+                                                    <span className="text-xs px-2 py-1 bg-gray-100 rounded">
+                                                        {element.type}
+                                                    </span>
+                                                    <span className="text-xs text-gray-600 truncate flex-1">
+                                                        {element.content}
+                                                    </span>
+                                                </div>
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setTshirtElements(prev => prev.filter(el => el.id !== element.id));
+                                                        if (selectedTshirtElement === element.id) {
+                                                            setSelectedTshirtElement(null);
+                                                        }
+                                                    }}
+                                                    className="text-red-500 hover:text-red-700 text-xs ml-2 p-1 hover:bg-red-50 rounded"
+                                                    title="Delete element"
+                                                >
+                                                    ×
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    
+                                    {/* Show message when no elements on current side */}
+                                    {tshirtElements.filter(el => el.side === currentView).length === 0 && (
+                                        <div className="text-center text-gray-400 text-xs py-4 border-2 border-dashed border-gray-200 rounded">
+                                            No elements on {currentView} side
+                                            <br />
+                                            Add elements using the options above
+                                        </div>
+                                    )}
                                 </div>
                             </div>
+
+                            {/* Element Controls */}
+                            {selectedTshirtElement && (() => {
+                                const element = tshirtElements.find(el => el.id === selectedTshirtElement);
+                                return element ? (
+                                    <div className="space-y-4">
+                                        <div className="flex justify-between items-center">
+                                            <h3 className="text-sm font-semibold text-gray-800">Edit Element</h3>
+                                            <button
+                                                onClick={() => setSelectedTshirtElement(null)}
+                                                className="px-3 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600 transition-colors flex items-center"
+                                                title="Done editing"
+                                            >
+                                                <span className="mr-1">✓</span>
+                                                Done
+                                            </button>
+                                        </div>
+
+                                        {/* Position Controls */}
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label className="block text-xs text-gray-600 mb-1">X Position: {element.position.x}px</label>
+                                                <input
+                                                    type="range"
+                                                    value={element.position.x}
+                                                    onChange={(e) => {
+                                                        setTshirtElements(prev =>
+                                                            prev.map(el =>
+                                                                el.id === element.id
+                                                                    ? { ...el, position: { ...el.position, x: parseInt(e.target.value) } }
+                                                                    : el
+                                                            )
+                                                        );
+                                                    }}
+                                                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                                    min="0"
+                                                    max="350"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs text-gray-600 mb-1">Y Position: {element.position.y}px</label>
+                                                <input
+                                                    type="range"
+                                                    value={element.position.y}
+                                                    onChange={(e) => {
+                                                        setTshirtElements(prev =>
+                                                            prev.map(el =>
+                                                                el.id === element.id
+                                                                    ? { ...el, position: { ...el.position, y: parseInt(e.target.value) } }
+                                                                    : el
+                                                            )
+                                                        );
+                                                    }}
+                                                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                                    min="0"
+                                                    max="450"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Size Controls */}
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label className="block text-xs text-gray-600 mb-1">Width: {element.size.width}px</label>
+                                                <input
+                                                    type="range"
+                                                    value={element.size.width}
+                                                    onChange={(e) => {
+                                                        setTshirtElements(prev =>
+                                                            prev.map(el =>
+                                                                el.id === element.id
+                                                                    ? { ...el, size: { ...el.size, width: parseInt(e.target.value) } }
+                                                                    : el
+                                                            )
+                                                        );
+                                                    }}
+                                                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                                    min="50"
+                                                    max="400"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs text-gray-600 mb-1">Height: {element.size.height}px</label>
+                                                <input
+                                                    type="range"
+                                                    value={element.size.height}
+                                                    onChange={(e) => {
+                                                        setTshirtElements(prev =>
+                                                            prev.map(el =>
+                                                                el.id === element.id
+                                                                    ? { ...el, size: { ...el.size, height: parseInt(e.target.value) } }
+                                                                    : el
+                                                            )
+                                                        );
+                                                    }}
+                                                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                                    min="20"
+                                                    max="300"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Overall Size Slider */}
+                                        <div className="border-t pt-4">
+                                            <label className="block text-xs text-gray-600 mb-2">Overall Size: {Math.round((element.size.width + element.size.height) / 2)}px</label>
+                                            <input
+                                                type="range"
+                                                value={Math.round((element.size.width + element.size.height) / 2)}
+                                                onChange={(e) => {
+                                                    const newSize = parseInt(e.target.value);
+                                                    const ratio = element.size.width / element.size.height;
+                                                    const newHeight = newSize;
+                                                    const newWidth = newSize * ratio;
+                                                    
+                                                    setTshirtElements(prev =>
+                                                        prev.map(el =>
+                                                            el.id === element.id
+                                                                ? { 
+                                                                    ...el, 
+                                                                    size: { 
+                                                                        width: Math.max(20, Math.min(400, newWidth)), 
+                                                                        height: Math.max(20, Math.min(300, newHeight))
+                                                                    } 
+                                                                }
+                                                                : el
+                                                        )
+                                                    );
+                                                }}
+                                                className="w-full h-3 bg-blue-200 rounded-lg appearance-none cursor-pointer"
+                                                min="30"
+                                                max="200"
+                                            />
+                                            <div className="flex justify-between text-xs text-gray-400 mt-1">
+                                                <span>Small</span>
+                                                <span>Large</span>
+                                            </div>
+                                        </div>
+
+                                        {element.type === 'text' && (
+                                            <>
+                                                <div>
+                                                    <label className="block text-xs text-gray-600 mb-1">Font Size: {element.style.fontSize || 14}px</label>
+                                                    <input
+                                                        type="range"
+                                                        value={element.style.fontSize || 14}
+                                                        onChange={(e) => {
+                                                            setTshirtElements(prev =>
+                                                                prev.map(el =>
+                                                                    el.id === element.id
+                                                                        ? { ...el, style: { ...el.style, fontSize: parseInt(e.target.value) } }
+                                                                        : el
+                                                                )
+                                                            );
+                                                        }}
+                                                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                                        min="8"
+                                                        max="72"
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-xs text-gray-600 mb-1">Color</label>
+                                                    <input
+                                                        type="color"
+                                                        value={element.style.color || '#000000'}
+                                                        onChange={(e) => {
+                                                            setTshirtElements(prev =>
+                                                                prev.map(el =>
+                                                                    el.id === element.id
+                                                                        ? { ...el, style: { ...el.style, color: e.target.value } }
+                                                                        : el
+                                                                )
+                                                            );
+                                                        }}
+                                                        className="w-full h-10 border border-gray-300 rounded cursor-pointer"
+                                                    />
+                                                </div>
+
+                                                <div className="grid grid-cols-3 gap-2">
+                                                    <button
+                                                        onClick={() => {
+                                                            setTshirtElements(prev =>
+                                                                prev.map(el =>
+                                                                    el.id === element.id
+                                                                        ? { ...el, style: { ...el.style, fontWeight: el.style.fontWeight === 'bold' ? 'normal' : 'bold' } }
+                                                                        : el
+                                                                )
+                                                            );
+                                                        }}
+                                                        className={`px-3 py-1 text-xs rounded border transition-colors ${element.style.fontWeight === 'bold'
+                                                            ? 'bg-blue-500 text-white border-blue-500'
+                                                            : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
+                                                            }`}
+                                                    >
+                                                        Bold
+                                                    </button>
+                                                    <button
+                                                        onClick={() => {
+                                                            setTshirtElements(prev =>
+                                                                prev.map(el =>
+                                                                    el.id === element.id
+                                                                        ? { ...el, style: { ...el.style, fontStyle: el.style.fontStyle === 'italic' ? 'normal' : 'italic' } }
+                                                                        : el
+                                                                )
+                                                            );
+                                                        }}
+                                                        className={`px-3 py-1 text-xs rounded border transition-colors ${element.style.fontStyle === 'italic'
+                                                            ? 'bg-blue-500 text-white border-blue-500'
+                                                            : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
+                                                            }`}
+                                                    >
+                                                        Italic
+                                                    </button>
+                                                    <button
+                                                        onClick={() => {
+                                                            setTshirtElements(prev =>
+                                                                prev.map(el =>
+                                                                    el.id === element.id
+                                                                        ? { ...el, style: { ...el.style, textDecoration: el.style.textDecoration === 'underline' ? 'none' : 'underline' } }
+                                                                        : el
+                                                                )
+                                                            );
+                                                        }}
+                                                        className={`px-3 py-1 text-xs rounded border transition-colors ${element.style.textDecoration === 'underline'
+                                                            ? 'bg-blue-500 text-white border-blue-500'
+                                                            : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
+                                                            }`}
+                                                    >
+                                                        U
+                                                    </button>
+                                                </div>
+                                            </>
+                                        )}
+
+                                        {(element.type === 'logo' || element.type === 'image') && (
+                                            <div>
+                                                <label className="block text-xs text-gray-600 mb-1">Upload Image</label>
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={(e) => {
+                                                        const file = e.target.files?.[0];
+                                                        if (file) {
+                                                            const reader = new FileReader();
+                                                            reader.onload = (e) => {
+                                                                setTshirtElements(prev =>
+                                                                    prev.map(el =>
+                                                                        el.id === element.id
+                                                                            ? { ...el, imageData: e.target?.result as string }
+                                                                            : el
+                                                                    )
+                                                                );
+                                                            };
+                                                            reader.readAsDataURL(file);
+                                                        }
+                                                    }}
+                                                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : null;
+                            })()}
                         </div>
 
                         {/* Right Panel - Preview */}
-                        <div className="flex-1 bg-gray-50 p-6 flex items-center justify-center">
-                            <div className="max-w-md w-full">
-                                <div className="bg-white p-8 rounded-lg shadow-lg border-2 border-gray-200">
-                                    <div className="h-80 flex flex-col items-center justify-center text-gray-400">
-                                        <div className="text-6xl mb-4">👕</div>
-                                        <h3 className="text-xl font-semibold mb-2">T-Shirt Preview</h3>
-                                        <p className="text-center">Your custom t-shirt design will appear here</p>
+                        <div className="flex-1 bg-gray-50 p-6 overflow-auto">
+                            <div className="max-w-4xl mx-auto">
+                                {/* Header with title and buttons */}
+                                <div className="flex justify-between items-center mb-6">
+                                    <h3 className="text-xl font-bold text-gray-800">T-Shirt Preview</h3>
+
+                                    {/* Action Buttons */}
+                                    <div className="flex space-x-3">
+                                        <button className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center text-sm shadow-md">
+                                            <span className="mr-2">📥</span>
+                                            Download
+                                        </button>
+                                        <button
+                                            onClick={() => setShowQuote(!showQuote)}
+                                            className="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors flex items-center text-sm shadow-md"
+                                        >
+                                            <span className="mr-2">💰</span>
+                                            Get Quote
+                                        </button>
                                     </div>
+                                </div>
+
+
+
+                                {/* Pricing Section - Above preview */}
+                                {showQuote && (
+                                    <div className="mb-6 p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
+                                        <h4 className="text-lg font-semibold text-gray-800 mb-4">Get Your Quote - T-Shirts</h4>
+
+                                        {/* Horizontal Layout for Quantity and Pricing */}
+                                        <div className="grid grid-cols-2 gap-4 mb-4">
+                                            {/* Left: Quantity Controls */}
+                                            <div>
+                                                <div className="flex items-center space-x-3 mb-3">
+                                                    <label className="text-sm font-medium text-gray-700 min-w-fit">Quantity:</label>
+                                                    <input
+                                                        type="number"
+                                                        value={customQuantity || quantity}
+                                                        onChange={(e) => {
+                                                            const value = e.target.value;
+                                                            setCustomQuantity(value);
+                                                            if (value) {
+                                                                setQuantity(parseInt(value) || 100);
+                                                            }
+                                                        }}
+                                                        className="w-20 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                                                        placeholder="50"
+                                                        min="1"
+                                                    />
+                                                </div>
+
+                                                {/* Quick Quantity Buttons */}
+                                                <div className="grid grid-cols-3 gap-2">
+                                                    {[50, 100, 250, 500, 1000, 2000].map((qty) => (
+                                                        <button
+                                                            key={qty}
+                                                            onClick={() => {
+                                                                setQuantity(qty);
+                                                                setCustomQuantity('');
+                                                            }}
+                                                            className={`px-3 py-1 text-xs rounded border transition-colors ${quantity === qty && !customQuantity
+                                                                ? 'bg-orange-500 text-white border-orange-500'
+                                                                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                                                                }`}
+                                                        >
+                                                            {qty}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            {/* Right: Pricing Display */}
+                                            <div>
+                                                <div className="bg-gray-50 p-3 rounded border">
+                                                    <div className="text-sm text-gray-600 mb-2">Estimated Price</div>
+                                                    <div className="text-2xl font-bold text-orange-600">
+                                                        ₹{((quantity * 45) + 150).toLocaleString()}
+                                                    </div>
+                                                    <div className="text-xs text-gray-500">
+                                                        ₹45 per T-shirt + ₹150 setup
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Download Options */}
+                                        <div className="border-t pt-4 mt-4">
+                                            <h5 className="text-sm font-semibold text-gray-700 mb-3">Download Options</h5>
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm flex items-center justify-center">
+                                                    <span className="mr-2">📄</span>
+                                                    Download PDF
+                                                </button>
+                                                <button className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors text-sm flex items-center justify-center">
+                                                    <span className="mr-2">🖼️</span>
+                                                    Download PNG
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {/* Contact Information */}
+                                        <div className="border-t pt-4 mt-4">
+                                            <div className="bg-orange-50 p-3 rounded border border-orange-200">
+                                                <div className="text-sm font-medium text-orange-800 mb-2">📞 Get Detailed Quote</div>
+                                                <div className="text-sm text-orange-700">
+                                                    Call us at <span className="font-semibold">+91 79798 31185</span> or email
+                                                    <span className="font-semibold"> rudra.org1@gmail.com</span> for custom pricing on T-shirt orders.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="text-center mb-4">
+                                    <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                                        Premium Cotton T-Shirt
+                                    </span>
+                                </div>
+
+                                {/* Front/Back Toggle */}
+                                <div className="mb-6 flex justify-center">
+                                    <div className="flex bg-gray-100 rounded-lg p-1">
+                                        <button
+                                            onClick={() => setCurrentView('front')}
+                                            className={`px-6 py-2 rounded-md transition-all text-sm ${currentView === 'front'
+                                                ? 'bg-blue-500 text-white shadow-md'
+                                                : 'text-gray-600 hover:bg-white'
+                                                }`}
+                                        >
+                                            Front
+                                        </button>
+                                        <button
+                                            onClick={() => setCurrentView('back')}
+                                            className={`px-6 py-2 rounded-md transition-all text-sm ${currentView === 'back'
+                                                ? 'bg-blue-500 text-white shadow-md'
+                                                : 'text-gray-600 hover:bg-white'
+                                                }`}
+                                        >
+                                            Back
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* T-Shirt Preview */}
+                                <div className="flex justify-center overflow-hidden">
+                                    <div className="relative">
+                                        {/* Zoom Controls - Positioned in upper right */}
+                                        <div className="absolute top-4 right-4 z-30 flex items-center space-x-2 bg-white/90 backdrop-blur-sm p-2 rounded-lg shadow-lg border border-gray-200">
+                                            <button
+                                                onClick={() => setTshirtZoom(prev => Math.max(0.5, prev - 0.1))}
+                                                className="w-7 h-7 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center transition-colors"
+                                                title="Zoom Out"
+                                            >
+                                                <span className="text-sm font-bold">-</span>
+                                            </button>
+                                            <span className="text-xs font-medium min-w-[40px] text-center text-gray-700">
+                                                {Math.round(tshirtZoom * 100)}%
+                                            </span>
+                                            <button
+                                                onClick={() => setTshirtZoom(prev => Math.min(2, prev + 0.1))}
+                                                className="w-7 h-7 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center transition-colors"
+                                                title="Zoom In"
+                                            >
+                                                <span className="text-sm font-bold">+</span>
+                                            </button>
+                                            <button
+                                                onClick={() => setTshirtZoom(1)}
+                                                className="px-2 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded text-xs transition-colors"
+                                                title="Reset Zoom"
+                                            >
+                                                1:1
+                                            </button>
+                                        </div>
+                                        
+                                        <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200 overflow-hidden" style={{ transform: `scale(${tshirtZoom})`, transformOrigin: 'center', transition: 'transform 0.2s ease' }}>
+                                        <div
+                                            ref={tshirtRef}
+                                            className="relative mx-auto bg-white rounded-lg overflow-hidden cursor-default"
+                                            style={{
+                                                width: '500px',
+                                                height: '600px',
+                                            }}
+                                            onMouseMove={handleTshirtMouseMove}
+                                            onMouseUp={handleTshirtMouseUp}
+                                            onMouseLeave={handleTshirtMouseUp}
+                                        >
+                                            {/* T-Shirt Background using actual image */}
+                                            <div className="absolute inset-0 flex items-center justify-center">
+                                                <div className="relative w-full h-full flex items-center justify-center">
+                                                    <img 
+                                                        src={currentView === 'front' 
+                                                            ? (selectedTshirtTemplate === 'red' ? "/src/assets/redt.png" : "/src/assets/whitefrontt.png")
+                                                            : (selectedTshirtTemplate === 'red' ? "/src/assets/redtb.png" : "/src/assets/whitebackt.png")
+                                                        }
+                                                        alt="T-Shirt Template"
+                                                        className="max-w-full max-h-full object-contain"
+                                                        style={{
+                                                            width: 'auto',
+                                                            height: 'auto',
+                                                            maxWidth: '450px',
+                                                            maxHeight: '550px'
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {/* Editable Elements */}
+                                            {tshirtElements
+                                                .filter(element => element.side === currentView)
+                                                .map((element) => (
+                                                <div
+                                                    key={element.id}
+                                                    className={`absolute group transition-all duration-200 ${
+                                                        selectedTshirtElement === element.id 
+                                                            ? 'ring-2 ring-blue-400 ring-offset-1 shadow-lg' 
+                                                            : 'hover:ring-1 hover:ring-blue-200'
+                                                    }`}
+                                                    style={{
+                                                        left: `${element.position.x}px`,
+                                                        top: `${element.position.y}px`,
+                                                        width: `${element.size.width}px`,
+                                                        height: `${element.size.height}px`,
+                                                        zIndex: selectedTshirtElement === element.id ? 20 : 10,
+                                                        cursor: isDraggingTshirt ? 'grabbing' : 'grab'
+                                                    }}
+                                                    onMouseDown={(e) => {
+                                                        if (!isDraggingTshirt) {
+                                                            handleTshirtMouseDown(e, element);
+                                                        }
+                                                    }}
+                                                    onClick={(e) => handleTshirtElementClick(e, element)}
+                                                >
+                                                    {renderTshirtElement(element)}
+
+                                                    {/* Selection outline when hovered or selected */}
+                                                    {(selectedTshirtElement === element.id || element.id === 'logo_placeholder') && (
+                                                        <div className="absolute inset-0 border-2 border-dashed border-blue-400 opacity-50 pointer-events-none"></div>
+                                                    )}
+
+                                                    {selectedTshirtElement === element.id && (
+                                                        <>
+                                                            {/* Done button (Green checkmark) */}
+                                                            <button
+                                                                className="absolute -top-3 -left-3 w-7 h-7 bg-green-500 text-white rounded-full text-sm font-bold hover:bg-green-600 transition-all duration-200 z-30 flex items-center justify-center cursor-pointer shadow-lg hover:scale-110"
+                                                                onClick={(e) => {
+                                                                    e.preventDefault();
+                                                                    e.stopPropagation();
+                                                                    setSelectedTshirtElement(null);
+                                                                }}
+                                                                title="Done editing"
+                                                            >
+                                                                ✓
+                                                            </button>
+
+                                                            {/* Delete button */}
+                                                            <button
+                                                                className="absolute -top-3 -right-3 w-7 h-7 bg-red-500 text-white rounded-full text-sm font-bold hover:bg-red-600 transition-all duration-200 z-30 flex items-center justify-center cursor-pointer shadow-lg hover:scale-110"
+                                                                onClick={(e) => {
+                                                                    e.preventDefault();
+                                                                    e.stopPropagation();
+                                                                    // Remove any element including logo placeholder
+                                                                    setTshirtElements(prev => prev.filter(el => el.id !== element.id));
+                                                                    setSelectedTshirtElement(null);
+                                                                }}
+                                                                title="Delete element"
+                                                            >
+                                                                ×
+                                                            </button>
+
+                                                            {/* Corner resize handles with better visibility */}
+                                                            <div 
+                                                                className="absolute -top-2 -left-2 w-4 h-4 bg-blue-500 border-2 border-white rounded-full cursor-nw-resize hover:bg-blue-600 hover:scale-125 transition-all duration-200 shadow-md"
+                                                                title="Resize corner"
+                                                            ></div>
+                                                            <div 
+                                                                className="absolute -top-2 -right-2 w-4 h-4 bg-blue-500 border-2 border-white rounded-full cursor-ne-resize hover:bg-blue-600 hover:scale-125 transition-all duration-200 shadow-md"
+                                                                title="Resize corner"
+                                                            ></div>
+                                                            <div 
+                                                                className="absolute -bottom-2 -left-2 w-4 h-4 bg-blue-500 border-2 border-white rounded-full cursor-sw-resize hover:bg-blue-600 hover:scale-125 transition-all duration-200 shadow-md"
+                                                                title="Resize corner"
+                                                            ></div>
+                                                            <div 
+                                                                className="absolute -bottom-2 -right-2 w-4 h-4 bg-blue-500 border-2 border-white rounded-full cursor-se-resize hover:bg-blue-600 hover:scale-125 transition-all duration-200 shadow-md"
+                                                                title="Resize corner"
+                                                            ></div>
+
+                                                            {/* Side resize handles */}
+                                                            <div 
+                                                                className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-green-500 border-2 border-white rounded-full cursor-n-resize hover:bg-green-600 hover:scale-125 transition-all duration-200 shadow-md"
+                                                                title="Resize height"
+                                                            ></div>
+                                                            <div 
+                                                                className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-green-500 border-2 border-white rounded-full cursor-s-resize hover:bg-green-600 hover:scale-125 transition-all duration-200 shadow-md"
+                                                                title="Resize height"
+                                                            ></div>
+                                                            <div 
+                                                                className="absolute -left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-green-500 border-2 border-white rounded-full cursor-w-resize hover:bg-green-600 hover:scale-125 transition-all duration-200 shadow-md"
+                                                                title="Resize width"
+                                                            ></div>
+                                                            <div 
+                                                                className="absolute -right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-green-500 border-2 border-white rounded-full cursor-e-resize hover:bg-green-600 hover:scale-125 transition-all duration-200 shadow-md"
+                                                                title="Resize width"
+                                                            ></div>
+
+                                                            {/* Center move handle */}
+                                                            <div 
+                                                                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-yellow-500 border-2 border-white rounded-full cursor-move hover:bg-yellow-600 hover:scale-110 transition-all duration-200 shadow-md flex items-center justify-center"
+                                                                title="Move element"
+                                                            >
+                                                                <div className="w-2 h-2 bg-white rounded-full"></div>
+                                                            </div>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
                                 </div>
                             </div>
                         </div>
