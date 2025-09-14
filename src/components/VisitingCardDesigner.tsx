@@ -15,9 +15,22 @@ interface CardData {
     cornerStyle: 'normal' | 'rounded' | 'sharp' | 'circular';
 }
 
+interface LetterPadData {
+    companyName: string;
+    address: string;
+    phone: string;
+    email: string;
+    website: string;
+    fax: string;
+    bgColor: string;
+    textColor: string;
+    accentColor: string;
+    template: 'corporate' | 'modern' | 'classic' | 'minimal' | 'professional';
+}
+
 interface CardElement {
     id: string;
-    type: 'text' | 'qr' | 'logo' | 'icon' | 'shape' | 'image';
+    type: 'text' | 'qr' | 'logo' | 'icon' | 'shape' | 'image' | 'line';
     content: string;
     position: { x: number; y: number };
     size: { width: number; height: number };
@@ -51,7 +64,124 @@ const VisitingCardDesigner: React.FC = () => {
     const [showQuote, setShowQuote] = useState(false);
     const [quantity, setQuantity] = useState(100);
     const [customQuantity, setCustomQuantity] = useState('');
+    const [activeProductTab, setActiveProductTab] = useState<'visiting-cards' | 'letter-pads' | 'tshirt' | 'merchandise'>('visiting-cards');
     const cardRef = useRef<HTMLDivElement>(null);
+
+    // Letter Pad state
+    const [letterPadData, setLetterPadData] = useState<LetterPadData>({
+        companyName: 'Your Company Name',
+        address: '123 Business Street, City - 400001',
+        phone: '+91 98765 43210',
+        email: 'info@company.com',
+        website: 'www.yourcompany.com',
+        fax: '+91 11 2345 6789',
+        bgColor: '#ffffff',
+        textColor: '#000000',
+        accentColor: '#3B82F6',
+        template: 'corporate'
+    });
+
+    const [letterPadElements, setLetterPadElements] = useState<CardElement[]>([
+        {
+            id: 'company_name',
+            type: 'text',
+            content: 'YOUR COMPANY NAME',
+            position: { x: 64, y: 64 },
+            size: { width: 350, height: 36 },
+            style: {
+                fontSize: 28,
+                fontWeight: 'bold',
+                color: '#3B82F6',
+                textAlign: 'left'
+            },
+            side: 'front'
+        },
+        {
+            id: 'company_address',
+            type: 'text',
+            content: 'Your Company Address\nCity, State, ZIP Code',
+            position: { x: 64, y: 110 },
+            size: { width: 350, height: 40 },
+            style: {
+                fontSize: 14,
+                color: '#000000',
+                textAlign: 'left',
+                lineHeight: '1.4'
+            },
+            side: 'front'
+        },
+        {
+            id: 'company_contact',
+            type: 'text',
+            content: 'Phone: (123) 456-7890\nEmail: info@company.com\nWebsite: www.company.com',
+            position: { x: 64, y: 155 },
+            size: { width: 350, height: 60 },
+            style: {
+                fontSize: 14,
+                color: '#000000',
+                textAlign: 'left',
+                lineHeight: '1.4'
+            },
+            side: 'front'
+        },
+        {
+            id: 'logo_placeholder',
+            type: 'logo',
+            content: 'LOGO',
+            position: { x: 455, y: 64 },
+            size: { width: 80, height: 80 },
+            style: {
+                fontSize: 12,
+                color: '#3B82F6',
+                border: '2px solid #3B82F6',
+                textAlign: 'center',
+                lineHeight: '76px',
+                backgroundColor: '#3B82F610'
+            },
+            side: 'front'
+        },
+        {
+            id: 'header_line',
+            type: 'line',
+            content: '',
+            position: { x: 64, y: 230 },
+            size: { width: 467, height: 2 },
+            style: {
+                backgroundColor: '#3B82F640'
+            },
+            side: 'front'
+        },
+        {
+            id: 'date_section',
+            type: 'text',
+            content: 'Date: _______________',
+            position: { x: 390, y: 250 },
+            size: { width: 141, height: 24 },
+            style: {
+                fontSize: 14,
+                color: '#000000',
+                textAlign: 'left'
+            },
+            side: 'front'
+        },
+        {
+            id: 'footer_line',
+            type: 'line',
+            content: '',
+            position: { x: 64, y: 778 },
+            size: { width: 467, height: 2 },
+            style: {
+                backgroundColor: '#3B82F640'
+            },
+            side: 'front'
+        }
+    ]);
+    const [selectedLetterPadElement, setSelectedLetterPadElement] = useState<string | null>(null);
+    const [isDraggingLetterPad, setIsDraggingLetterPad] = useState(false);
+    const [letterPadDragOffset, setLetterPadDragOffset] = useState({ x: 0, y: 0 });
+    const [letterPadDragStartPos, setLetterPadDragStartPos] = useState({ x: 0, y: 0 });
+    const [letterPadMouseDownTime, setLetterPadMouseDownTime] = useState(0);
+    const letterPadRef = useRef<HTMLDivElement>(null);
 
     // Initialize with default elements that can be edited/removed
     const [cardElements, setCardElements] = useState<CardElement[]>([
@@ -485,6 +615,52 @@ const VisitingCardDesigner: React.FC = () => {
         };
     };
 
+    // Letter Pad template function
+    const getLetterPadTemplateStyle = (template: string, data: LetterPadData) => {
+        const baseStyle = {
+            backgroundColor: data.bgColor,
+            color: data.textColor,
+            fontFamily: '"Proxima Nova", Arial, sans-serif',
+            position: 'relative' as const,
+            margin: '0 auto',
+            boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+            border: '1px solid #e5e7eb'
+        };
+
+        switch (template) {
+            case 'corporate':
+                return {
+                    ...baseStyle,
+                    background: `linear-gradient(180deg, ${data.accentColor} 0%, ${data.accentColor}15 100%), ${data.bgColor}`,
+                };
+            case 'modern':
+                return {
+                    ...baseStyle,
+                    background: `linear-gradient(135deg, ${data.bgColor} 0%, ${data.accentColor}08 100%)`,
+                    borderLeft: `4px solid ${data.accentColor}`,
+                };
+            case 'classic':
+                return {
+                    ...baseStyle,
+                    borderTop: `3px solid ${data.accentColor}`,
+                    borderBottom: `3px solid ${data.accentColor}`,
+                };
+            case 'minimal':
+                return {
+                    ...baseStyle,
+                    borderTop: `1px solid ${data.accentColor}`,
+                };
+            case 'professional':
+                return {
+                    ...baseStyle,
+                    background: `${data.bgColor}`,
+                    borderTop: `5px solid ${data.accentColor}`,
+                };
+            default:
+                return baseStyle;
+        }
+    };
+
     const updateElement = (id: string, updates: Partial<CardElement>) => {
         const element = cardElements.find(el => el.id === id);
         if (!element) return;
@@ -568,6 +744,163 @@ const VisitingCardDesigner: React.FC = () => {
     const handleMouseUp = () => {
         setIsDragging(false);
         setMouseDownTime(0);
+    };
+
+    // Letter Pad Drag and Drop Functions
+    const handleLetterPadMouseDown = (e: React.MouseEvent, element: CardElement) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        setSelectedLetterPadElement(element.id);
+        setLetterPadMouseDownTime(Date.now());
+        setLetterPadDragStartPos({ x: e.clientX, y: e.clientY });
+
+        // Calculate offset relative to element position within the letterpad area
+        const letterPadRect = letterPadRef.current?.getBoundingClientRect();
+
+        if (letterPadRect) {
+            const letterPadX = e.clientX - letterPadRect.left;
+            const letterPadY = e.clientY - letterPadRect.top;
+
+            setLetterPadDragOffset({
+                x: letterPadX - element.position.x,
+                y: letterPadY - element.position.y
+            });
+        }
+    };
+
+    const handleLetterPadMouseMove = (e: React.MouseEvent) => {
+        if (!selectedLetterPadElement || !letterPadRef.current || letterPadMouseDownTime === 0) return;
+
+        const selectedElement = letterPadElements.find(el => el.id === selectedLetterPadElement);
+        if (!selectedElement) return;
+
+        const timeDiff = Date.now() - letterPadMouseDownTime;
+        const mouseDiff = Math.abs(e.clientX - letterPadDragStartPos.x) + Math.abs(e.clientY - letterPadDragStartPos.y);
+
+        // Require both time and movement threshold to start dragging
+        if (timeDiff > 150 && mouseDiff > 8) {
+            setIsDraggingLetterPad(true);
+        }
+
+        if (!isDraggingLetterPad) return;
+
+        const letterPadRect = letterPadRef.current.getBoundingClientRect();
+
+        // Calculate position relative to letterpad area
+        const letterPadX = e.clientX - letterPadRect.left;
+        const letterPadY = e.clientY - letterPadRect.top;
+
+        const newX = letterPadX - letterPadDragOffset.x;
+        const newY = letterPadY - letterPadDragOffset.y;
+
+        // Constrain to letterpad bounds
+        const constrainedX = Math.max(0, Math.min(newX, letterPadRect.width - selectedElement.size.width));
+        const constrainedY = Math.max(0, Math.min(newY, letterPadRect.height - selectedElement.size.height));
+
+        setLetterPadElements(prev =>
+            prev.map(el =>
+                el.id === selectedElement.id
+                    ? { ...el, position: { x: constrainedX, y: constrainedY } }
+                    : el
+            )
+        );
+    };
+
+    const handleLetterPadMouseUp = () => {
+        setIsDraggingLetterPad(false);
+        setLetterPadMouseDownTime(0);
+    };
+
+    const handleLetterPadElementClick = (e: React.MouseEvent, element: CardElement) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setSelectedLetterPadElement(element.id);
+    };
+
+    const renderLetterPadElement = (element: CardElement) => {
+        switch (element.type) {
+            case 'text':
+                return (
+                    <div
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e) => {
+                            setLetterPadElements(prev =>
+                                prev.map(el =>
+                                    el.id === element.id
+                                        ? { ...el, content: e.target.textContent || '' }
+                                        : el
+                                )
+                            );
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="w-full h-full outline-none resize-none border-none bg-transparent flex items-start leading-tight"
+                        style={{
+                            fontSize: `${element.style.fontSize || 14}px`,
+                            color: element.style.color || letterPadData.textColor,
+                            fontWeight: element.style.fontWeight || 'normal',
+                            fontStyle: element.style.fontStyle || 'normal',
+                            textDecoration: element.style.textDecoration || 'none',
+                            textAlign: element.style.textAlign || 'left',
+                            lineHeight: '1.2',
+                            wordWrap: 'break-word',
+                            overflow: 'visible',
+                            cursor: 'text',
+                            pointerEvents: 'auto'
+                        }}
+                    >
+                        {element.content}
+                    </div>
+                );
+            case 'logo':
+                return !element.imageData ? (
+                    <div
+                        className="w-full h-full flex items-center justify-center rounded border-2 cursor-pointer hover:bg-opacity-80 transition-all"
+                        style={{
+                            borderColor: letterPadData.accentColor,
+                            backgroundColor: letterPadData.accentColor + '10',
+                            color: letterPadData.accentColor,
+                            fontSize: '12px',
+                            fontWeight: 'bold'
+                        }}
+                        title="Click to upload logo"
+                    >
+                        {element.content}
+                    </div>
+                ) : (
+                    <img
+                        src={element.imageData}
+                        alt="Logo"
+                        className="w-full h-full object-cover rounded pointer-events-none"
+                        draggable={false}
+                    />
+                );
+            case 'line':
+                return (
+                    <div
+                        className="w-full h-full cursor-grab hover:opacity-80 transition-opacity"
+                        style={{
+                            backgroundColor: element.style?.backgroundColor || letterPadData.accentColor + '40'
+                        }}
+                    />
+                );
+            case 'image':
+                return element.imageData ? (
+                    <img
+                        src={element.imageData}
+                        alt="Custom Image"
+                        className="w-full h-full object-cover rounded pointer-events-none"
+                        draggable={false}
+                    />
+                ) : (
+                    <div className="w-full h-full bg-gray-200 border-2 border-dashed border-gray-400 flex items-center justify-center text-gray-500 text-xs">
+                        🖼️ Image
+                    </div>
+                );
+            default:
+                return <div>{element.content}</div>;
+        }
     };
 
     const handleElementClick = (e: React.MouseEvent, element: CardElement) => {
@@ -667,63 +1000,62 @@ const VisitingCardDesigner: React.FC = () => {
             case 'classic':
                 return {
                     ...baseStyle,
-                    backgroundColor: '#f8f8f8',
-                    border: `2px solid #2c3e50`,
-                    borderRadius: '0px',
+                    backgroundColor: cardData.bgColor,
+                    border: `2px solid ${cardData.accentColor}`,
+                    color: cardData.textColor,
                     fontFamily: 'Georgia, serif',
-                    color: '#2c3e50',
                 };
             case 'minimal':
                 return {
                     ...baseStyle,
-                    backgroundColor: '#ffffff',
+                    backgroundColor: cardData.bgColor,
                     border: `1px solid ${cardData.accentColor}40`,
                     boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-                    color: '#333333',
+                    color: cardData.textColor,
                     fontFamily: 'Helvetica, Arial, sans-serif',
                 };
             case 'elegant':
                 return {
                     ...baseStyle,
-                    background: `linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)`,
+                    background: `linear-gradient(135deg, ${cardData.bgColor} 0%, ${cardData.accentColor}20 100%)`,
                     border: `1px solid ${cardData.accentColor}30`,
                     boxShadow: `0 6px 20px ${cardData.accentColor}15`,
-                    color: '#2c3e50',
+                    color: cardData.textColor,
                     fontFamily: 'Times, serif',
                 };
             case 'creative':
                 return {
                     ...baseStyle,
-                    background: `linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4)`,
-                    color: 'white',
+                    background: `linear-gradient(45deg, ${cardData.bgColor}, ${cardData.accentColor}, ${cardData.textColor}20)`,
+                    color: cardData.textColor,
                     borderRadius: '15px 5px 15px 5px',
                     fontFamily: 'Arial, sans-serif',
                     fontWeight: 'bold',
-                    textShadow: '1px 1px 2px rgba(0,0,0,0.3)',
+                    border: `2px solid ${cardData.accentColor}`,
                 };
             case 'corporate':
                 return {
                     ...baseStyle,
-                    background: `linear-gradient(135deg, #2c3e50 0%, #34495e 100%)`,
-                    color: '#ffffff',
-                    border: `2px solid #3498db`,
+                    background: `linear-gradient(135deg, ${cardData.bgColor} 0%, ${cardData.accentColor}40 100%)`,
+                    color: cardData.textColor,
+                    border: `2px solid ${cardData.accentColor}`,
                     fontFamily: 'Calibri, sans-serif',
-                    boxShadow: '0 4px 15px rgba(52, 73, 94, 0.3)',
+                    boxShadow: `0 4px 15px ${cardData.accentColor}30`,
                 };
             case 'gradient':
                 return {
                     ...baseStyle,
-                    background: `linear-gradient(135deg, #667eea 0%, #764ba2 100%)`,
-                    color: 'white',
+                    background: `linear-gradient(135deg, ${cardData.bgColor} 0%, ${cardData.accentColor} 100%)`,
+                    color: cardData.textColor,
                     border: 'none',
-                    boxShadow: `0 5px 15px rgba(102, 126, 234, 0.4)`,
+                    boxShadow: `0 5px 15px ${cardData.accentColor}40`,
                     fontFamily: 'Arial, sans-serif',
                 };
             case 'dark':
                 return {
                     ...baseStyle,
-                    background: `linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)`,
-                    color: '#ffffff',
+                    background: `linear-gradient(135deg, ${cardData.bgColor} 0%, ${cardData.accentColor}20 100%)`,
+                    color: cardData.textColor,
                     border: `1px solid ${cardData.accentColor}`,
                     boxShadow: `0 0 12px ${cardData.accentColor}40`,
                     fontFamily: 'Consolas, monospace',
@@ -731,102 +1063,101 @@ const VisitingCardDesigner: React.FC = () => {
             case 'colorful':
                 return {
                     ...baseStyle,
-                    background: `linear-gradient(45deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%)`,
-                    color: '#2c3e50',
+                    background: `linear-gradient(45deg, ${cardData.bgColor} 0%, ${cardData.accentColor}60 50%, ${cardData.accentColor}60 100%)`,
+                    color: cardData.textColor,
                     borderRadius: '20px',
-                    boxShadow: `0 8px 25px rgba(255, 154, 158, 0.3)`,
+                    boxShadow: `0 8px 25px ${cardData.accentColor}30`,
                     fontFamily: 'Comic Sans MS, cursive',
                 };
             case 'professional':
                 return {
                     ...baseStyle,
-                    background: `linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)`,
-                    color: '#495057',
-                    border: '2px solid #6c757d',
-                    boxShadow: '0 6px 20px rgba(108, 117, 125, 0.2)',
+                    background: `linear-gradient(135deg, ${cardData.bgColor} 0%, ${cardData.accentColor}10 100%)`,
+                    color: cardData.textColor,
+                    border: `2px solid ${cardData.accentColor}`,
+                    boxShadow: `0 6px 20px ${cardData.accentColor}20`,
                     fontFamily: 'Arial, sans-serif',
                 };
             case 'artistic':
                 return {
                     ...baseStyle,
-                    background: `radial-gradient(circle at 30% 70%, #ff7eb3, #ff758c, #ff7eb3)`,
-                    color: 'white',
+                    background: `radial-gradient(circle at 30% 70%, ${cardData.bgColor}, ${cardData.accentColor})`,
+                    color: cardData.textColor,
                     borderRadius: '25px 5px 25px 5px',
                     transform: 'rotate(-1deg)',
                     fontFamily: 'Brush Script MT, cursive',
-                    textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
+                    border: `3px solid ${cardData.accentColor}`,
                 };
             case 'tech':
                 return {
                     ...baseStyle,
-                    background: `linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)`,
-                    color: '#00ff88',
-                    border: '1px solid #00ff88',
+                    background: `linear-gradient(135deg, ${cardData.bgColor} 0%, ${cardData.accentColor}20 100%)`,
+                    color: cardData.textColor,
+                    border: `1px solid ${cardData.accentColor}`,
                     borderRadius: '2px',
-                    boxShadow: '0 0 15px rgba(0,255,136,0.3)',
+                    boxShadow: `0 0 15px ${cardData.accentColor}30`,
                     fontFamily: 'Courier New, monospace',
                 };
             case 'luxury':
                 return {
                     ...baseStyle,
-                    background: `linear-gradient(135deg, #ffd700 0%, #fff8dc 30%, #ffd700 100%)`,
-                    border: '3px solid #b8860b',
-                    color: '#8b4513',
-                    boxShadow: '0 6px 18px rgba(255,215,0,0.4)',
+                    background: `linear-gradient(135deg, ${cardData.bgColor} 0%, ${cardData.accentColor}40 100%)`,
+                    border: `3px solid ${cardData.accentColor}`,
+                    color: cardData.textColor,
+                    boxShadow: `0 6px 18px ${cardData.accentColor}40`,
                     fontFamily: 'Palatino, serif',
                 };
             case 'geometric':
                 return {
                     ...baseStyle,
-                    background: `linear-gradient(45deg, #667eea 25%, transparent 25%, transparent 75%, #667eea 75%), linear-gradient(-45deg, #764ba2 25%, transparent 25%, transparent 75%, #764ba2 75%)`,
-                    backgroundColor: '#f8f9fa',
+                    background: `linear-gradient(45deg, ${cardData.bgColor} 25%, transparent 25%, transparent 75%, ${cardData.bgColor} 75%), linear-gradient(-45deg, ${cardData.accentColor} 25%, transparent 25%, transparent 75%, ${cardData.accentColor} 75%)`,
+                    backgroundColor: cardData.bgColor,
                     backgroundSize: '20px 20px',
-                    border: `2px solid #667eea`,
-                    color: '#2c3e50',
+                    border: `2px solid ${cardData.accentColor}`,
+                    color: cardData.textColor,
                     fontFamily: 'Helvetica, sans-serif',
                 };
             case 'nature':
                 return {
                     ...baseStyle,
-                    background: `linear-gradient(135deg, #a8e6cf 0%, #dcedc1 50%, #ffd3a5 100%)`,
-                    color: '#2d5016',
+                    background: `linear-gradient(135deg, ${cardData.bgColor} 0%, ${cardData.accentColor}40 50%, ${cardData.accentColor}60 100%)`,
+                    color: cardData.textColor,
                     borderRadius: '15px',
-                    border: '2px solid #7cb342',
-                    boxShadow: '0 8px 25px rgba(124, 179, 66, 0.3)',
+                    border: `2px solid ${cardData.accentColor}`,
+                    boxShadow: `0 8px 25px ${cardData.accentColor}30`,
                     fontFamily: 'Verdana, sans-serif',
                 };
             case 'bold':
                 return {
                     ...baseStyle,
-                    background: `linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%)`,
-                    color: 'white',
-                    border: '4px solid #ff1744',
+                    background: `linear-gradient(135deg, ${cardData.bgColor} 0%, ${cardData.accentColor} 100%)`,
+                    color: cardData.textColor,
+                    border: `4px solid ${cardData.accentColor}`,
                     borderRadius: '8px',
                     fontWeight: 'bold',
                     fontFamily: 'Impact, sans-serif',
-                    boxShadow: '0 8px 25px rgba(255, 65, 108, 0.4)',
-                    textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
+                    boxShadow: `0 8px 25px ${cardData.accentColor}40`,
                 };
             case 'vintage':
                 return {
                     ...baseStyle,
-                    background: `linear-gradient(135deg, #d2b48c 0%, #deb887 100%)`,
-                    color: '#5d4037',
-                    border: '4px double #8d6e63',
+                    background: `linear-gradient(135deg, ${cardData.bgColor} 0%, ${cardData.accentColor}40 100%)`,
+                    color: cardData.textColor,
+                    border: `4px double ${cardData.accentColor}`,
                     borderRadius: '8px',
                     fontFamily: 'Times New Roman, serif',
-                    boxShadow: '0 6px 20px rgba(141, 110, 99, 0.3)',
+                    boxShadow: `0 6px 20px ${cardData.accentColor}30`,
                 };
             case 'futuristic':
                 return {
                     ...baseStyle,
-                    background: `linear-gradient(135deg, #667eea 0%, #764ba2 100%)`,
-                    color: '#00ffff',
-                    border: '2px solid #00ffff',
+                    background: `linear-gradient(135deg, ${cardData.bgColor} 0%, ${cardData.accentColor} 100%)`,
+                    color: cardData.textColor,
+                    border: `2px solid ${cardData.accentColor}`,
                     borderRadius: '0px',
                     fontFamily: 'Orbitron, sans-serif',
-                    boxShadow: '0 0 20px rgba(0, 255, 255, 0.5)',
-                    textShadow: '0 0 10px rgba(0, 255, 255, 0.8)',
+                    boxShadow: `0 0 20px ${cardData.accentColor}50`,
+                    textShadow: `0 0 10px ${cardData.accentColor}80`,
                 };
             default:
                 return baseStyle;
@@ -1111,434 +1442,501 @@ const VisitingCardDesigner: React.FC = () => {
                 <div className="bg-white border-b border-gray-200 px-6 py-3">
                     <h1 className="text-xl font-bold text-gray-800">Visiting Card Designer</h1>
                     <p className="text-sm text-gray-600">Design professional business cards</p>
+
+                    {/* Product Navigation Tabs */}
+                    <div className="mt-4 border-b border-gray-200">
+                        <nav className="flex space-x-8">
+                            <button
+                                onClick={() => setActiveProductTab('visiting-cards')}
+                                className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${activeProductTab === 'visiting-cards'
+                                    ? 'border-blue-500 text-blue-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                    }`}
+                            >
+                                Visiting Cards
+                            </button>
+                            <button
+                                onClick={() => setActiveProductTab('letter-pads')}
+                                className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${activeProductTab === 'letter-pads'
+                                    ? 'border-blue-500 text-blue-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                    }`}
+                            >
+                                Letter Pads
+                            </button>
+                            <button
+                                onClick={() => setActiveProductTab('tshirt')}
+                                className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${activeProductTab === 'tshirt'
+                                    ? 'border-blue-500 text-blue-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                    }`}
+                            >
+                                T-Shirt
+                            </button>
+                            <button
+                                onClick={() => setActiveProductTab('merchandise')}
+                                className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${activeProductTab === 'merchandise'
+                                    ? 'border-blue-500 text-blue-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                    }`}
+                            >
+                                Merchandise
+                            </button>
+                        </nav>
+                    </div>
                 </div>
 
-                {/* Main Content - Single View Layout */}
-                <div className="flex-1 flex overflow-hidden">
+                {/* Main Content - Conditional rendering based on active tab */}
+                {activeProductTab === 'visiting-cards' && (
+                    <div className="flex-1 flex overflow-hidden">
 
-                    {/* Left Panel - Templates */}
-                    <div className="w-80 bg-white border-r border-gray-200 p-4 overflow-y-auto">
-                        <h3 className="text-lg font-semibold text-gray-800 mb-4">Choose Template</h3>
-                        <div className="space-y-3">
-                            {templates.map((template) => (
-                                <button
-                                    key={template.id}
-                                    onClick={() => handleInputChange('template', template.id)}
-                                    className={`group relative overflow-hidden rounded-lg border-2 transition-all duration-300 w-full transform hover:scale-105 ${cardData.template === template.id
-                                        ? 'border-blue-500 shadow-xl ring-2 ring-blue-200 scale-105'
-                                        : 'border-gray-200 hover:border-blue-300 hover:shadow-lg'
-                                        }`}
-                                    style={{ aspectRatio: '3.5/2' }}
-                                >
-                                    <div className="w-full h-full p-2">
+                        {/* Left Panel - Templates */}
+                        <div className="w-80 bg-white border-r border-gray-200 p-4 overflow-y-auto">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-4">Choose Template</h3>
+                            <div className="space-y-3">
+                                {templates.map((template) => (
+                                    <button
+                                        key={template.id}
+                                        onClick={() => handleInputChange('template', template.id)}
+                                        className={`group relative overflow-hidden rounded-lg border-2 transition-all duration-300 w-full transform hover:scale-105 ${cardData.template === template.id
+                                            ? 'border-blue-500 shadow-xl ring-2 ring-blue-200 scale-105'
+                                            : 'border-gray-200 hover:border-blue-300 hover:shadow-lg'
+                                            }`}
+                                        style={{ aspectRatio: '3.5/2' }}
+                                    >
+                                        <div className="w-full h-full p-2">
+                                            <div
+                                                className="w-full h-full rounded-md shadow-sm relative overflow-hidden"
+                                                style={getTemplatePreviewStyle(template.id)}
+                                            >
+                                                {/* Template Content Preview */}
+                                                {renderTemplatePreview(template.id)}
+                                            </div>
+                                        </div>
+                                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                                            <div className="text-white text-xs font-semibold truncate">{template.name}</div>
+                                        </div>
+                                        {cardData.template === template.id && (
+                                            <div className="absolute top-2 right-2 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center shadow-lg">
+                                                <span className="text-white text-xs font-bold">✓</span>
+                                            </div>
+                                        )}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Center Panel - Controls */}
+                        <div className="w-80 bg-white border-r border-gray-200 p-4 overflow-y-auto">
+
+                            {/* Element Management */}
+                            <div className="mb-6">
+                                <div className="flex justify-between items-center mb-3">
+                                    <h3 className="text-sm font-semibold text-gray-800">Manage Elements</h3>
+                                    <button
+                                        onClick={() => setCardElements([])}
+                                        className="px-3 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600 transition-colors"
+                                    >
+                                        Clear All
+                                    </button>
+                                </div>
+
+                                {/* Quick Add Default Elements */}
+                                <div className="mb-4">
+                                    <h4 className="text-xs font-medium text-gray-600 mb-2">Quick Add</h4>
+                                    <select
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            if (value === 'name') {
+                                                addElement('text', 'Name', { fontSize: 18, fontWeight: 'bold' });
+                                            } else if (value === 'title') {
+                                                addElement('text', 'Job Title', { fontSize: 14, color: '#666' });
+                                            } else if (value === 'company') {
+                                                addElement('text', 'Company Name', { fontSize: 16, fontWeight: 'bold', color: '#007bff' });
+                                            } else if (value === 'phone') {
+                                                addElement('text', '📞 Phone', { fontSize: 12 });
+                                            } else if (value === 'email') {
+                                                addElement('text', '✉️ Email', { fontSize: 12 });
+                                            } else if (value === 'website') {
+                                                addElement('text', '🌐 Website', { fontSize: 12 });
+                                            }
+                                            e.target.value = '';
+                                        }}
+                                        className="w-full p-2 border border-gray-300 rounded text-xs"
+                                        defaultValue=""
+                                    >
+                                        <option value="" disabled>Select quick element...</option>
+                                        <option value="name">+ Name</option>
+                                        <option value="title">+ Title</option>
+                                        <option value="company">+ Company</option>
+                                        <option value="phone">+ Phone</option>
+                                        <option value="email">+ Email</option>
+                                        <option value="website">+ Website</option>
+                                    </select>
+                                </div>
+
+                                {/* Corner Style */}
+                                <div className="mb-4">
+                                    <h4 className="text-xs font-medium text-gray-600 mb-2">Corner Style</h4>
+                                    <select
+                                        value={cardData.cornerStyle}
+                                        onChange={(e) => {
+                                            const value = e.target.value as 'normal' | 'rounded' | 'sharp' | 'circular';
+                                            setCardData(prev => ({ ...prev, cornerStyle: value }));
+                                        }}
+                                        className="w-full p-2 border border-gray-300 rounded text-xs"
+                                    >
+                                        <option value="normal">Normal</option>
+                                        <option value="rounded">Rounded</option>
+                                        <option value="sharp">Sharp</option>
+                                        <option value="circular">Circular</option>
+                                    </select>
+                                </div>
+
+                                {/* Current Elements List */}
+                                <div className="space-y-2">
+                                    <h4 className="text-xs font-medium text-gray-600">Current Elements ({cardElements.filter(el => el.side === currentView).length})</h4>
+                                    {cardElements.filter(el => el.side === currentView).map((element, index) => (
                                         <div
-                                            className="w-full h-full rounded-md shadow-sm relative overflow-hidden"
-                                            style={getTemplatePreviewStyle(template.id)}
+                                            key={element.id}
+                                            className={`p-2 rounded border text-xs cursor-pointer transition-colors ${selectedElement?.id === element.id
+                                                ? 'bg-blue-100 border-blue-300'
+                                                : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                                                }`}
+                                            onClick={() => setSelectedElement(element)}
                                         >
-                                            {/* Template Content Preview */}
-                                            {renderTemplatePreview(template.id)}
+                                            <div className="flex justify-between items-center">
+                                                <div className="flex items-center space-x-2">
+                                                    <span className="font-medium">
+                                                        {element.type === 'qr' ? '📱' : element.type === 'image' ? '�️' : '�📝'}
+                                                    </span>
+                                                    <span className="truncate max-w-24">
+                                                        {element.type === 'qr' ? 'QR Code' : element.type === 'image' ? 'Image' : element.content}
+                                                    </span>
+                                                </div>
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        deleteElement(element.id);
+                                                    }}
+                                                    className="text-red-500 hover:text-red-700 font-bold"
+                                                >
+                                                    ×
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {cardElements.filter(el => el.side === currentView).length === 0 && (
+                                        <p className="text-xs text-gray-500 italic py-4 text-center">
+                                            No elements on this side. Add some elements to get started!
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Colors */}
+                            <div className="mb-6">
+                                <h3 className="text-sm font-semibold text-gray-800 mb-3">Colors</h3>
+                                <div className="grid grid-cols-3 gap-3">
+                                    <div>
+                                        <label className="block text-xs text-gray-600 mb-1">Background</label>
+                                        <input
+                                            type="color"
+                                            value={cardData.bgColor}
+                                            onChange={(e) => handleInputChange('bgColor', e.target.value)}
+                                            className="w-full h-10 border border-gray-300 rounded cursor-pointer"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 mb-1">Text</label>
+                                        <input
+                                            type="color"
+                                            value={cardData.textColor}
+                                            onChange={(e) => handleInputChange('textColor', e.target.value)}
+                                            className="w-full h-10 border border-gray-300 rounded cursor-pointer"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 mb-1">Accent</label>
+                                        <input
+                                            type="color"
+                                            value={cardData.accentColor}
+                                            onChange={(e) => handleInputChange('accentColor', e.target.value)}
+                                            className="w-full h-10 border border-gray-300 rounded cursor-pointer"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Add Elements */}
+                            <div className="mb-6">
+                                <h3 className="text-sm font-semibold text-gray-800 mb-3">Add Elements</h3>
+                                <div className="grid grid-cols-3 gap-2">
+                                    <button
+                                        onClick={() => addElement('text')}
+                                        className="p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex flex-col items-center text-sm font-medium shadow-sm"
+                                    >
+                                        <span className="text-lg mb-1">📝</span>
+                                        Text
+                                    </button>
+                                    <button
+                                        onClick={() => addElement('qr')}
+                                        className="p-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex flex-col items-center text-sm font-medium shadow-sm"
+                                    >
+                                        <span className="text-lg mb-1">📱</span>
+                                        QR Code
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            const fileInput = document.createElement('input');
+                                            fileInput.type = 'file';
+                                            fileInput.accept = 'image/*';
+                                            fileInput.onchange = (event) => {
+                                                const file = (event.target as HTMLInputElement).files?.[0];
+                                                if (file) {
+                                                    const reader = new FileReader();
+                                                    reader.onload = (e) => {
+                                                        const imageData = e.target?.result as string;
+                                                        const newElement: CardElement = {
+                                                            id: `image_${Date.now()}`,
+                                                            type: 'image',
+                                                            content: file.name,
+                                                            position: { x: 44, y: 44 },
+                                                            size: { width: 80, height: 60 },
+                                                            style: { borderRadius: '4px' },
+                                                            side: currentView,
+                                                            imageData: imageData
+                                                        };
+                                                        setCardElements(prev => [...prev, newElement]);
+                                                        setSelectedElement(newElement);
+                                                    };
+                                                    reader.readAsDataURL(file);
+                                                }
+                                            };
+                                            fileInput.click();
+                                        }}
+                                        className="p-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors flex flex-col items-center text-sm font-medium shadow-sm"
+                                    >
+                                        <span className="text-lg mb-1">�️</span>
+                                        Image
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Selected Element Editor */}
+                            {selectedElement && (
+                                <div className="border border-blue-200 rounded-lg p-3 bg-blue-50">
+                                    <div className="flex justify-between items-center mb-3">
+                                        <h4 className="text-sm font-semibold text-blue-800">
+                                            ✏️ Editing: {selectedElement.type === 'qr' ? 'QR Code' : selectedElement.type === 'image' ? 'Image' : selectedElement.content.substring(0, 20) + (selectedElement.content.length > 20 ? '...' : '')}
+                                        </h4>
+                                        <div className="flex space-x-2">
+                                            <button
+                                                onClick={() => setSelectedElement(null)}
+                                                className="text-xs text-green-600 hover:text-green-800 bg-green-100 hover:bg-green-200 px-2 py-1 rounded transition-colors font-medium"
+                                            >
+                                                ✓ Done
+                                            </button>
+                                            <button
+                                                onClick={() => deleteElement(selectedElement.id)}
+                                                className="text-xs text-red-600 hover:text-red-800 bg-red-100 hover:bg-red-200 px-2 py-1 rounded transition-colors"
+                                            >
+                                                🗑️ Delete
+                                            </button>
                                         </div>
                                     </div>
-                                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
-                                        <div className="text-white text-xs font-semibold truncate">{template.name}</div>
-                                    </div>
-                                    {cardData.template === template.id && (
-                                        <div className="absolute top-2 right-2 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center shadow-lg">
-                                            <span className="text-white text-xs font-bold">✓</span>
+
+                                    {selectedElement.type === 'text' && (
+                                        <div className="space-y-3">
+                                            <div>
+                                                <label className="block text-xs text-gray-600 mb-1">Text Content</label>
+                                                <input
+                                                    type="text"
+                                                    value={selectedElement.content}
+                                                    onChange={(e) => updateElement(selectedElement.id, { content: e.target.value })}
+                                                    className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
+                                                    placeholder="Enter text"
+                                                />
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <div>
+                                                    <label className="block text-xs text-gray-600 mb-1">Color</label>
+                                                    <input
+                                                        type="color"
+                                                        value={selectedElement.style.color || '#333333'}
+                                                        onChange={(e) => updateElement(selectedElement.id, { style: { ...selectedElement.style, color: e.target.value } })}
+                                                        className="w-full h-8 border border-gray-300 rounded cursor-pointer"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs text-gray-600 mb-1">Font Size</label>
+                                                    <input
+                                                        type="range"
+                                                        min="8"
+                                                        max="32"
+                                                        value={selectedElement.style.fontSize || 16}
+                                                        onChange={(e) => updateElement(selectedElement.id, { style: { ...selectedElement.style, fontSize: parseInt(e.target.value) } })}
+                                                        className="w-full"
+                                                    />
+                                                    <span className="text-xs text-gray-500">{selectedElement.style.fontSize || 16}px</span>
+                                                </div>
+                                            </div>
+
+                                            {/* Element Size Controls */}
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <div>
+                                                    <label className="block text-xs text-gray-600 mb-1">Width</label>
+                                                    <input
+                                                        type="range"
+                                                        min="50"
+                                                        max="300"
+                                                        value={selectedElement.size.width}
+                                                        onChange={(e) => updateElement(selectedElement.id, {
+                                                            size: { ...selectedElement.size, width: parseInt(e.target.value) }
+                                                        })}
+                                                        className="w-full"
+                                                    />
+                                                    <span className="text-xs text-gray-500">{selectedElement.size.width}px</span>
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs text-gray-600 mb-1">Height</label>
+                                                    <input
+                                                        type="range"
+                                                        min="10"
+                                                        max="100"
+                                                        value={selectedElement.size.height}
+                                                        onChange={(e) => updateElement(selectedElement.id, {
+                                                            size: { ...selectedElement.size, height: parseInt(e.target.value) }
+                                                        })}
+                                                        className="w-full"
+                                                    />
+                                                    <span className="text-xs text-gray-500">{selectedElement.size.height}px</span>
+                                                </div>
+                                            </div>
+
+                                            <div className="grid grid-cols-3 gap-1">
+                                                <button
+                                                    onClick={() => updateElement(selectedElement.id, { style: { ...selectedElement.style, fontWeight: selectedElement.style.fontWeight === 'bold' ? 'normal' : 'bold' } })}
+                                                    className={`p-1 text-xs rounded border ${selectedElement.style.fontWeight === 'bold' ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}
+                                                >
+                                                    B
+                                                </button>
+                                                <button
+                                                    onClick={() => updateElement(selectedElement.id, { style: { ...selectedElement.style, fontStyle: selectedElement.style.fontStyle === 'italic' ? 'normal' : 'italic' } })}
+                                                    className={`p-1 text-xs rounded border ${selectedElement.style.fontStyle === 'italic' ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}
+                                                >
+                                                    I
+                                                </button>
+                                                <button
+                                                    onClick={() => updateElement(selectedElement.id, { style: { ...selectedElement.style, textDecoration: selectedElement.style.textDecoration === 'underline' ? 'none' : 'underline' } })}
+                                                    className={`p-1 text-xs rounded border ${selectedElement.style.textDecoration === 'underline' ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}
+                                                >
+                                                    U
+                                                </button>
+                                            </div>
                                         </div>
                                     )}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
 
-                    {/* Center Panel - Controls */}
-                    <div className="w-80 bg-white border-r border-gray-200 p-4 overflow-y-auto">
-
-                        {/* Element Management */}
-                        <div className="mb-6">
-                            <div className="flex justify-between items-center mb-3">
-                                <h3 className="text-sm font-semibold text-gray-800">Manage Elements</h3>
-                                <button
-                                    onClick={() => setCardElements([])}
-                                    className="px-3 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600 transition-colors"
-                                >
-                                    Clear All
-                                </button>
-                            </div>
-
-                            {/* Quick Add Default Elements */}
-                            <div className="mb-4">
-                                <h4 className="text-xs font-medium text-gray-600 mb-2">Quick Add</h4>
-                                <select
-                                    onChange={(e) => {
-                                        const value = e.target.value;
-                                        if (value === 'name') {
-                                            addElement('text', 'Name', { fontSize: 18, fontWeight: 'bold' });
-                                        } else if (value === 'title') {
-                                            addElement('text', 'Job Title', { fontSize: 14, color: '#666' });
-                                        } else if (value === 'company') {
-                                            addElement('text', 'Company Name', { fontSize: 16, fontWeight: 'bold', color: '#007bff' });
-                                        } else if (value === 'phone') {
-                                            addElement('text', '📞 Phone', { fontSize: 12 });
-                                        } else if (value === 'email') {
-                                            addElement('text', '✉️ Email', { fontSize: 12 });
-                                        } else if (value === 'website') {
-                                            addElement('text', '🌐 Website', { fontSize: 12 });
-                                        }
-                                        e.target.value = '';
-                                    }}
-                                    className="w-full p-2 border border-gray-300 rounded text-xs"
-                                    defaultValue=""
-                                >
-                                    <option value="" disabled>Select quick element...</option>
-                                    <option value="name">+ Name</option>
-                                    <option value="title">+ Title</option>
-                                    <option value="company">+ Company</option>
-                                    <option value="phone">+ Phone</option>
-                                    <option value="email">+ Email</option>
-                                    <option value="website">+ Website</option>
-                                </select>
-                            </div>
-
-                            {/* Corner Style */}
-                            <div className="mb-4">
-                                <h4 className="text-xs font-medium text-gray-600 mb-2">Corner Style</h4>
-                                <select
-                                    value={cardData.cornerStyle}
-                                    onChange={(e) => {
-                                        const value = e.target.value as 'normal' | 'rounded' | 'sharp' | 'circular';
-                                        setCardData(prev => ({ ...prev, cornerStyle: value }));
-                                    }}
-                                    className="w-full p-2 border border-gray-300 rounded text-xs"
-                                >
-                                    <option value="normal">Normal</option>
-                                    <option value="rounded">Rounded</option>
-                                    <option value="sharp">Sharp</option>
-                                    <option value="circular">Circular</option>
-                                </select>
-                            </div>
-
-                            {/* Current Elements List */}
-                            <div className="space-y-2">
-                                <h4 className="text-xs font-medium text-gray-600">Current Elements ({cardElements.filter(el => el.side === currentView).length})</h4>
-                                {cardElements.filter(el => el.side === currentView).map((element, index) => (
-                                    <div
-                                        key={element.id}
-                                        className={`p-2 rounded border text-xs cursor-pointer transition-colors ${selectedElement?.id === element.id
-                                            ? 'bg-blue-100 border-blue-300'
-                                            : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
-                                            }`}
-                                        onClick={() => setSelectedElement(element)}
-                                    >
-                                        <div className="flex justify-between items-center">
-                                            <div className="flex items-center space-x-2">
-                                                <span className="font-medium">
-                                                    {element.type === 'qr' ? '📱' : element.type === 'image' ? '�️' : '�📝'}
-                                                </span>
-                                                <span className="truncate max-w-24">
-                                                    {element.type === 'qr' ? 'QR Code' : element.type === 'image' ? 'Image' : element.content}
-                                                </span>
-                                            </div>
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    deleteElement(element.id);
-                                                }}
-                                                className="text-red-500 hover:text-red-700 font-bold"
-                                            >
-                                                ×
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))}
-                                {cardElements.filter(el => el.side === currentView).length === 0 && (
-                                    <p className="text-xs text-gray-500 italic py-4 text-center">
-                                        No elements on this side. Add some elements to get started!
-                                    </p>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Colors */}
-                        <div className="mb-6">
-                            <h3 className="text-sm font-semibold text-gray-800 mb-3">Colors</h3>
-                            <div className="grid grid-cols-3 gap-3">
-                                <div>
-                                    <label className="block text-xs text-gray-600 mb-1">Background</label>
-                                    <input
-                                        type="color"
-                                        value={cardData.bgColor}
-                                        onChange={(e) => handleInputChange('bgColor', e.target.value)}
-                                        className="w-full h-10 border border-gray-300 rounded cursor-pointer"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-xs text-gray-600 mb-1">Text</label>
-                                    <input
-                                        type="color"
-                                        value={cardData.textColor}
-                                        onChange={(e) => handleInputChange('textColor', e.target.value)}
-                                        className="w-full h-10 border border-gray-300 rounded cursor-pointer"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-xs text-gray-600 mb-1">Accent</label>
-                                    <input
-                                        type="color"
-                                        value={cardData.accentColor}
-                                        onChange={(e) => handleInputChange('accentColor', e.target.value)}
-                                        className="w-full h-10 border border-gray-300 rounded cursor-pointer"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Add Elements */}
-                        <div className="mb-6">
-                            <h3 className="text-sm font-semibold text-gray-800 mb-3">Add Elements</h3>
-                            <div className="grid grid-cols-3 gap-2">
-                                <button
-                                    onClick={() => addElement('text')}
-                                    className="p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex flex-col items-center text-sm font-medium shadow-sm"
-                                >
-                                    <span className="text-lg mb-1">📝</span>
-                                    Text
-                                </button>
-                                <button
-                                    onClick={() => addElement('qr')}
-                                    className="p-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex flex-col items-center text-sm font-medium shadow-sm"
-                                >
-                                    <span className="text-lg mb-1">📱</span>
-                                    QR Code
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        const fileInput = document.createElement('input');
-                                        fileInput.type = 'file';
-                                        fileInput.accept = 'image/*';
-                                        fileInput.onchange = (event) => {
-                                            const file = (event.target as HTMLInputElement).files?.[0];
-                                            if (file) {
-                                                const reader = new FileReader();
-                                                reader.onload = (e) => {
-                                                    const imageData = e.target?.result as string;
-                                                    const newElement: CardElement = {
-                                                        id: `image_${Date.now()}`,
-                                                        type: 'image',
-                                                        content: file.name,
-                                                        position: { x: 44, y: 44 },
-                                                        size: { width: 80, height: 60 },
-                                                        style: { borderRadius: '4px' },
-                                                        side: currentView,
-                                                        imageData: imageData
-                                                    };
-                                                    setCardElements(prev => [...prev, newElement]);
-                                                    setSelectedElement(newElement);
-                                                };
-                                                reader.readAsDataURL(file);
-                                            }
-                                        };
-                                        fileInput.click();
-                                    }}
-                                    className="p-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors flex flex-col items-center text-sm font-medium shadow-sm"
-                                >
-                                    <span className="text-lg mb-1">�️</span>
-                                    Image
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Selected Element Editor */}
-                        {selectedElement && (
-                            <div className="border border-blue-200 rounded-lg p-3 bg-blue-50">
-                                <div className="flex justify-between items-center mb-3">
-                                    <h4 className="text-sm font-semibold text-blue-800">
-                                        ✏️ Editing: {selectedElement.type === 'qr' ? 'QR Code' : selectedElement.type === 'image' ? 'Image' : selectedElement.content.substring(0, 20) + (selectedElement.content.length > 20 ? '...' : '')}
-                                    </h4>
-                                    <div className="flex space-x-2">
-                                        <button
-                                            onClick={() => setSelectedElement(null)}
-                                            className="text-xs text-green-600 hover:text-green-800 bg-green-100 hover:bg-green-200 px-2 py-1 rounded transition-colors font-medium"
-                                        >
-                                            ✓ Done
-                                        </button>
-                                        <button
-                                            onClick={() => deleteElement(selectedElement.id)}
-                                            className="text-xs text-red-600 hover:text-red-800 bg-red-100 hover:bg-red-200 px-2 py-1 rounded transition-colors"
-                                        >
-                                            🗑️ Delete
-                                        </button>
-                                    </div>
-                                </div>
-
-                                {selectedElement.type === 'text' && (
-                                    <div className="space-y-3">
-                                        <div>
-                                            <label className="block text-xs text-gray-600 mb-1">Text Content</label>
-                                            <input
-                                                type="text"
-                                                value={selectedElement.content}
-                                                onChange={(e) => updateElement(selectedElement.id, { content: e.target.value })}
-                                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
-                                                placeholder="Enter text"
-                                            />
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-2">
+                                    {selectedElement.type === 'qr' && (
+                                        <div className="space-y-3">
                                             <div>
-                                                <label className="block text-xs text-gray-600 mb-1">Color</label>
+                                                <label className="block text-xs text-gray-600 mb-1">QR Code Data</label>
                                                 <input
-                                                    type="color"
-                                                    value={selectedElement.style.color || '#333333'}
-                                                    onChange={(e) => updateElement(selectedElement.id, { style: { ...selectedElement.style, color: e.target.value } })}
-                                                    className="w-full h-8 border border-gray-300 rounded cursor-pointer"
+                                                    type="text"
+                                                    value={selectedElement.content}
+                                                    onChange={(e) => updateElement(selectedElement.id, { content: e.target.value })}
+                                                    className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
+                                                    placeholder="Enter URL or text"
                                                 />
                                             </div>
-                                            <div>
-                                                <label className="block text-xs text-gray-600 mb-1">Font Size</label>
-                                                <input
-                                                    type="range"
-                                                    min="8"
-                                                    max="32"
-                                                    value={selectedElement.style.fontSize || 16}
-                                                    onChange={(e) => updateElement(selectedElement.id, { style: { ...selectedElement.style, fontSize: parseInt(e.target.value) } })}
-                                                    className="w-full"
-                                                />
-                                                <span className="text-xs text-gray-500">{selectedElement.style.fontSize || 16}px</span>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <div>
+                                                    <label className="block text-xs text-gray-600 mb-1">Size</label>
+                                                    <input
+                                                        type="range"
+                                                        min="40"
+                                                        max="150"
+                                                        value={selectedElement.size.width}
+                                                        onChange={(e) => updateElement(selectedElement.id, {
+                                                            size: {
+                                                                width: parseInt(e.target.value),
+                                                                height: parseInt(e.target.value) // Keep QR code square
+                                                            }
+                                                        })}
+                                                        className="w-full"
+                                                    />
+                                                    <span className="text-xs text-gray-500">{selectedElement.size.width}×{selectedElement.size.height}px</span>
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs text-gray-600 mb-1">Position</label>
+                                                    <div className="text-xs text-gray-500">
+                                                        X: {Math.round(selectedElement.position.x)}px<br />
+                                                        Y: {Math.round(selectedElement.position.y)}px
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
 
-                                        {/* Element Size Controls */}
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <div>
-                                                <label className="block text-xs text-gray-600 mb-1">Width</label>
-                                                <input
-                                                    type="range"
-                                                    min="50"
-                                                    max="300"
-                                                    value={selectedElement.size.width}
-                                                    onChange={(e) => updateElement(selectedElement.id, {
-                                                        size: { ...selectedElement.size, width: parseInt(e.target.value) }
-                                                    })}
-                                                    className="w-full"
-                                                />
-                                                <span className="text-xs text-gray-500">{selectedElement.size.width}px</span>
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs text-gray-600 mb-1">Height</label>
-                                                <input
-                                                    type="range"
-                                                    min="10"
-                                                    max="100"
-                                                    value={selectedElement.size.height}
-                                                    onChange={(e) => updateElement(selectedElement.id, {
-                                                        size: { ...selectedElement.size, height: parseInt(e.target.value) }
-                                                    })}
-                                                    className="w-full"
-                                                />
-                                                <span className="text-xs text-gray-500">{selectedElement.size.height}px</span>
-                                            </div>
-                                        </div>
-
-                                        <div className="grid grid-cols-3 gap-1">
-                                            <button
-                                                onClick={() => updateElement(selectedElement.id, { style: { ...selectedElement.style, fontWeight: selectedElement.style.fontWeight === 'bold' ? 'normal' : 'bold' } })}
-                                                className={`p-1 text-xs rounded border ${selectedElement.style.fontWeight === 'bold' ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}
-                                            >
-                                                B
-                                            </button>
-                                            <button
-                                                onClick={() => updateElement(selectedElement.id, { style: { ...selectedElement.style, fontStyle: selectedElement.style.fontStyle === 'italic' ? 'normal' : 'italic' } })}
-                                                className={`p-1 text-xs rounded border ${selectedElement.style.fontStyle === 'italic' ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}
-                                            >
-                                                I
-                                            </button>
-                                            <button
-                                                onClick={() => updateElement(selectedElement.id, { style: { ...selectedElement.style, textDecoration: selectedElement.style.textDecoration === 'underline' ? 'none' : 'underline' } })}
-                                                className={`p-1 text-xs rounded border ${selectedElement.style.textDecoration === 'underline' ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}
-                                            >
-                                                U
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {selectedElement.type === 'qr' && (
-                                    <div className="space-y-3">
-                                        <div>
-                                            <label className="block text-xs text-gray-600 mb-1">QR Code Data</label>
-                                            <input
-                                                type="text"
-                                                value={selectedElement.content}
-                                                onChange={(e) => updateElement(selectedElement.id, { content: e.target.value })}
-                                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
-                                                placeholder="Enter URL or text"
-                                            />
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <div>
-                                                <label className="block text-xs text-gray-600 mb-1">Size</label>
-                                                <input
-                                                    type="range"
-                                                    min="40"
-                                                    max="150"
-                                                    value={selectedElement.size.width}
-                                                    onChange={(e) => updateElement(selectedElement.id, {
-                                                        size: {
-                                                            width: parseInt(e.target.value),
-                                                            height: parseInt(e.target.value) // Keep QR code square
-                                                        }
-                                                    })}
-                                                    className="w-full"
-                                                />
-                                                <span className="text-xs text-gray-500">{selectedElement.size.width}×{selectedElement.size.height}px</span>
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs text-gray-600 mb-1">Position</label>
-                                                <div className="text-xs text-gray-500">
-                                                    X: {Math.round(selectedElement.position.x)}px<br />
-                                                    Y: {Math.round(selectedElement.position.y)}px
+                                            {/* Manual Size Input for QR */}
+                                            <div className="border-t pt-2">
+                                                <label className="block text-xs text-gray-600 mb-1">Manual Size</label>
+                                                <div className="flex space-x-2">
+                                                    <input
+                                                        type="number"
+                                                        min="40"
+                                                        max="150"
+                                                        value={selectedElement.size.width}
+                                                        onChange={(e) => {
+                                                            const newSize = parseInt(e.target.value) || 60;
+                                                            updateElement(selectedElement.id, {
+                                                                size: { width: newSize, height: newSize }
+                                                            });
+                                                        }}
+                                                        className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded"
+                                                        placeholder="Size"
+                                                    />
+                                                    <span className="text-xs text-gray-500 self-center">px</span>
                                                 </div>
                                             </div>
                                         </div>
+                                    )}
 
-                                        {/* Manual Size Input for QR */}
-                                        <div className="border-t pt-2">
-                                            <label className="block text-xs text-gray-600 mb-1">Manual Size</label>
-                                            <div className="flex space-x-2">
-                                                <input
-                                                    type="number"
-                                                    min="40"
-                                                    max="150"
-                                                    value={selectedElement.size.width}
-                                                    onChange={(e) => {
-                                                        const newSize = parseInt(e.target.value) || 60;
-                                                        updateElement(selectedElement.id, {
-                                                            size: { width: newSize, height: newSize }
-                                                        });
-                                                    }}
-                                                    className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded"
-                                                    placeholder="Size"
-                                                />
-                                                <span className="text-xs text-gray-500 self-center">px</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {selectedElement.type === 'image' && (
-                                    <div className="space-y-3">
-                                        <div>
-                                            <label className="block text-xs text-gray-600 mb-1">Image</label>
-                                            {selectedElement.imageData ? (
-                                                <div className="space-y-2">
-                                                    <img
-                                                        src={selectedElement.imageData}
-                                                        alt="Preview"
-                                                        className="w-full h-20 object-cover rounded border border-gray-300"
-                                                    />
-                                                    <label className="block w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors text-sm cursor-pointer text-center">
-                                                        🔄 Replace Image
+                                    {selectedElement.type === 'image' && (
+                                        <div className="space-y-3">
+                                            <div>
+                                                <label className="block text-xs text-gray-600 mb-1">Image</label>
+                                                {selectedElement.imageData ? (
+                                                    <div className="space-y-2">
+                                                        <img
+                                                            src={selectedElement.imageData}
+                                                            alt="Preview"
+                                                            className="w-full h-20 object-cover rounded border border-gray-300"
+                                                        />
+                                                        <label className="block w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors text-sm cursor-pointer text-center">
+                                                            🔄 Replace Image
+                                                            <input
+                                                                type="file"
+                                                                accept="image/*"
+                                                                onChange={(e) => {
+                                                                    const file = e.target.files?.[0];
+                                                                    if (file) {
+                                                                        const reader = new FileReader();
+                                                                        reader.onload = (event) => {
+                                                                            updateElement(selectedElement.id, {
+                                                                                imageData: event.target?.result as string,
+                                                                                content: file.name
+                                                                            });
+                                                                        };
+                                                                        reader.readAsDataURL(file);
+                                                                    }
+                                                                    e.target.value = '';
+                                                                }}
+                                                                className="hidden"
+                                                            />
+                                                        </label>
+                                                    </div>
+                                                ) : (
+                                                    <label className="block w-full p-4 border-2 border-dashed border-gray-300 rounded text-center cursor-pointer hover:border-blue-400">
+                                                        📷 Click to upload image
                                                         <input
                                                             type="file"
                                                             accept="image/*"
@@ -1559,195 +1957,914 @@ const VisitingCardDesigner: React.FC = () => {
                                                             className="hidden"
                                                         />
                                                     </label>
-                                                </div>
-                                            ) : (
-                                                <label className="block w-full p-4 border-2 border-dashed border-gray-300 rounded text-center cursor-pointer hover:border-blue-400">
-                                                    📷 Click to upload image
-                                                    <input
-                                                        type="file"
-                                                        accept="image/*"
-                                                        onChange={(e) => {
-                                                            const file = e.target.files?.[0];
-                                                            if (file) {
-                                                                const reader = new FileReader();
-                                                                reader.onload = (event) => {
-                                                                    updateElement(selectedElement.id, {
-                                                                        imageData: event.target?.result as string,
-                                                                        content: file.name
-                                                                    });
-                                                                };
-                                                                reader.readAsDataURL(file);
-                                                            }
-                                                            e.target.value = '';
-                                                        }}
-                                                        className="hidden"
-                                                    />
-                                                </label>
-                                            )}
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs text-gray-600 mb-1">Border Radius</label>
-                                            <input
-                                                type="range"
-                                                min="0"
-                                                max="50"
-                                                value={parseInt(selectedElement.style.borderRadius) || 4}
-                                                onChange={(e) => updateElement(selectedElement.id, {
-                                                    style: {
-                                                        ...selectedElement.style,
-                                                        borderRadius: `${e.target.value}px`
-                                                    }
-                                                })}
-                                                className="w-full"
-                                            />
-                                            <span className="text-xs text-gray-500">{parseInt(selectedElement.style.borderRadius) || 4}px</span>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Common positioning controls */}
-                                <div className="mt-3 pt-3 border-t border-gray-200">
-                                    <div className="text-xs text-gray-600 mb-2">Position & Size</div>
-                                    <div className="grid grid-cols-2 gap-2 text-xs">
-                                        <div>
-                                            <label className="block text-gray-500 mb-1">X Position</label>
-                                            <input
-                                                type="number"
-                                                min="0"
-                                                max="336"
-                                                value={Math.round(selectedElement.position.x)}
-                                                onChange={(e) => updateElement(selectedElement.id, {
-                                                    position: { ...selectedElement.position, x: parseInt(e.target.value) || 0 }
-                                                })}
-                                                className="w-full px-1 py-1 border border-gray-300 rounded text-xs"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-gray-500 mb-1">Y Position</label>
-                                            <input
-                                                type="number"
-                                                min="0"
-                                                max="176"
-                                                value={Math.round(selectedElement.position.y)}
-                                                onChange={(e) => updateElement(selectedElement.id, {
-                                                    position: { ...selectedElement.position, y: parseInt(e.target.value) || 0 }
-                                                })}
-                                                className="w-full px-1 py-1 border border-gray-300 rounded text-xs"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    {/* Manual Size Controls for All Elements */}
-                                    {selectedElement.type !== 'qr' && selectedElement.type !== 'image' && (
-                                        <div className="grid grid-cols-2 gap-2 text-xs mt-2">
+                                                )}
+                                            </div>
                                             <div>
-                                                <label className="block text-gray-500 mb-1">Width (px)</label>
+                                                <label className="block text-xs text-gray-600 mb-1">Border Radius</label>
+                                                <input
+                                                    type="range"
+                                                    min="0"
+                                                    max="50"
+                                                    value={parseInt(selectedElement.style.borderRadius) || 4}
+                                                    onChange={(e) => updateElement(selectedElement.id, {
+                                                        style: {
+                                                            ...selectedElement.style,
+                                                            borderRadius: `${e.target.value}px`
+                                                        }
+                                                    })}
+                                                    className="w-full"
+                                                />
+                                                <span className="text-xs text-gray-500">{parseInt(selectedElement.style.borderRadius) || 4}px</span>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Common positioning controls */}
+                                    <div className="mt-3 pt-3 border-t border-gray-200">
+                                        <div className="text-xs text-gray-600 mb-2">Position & Size</div>
+                                        <div className="grid grid-cols-2 gap-2 text-xs">
+                                            <div>
+                                                <label className="block text-gray-500 mb-1">X Position</label>
                                                 <input
                                                     type="number"
-                                                    min="20"
-                                                    max="300"
-                                                    value={selectedElement.size.width}
+                                                    min="0"
+                                                    max="336"
+                                                    value={Math.round(selectedElement.position.x)}
                                                     onChange={(e) => updateElement(selectedElement.id, {
-                                                        size: { ...selectedElement.size, width: parseInt(e.target.value) || 100 }
+                                                        position: { ...selectedElement.position, x: parseInt(e.target.value) || 0 }
                                                     })}
                                                     className="w-full px-1 py-1 border border-gray-300 rounded text-xs"
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-gray-500 mb-1">Height (px)</label>
+                                                <label className="block text-gray-500 mb-1">Y Position</label>
                                                 <input
                                                     type="number"
-                                                    min="10"
-                                                    max="100"
-                                                    value={selectedElement.size.height}
+                                                    min="0"
+                                                    max="176"
+                                                    value={Math.round(selectedElement.position.y)}
                                                     onChange={(e) => updateElement(selectedElement.id, {
-                                                        size: { ...selectedElement.size, height: parseInt(e.target.value) || 30 }
+                                                        position: { ...selectedElement.position, y: parseInt(e.target.value) || 0 }
                                                     })}
                                                     className="w-full px-1 py-1 border border-gray-300 rounded text-xs"
                                                 />
+                                            </div>
+                                        </div>
+
+                                        {/* Manual Size Controls for All Elements */}
+                                        {selectedElement.type !== 'qr' && selectedElement.type !== 'image' && (
+                                            <div className="grid grid-cols-2 gap-2 text-xs mt-2">
+                                                <div>
+                                                    <label className="block text-gray-500 mb-1">Width (px)</label>
+                                                    <input
+                                                        type="number"
+                                                        min="20"
+                                                        max="300"
+                                                        value={selectedElement.size.width}
+                                                        onChange={(e) => updateElement(selectedElement.id, {
+                                                            size: { ...selectedElement.size, width: parseInt(e.target.value) || 100 }
+                                                        })}
+                                                        className="w-full px-1 py-1 border border-gray-300 rounded text-xs"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-gray-500 mb-1">Height (px)</label>
+                                                    <input
+                                                        type="number"
+                                                        min="10"
+                                                        max="100"
+                                                        value={selectedElement.size.height}
+                                                        onChange={(e) => updateElement(selectedElement.id, {
+                                                            size: { ...selectedElement.size, height: parseInt(e.target.value) || 30 }
+                                                        })}
+                                                        className="w-full px-1 py-1 border border-gray-300 rounded text-xs"
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Right Panel - Card Preview */}
+                        <div className="flex-1 flex flex-col">
+
+                            {/* Card Preview Section - At Top */}
+                            <div className="bg-white border-b border-gray-200 p-6">
+                                <div className="flex flex-col items-center">
+
+                                    {/* Card Dimensions */}
+                                    <div className="mb-3 text-center">
+                                        <span className="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                                            3.5" × 2" (89mm × 51mm)
+                                        </span>
+                                    </div>
+
+                                    {/* Front/Back Toggle */}
+                                    <div className="mb-4">
+                                        <div className="flex bg-gray-100 rounded-lg p-1">
+                                            <button
+                                                onClick={() => setCurrentView('front')}
+                                                className={`px-4 py-2 rounded-md transition-all text-sm ${currentView === 'front'
+                                                    ? 'bg-blue-500 text-white shadow-md'
+                                                    : 'text-gray-600 hover:bg-white'
+                                                    }`}
+                                            >
+                                                Front
+                                            </button>
+                                            <button
+                                                onClick={() => setCurrentView('back')}
+                                                className={`px-4 py-2 rounded-md transition-all text-sm ${currentView === 'back'
+                                                    ? 'bg-blue-500 text-white shadow-md'
+                                                    : 'text-gray-600 hover:bg-white'
+                                                    }`}
+                                            >
+                                                Back
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Card Preview */}
+                                    <div className="relative">
+                                        <div
+                                            ref={cardRef}
+                                            className="w-96 h-56 shadow-xl transition-all duration-500 relative cursor-pointer select-none border-2 border-gray-200 rounded-lg overflow-hidden"
+                                            style={getTemplateStyle()}
+                                            onClick={() => setSelectedElement(null)}
+                                        >
+                                            {/* Visual padding container for default positioning */}
+                                            <div className="absolute inset-0 p-6 pointer-events-none" />
+                                            {renderCardContent(currentView)}
+                                        </div>
+                                    </div>
+
+                                    {/* Action Buttons */}
+                                    <div className="flex space-x-3 mt-6">
+                                        <button className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center text-sm shadow-md">
+                                            <span className="mr-2">📥</span>
+                                            Download
+                                        </button>
+                                        <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center text-sm shadow-md">
+                                            <span className="mr-2">🖨️</span>
+                                            Print
+                                        </button>
+                                        <button
+                                            onClick={() => setShowQuote(!showQuote)}
+                                            className="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors flex items-center text-sm shadow-md"
+                                        >
+                                            <span className="mr-2">💰</span>
+                                            Get Quote
+                                        </button>
+                                    </div>
+
+                                    {/* Pricing Section */}
+                                    {showQuote && (
+                                        <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                                            <h4 className="text-lg font-semibold text-gray-800 mb-4">Get Your Quote</h4>
+
+                                            {/* Horizontal Layout for Quantity and Pricing */}
+                                            <div className="grid grid-cols-2 gap-4 mb-4">
+                                                {/* Left: Quantity Controls */}
+                                                <div>
+                                                    <div className="flex items-center space-x-3 mb-3">
+                                                        <label className="text-sm font-medium text-gray-700 min-w-fit">Quantity:</label>
+                                                        <input
+                                                            type="number"
+                                                            value={customQuantity || quantity}
+                                                            onChange={(e) => {
+                                                                const value = e.target.value;
+                                                                setCustomQuantity(value);
+                                                                if (value) {
+                                                                    setQuantity(parseInt(value) || 100);
+                                                                }
+                                                            }}
+                                                            className="w-20 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                                                            placeholder="100"
+                                                            min="1"
+                                                        />
+                                                        <button className="relative">
+                                                            <select
+                                                                value={quantity}
+                                                                onChange={(e) => {
+                                                                    const value = parseInt(e.target.value);
+                                                                    setQuantity(value);
+                                                                    setCustomQuantity('');
+                                                                }}
+                                                                className="opacity-0 absolute inset-0 w-6 h-6 cursor-pointer"
+                                                            >
+                                                                <option value={100}>100</option>
+                                                                <option value={200}>200</option>
+                                                                <option value={500}>500</option>
+                                                                <option value={1000}>1000</option>
+                                                            </select>
+                                                            <div className="w-6 h-6 bg-gray-200 hover:bg-gray-300 rounded border border-gray-300 flex items-center justify-center transition-colors">
+                                                                <span className="text-xs text-gray-600">▼</span>
+                                                            </div>
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                {/* Right: Pricing Summary */}
+                                                <div className="bg-white p-3 border border-gray-200 rounded">
+                                                    <div className="flex justify-between items-center text-sm mb-1">
+                                                        <span className="text-gray-600">{quantity} cards</span>
+                                                        <span className="font-medium">₹{quantity >= 1000 ? '8' : quantity >= 500 ? '10' : quantity >= 200 ? '12' : '15'}/card</span>
+                                                    </div>
+                                                    <div className="border-t border-gray-200 pt-1 flex justify-between items-center">
+                                                        <span className="text-sm font-semibold text-gray-800">Total:</span>
+                                                        <span className="text-lg font-bold text-orange-600">₹{quantity * (quantity >= 1000 ? 8 : quantity >= 500 ? 10 : quantity >= 200 ? 12 : 15)}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="text-center">
+                                                <button className="px-8 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-semibold text-sm shadow-lg">
+                                                    Place Order
+                                                </button>
                                             </div>
                                         </div>
                                     )}
                                 </div>
                             </div>
-                        )}
+                        </div>
                     </div>
+                )}
 
-                    {/* Right Panel - Card Preview */}
-                    <div className="flex-1 flex flex-col">
-
-                        {/* Card Preview Section - At Top */}
-                        <div className="bg-white border-b border-gray-200 p-6">
-                            <div className="flex flex-col items-center">
-
-                                {/* Card Dimensions */}
-                                <div className="mb-3 text-center">
-                                    <span className="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                                        3.5" × 2" (89mm × 51mm)
-                                    </span>
-                                </div>
-
-                                {/* Front/Back Toggle */}
-                                <div className="mb-4">
-                                    <div className="flex bg-gray-100 rounded-lg p-1">
-                                        <button
-                                            onClick={() => setCurrentView('front')}
-                                            className={`px-4 py-2 rounded-md transition-all text-sm ${currentView === 'front'
-                                                ? 'bg-blue-500 text-white shadow-md'
-                                                : 'text-gray-600 hover:bg-white'
-                                                }`}
-                                        >
-                                            Front
-                                        </button>
-                                        <button
-                                            onClick={() => setCurrentView('back')}
-                                            className={`px-4 py-2 rounded-md transition-all text-sm ${currentView === 'back'
-                                                ? 'bg-blue-500 text-white shadow-md'
-                                                : 'text-gray-600 hover:bg-white'
-                                                }`}
-                                        >
-                                            Back
-                                        </button>
-                                    </div>
-                                </div>
-
-                                {/* Card Preview */}
-                                <div className="relative">
-                                    <div
-                                        ref={cardRef}
-                                        className="w-96 h-56 shadow-xl transition-all duration-500 relative cursor-pointer select-none border-2 border-gray-200 rounded-lg overflow-hidden"
-                                        style={getTemplateStyle()}
-                                        onClick={() => setSelectedElement(null)}
+                {activeProductTab === 'letter-pads' && (
+                    <div className="flex-1 flex overflow-hidden">
+                        {/* Left Panel - Templates */}
+                        <div className="w-80 bg-white border-r border-gray-200 p-4 overflow-y-auto">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-4">Choose Template</h3>
+                            <div className="space-y-3">
+                                {[
+                                    { id: 'corporate', name: 'Corporate' },
+                                    { id: 'modern', name: 'Modern' },
+                                    { id: 'classic', name: 'Classic' },
+                                    { id: 'minimal', name: 'Minimal' },
+                                    { id: 'professional', name: 'Professional' }
+                                ].map((template) => (
+                                    <button
+                                        key={template.id}
+                                        onClick={() => setLetterPadData(prev => ({ ...prev, template: template.id as any }))}
+                                        className={`group relative overflow-hidden rounded-lg border-2 transition-all duration-300 w-full transform hover:scale-105 ${letterPadData.template === template.id
+                                                ? 'border-blue-500 shadow-xl ring-2 ring-blue-200 scale-105'
+                                                : 'border-gray-200 hover:border-blue-300 hover:shadow-lg'
+                                            }`}
+                                        style={{ aspectRatio: '210/297' }} // A4 ratio
                                     >
-                                        {/* Visual padding container for default positioning */}
-                                        <div className="absolute inset-0 p-6 pointer-events-none" />
-                                        {renderCardContent(currentView)}
-                                    </div>
+                                        <div className="w-full h-full p-2">
+                                            <div
+                                                className="w-full h-full rounded-md shadow-sm relative overflow-hidden"
+                                                style={getLetterPadTemplateStyle(template.id, letterPadData)}
+                                            >
+                                                {/* A4 Template Preview */}
+                                                <div className="p-2 h-full flex flex-col">
+                                                    {/* Header */}
+                                                    <div className="flex items-start justify-between mb-2" style={{ borderBottom: `1px solid ${letterPadData.accentColor}20` }}>
+                                                        <div className="flex-1">
+                                                            <div className="text-xs font-bold mb-1" style={{ color: letterPadData.accentColor }}>
+                                                                {letterPadData.companyName || 'Company Name'}
+                                                            </div>
+                                                            <div className="text-xs opacity-70">
+                                                                {letterPadData.address || 'Address'}
+                                                            </div>
+                                                            <div className="text-xs opacity-70">
+                                                                📞 {letterPadData.phone || 'Phone'}
+                                                            </div>
+                                                        </div>
+                                                        <div className="w-4 h-4 border rounded-sm flex items-center justify-center text-xs" style={{ borderColor: letterPadData.accentColor, fontSize: '6px' }}>
+                                                            L
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Content lines */}
+                                                    <div className="flex-1 space-y-1">
+                                                        {[...Array(8)].map((_, i) => (
+                                                            <div key={i} className="border-b" style={{ borderColor: letterPadData.textColor + '15', height: '2px' }} />
+                                                        ))}
+                                                    </div>
+
+                                                    {/* Footer */}
+                                                    <div className="text-xs text-center pt-1" style={{ borderTop: `1px solid ${letterPadData.accentColor}`, fontSize: '6px' }}>
+                                                        {letterPadData.companyName || 'Company'} | {letterPadData.phone || 'Phone'}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                                            <div className="text-white text-xs font-semibold truncate">{template.name}</div>
+                                        </div>
+                                        {letterPadData.template === template.id && (
+                                            <div className="absolute top-2 right-2 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center shadow-lg">
+                                                <span className="text-white text-xs font-bold">✓</span>
+                                            </div>
+                                        )}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Center Panel - Controls */}
+                        <div className="w-80 bg-white border-r border-gray-200 p-4 overflow-y-auto">
+
+                            {/* Element Management */}
+                            <div className="mb-6">
+                                <div className="flex justify-between items-center mb-3">
+                                    <h3 className="text-sm font-semibold text-gray-800">Manage Elements</h3>
+                                    <button
+                                        onClick={() => setLetterPadElements([])}
+                                        className="px-3 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600 transition-colors"
+                                    >
+                                        Clear All
+                                    </button>
                                 </div>
 
-                                {/* Action Buttons */}
-                                <div className="flex space-x-3 mt-6">
-                                    <button className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center text-sm shadow-md">
-                                        <span className="mr-2">📥</span>
-                                        Download
-                                    </button>
-                                    <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center text-sm shadow-md">
-                                        <span className="mr-2">🖨️</span>
-                                        Print
+                                {/* Quick Add Default Elements */}
+                                <div className="mb-4">
+                                    <h4 className="text-xs font-medium text-gray-600 mb-2">Quick Add</h4>
+                                    <select
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            if (value === 'company') {
+                                                const newElement: CardElement = {
+                                                    id: Date.now().toString(),
+                                                    type: 'text',
+                                                    content: letterPadData.companyName || 'Company Name',
+                                                    position: { x: 50, y: 50 },
+                                                    size: { width: 300, height: 30 },
+                                                    style: { fontSize: 24, fontWeight: 'bold', color: letterPadData.accentColor },
+                                                    side: 'front'
+                                                };
+                                                setLetterPadElements(prev => [...prev, newElement]);
+                                            } else if (value === 'address') {
+                                                const newElement: CardElement = {
+                                                    id: Date.now().toString(),
+                                                    type: 'text',
+                                                    content: letterPadData.address || 'Company Address',
+                                                    position: { x: 50, y: 90 },
+                                                    size: { width: 300, height: 20 },
+                                                    style: { fontSize: 14, color: letterPadData.textColor },
+                                                    side: 'front'
+                                                };
+                                                setLetterPadElements(prev => [...prev, newElement]);
+                                            } else if (value === 'phone') {
+                                                const newElement: CardElement = {
+                                                    id: Date.now().toString(),
+                                                    type: 'text',
+                                                    content: `📞 ${letterPadData.phone || 'Phone'}`,
+                                                    position: { x: 50, y: 120 },
+                                                    size: { width: 200, height: 20 },
+                                                    style: { fontSize: 12, color: letterPadData.textColor },
+                                                    side: 'front'
+                                                };
+                                                setLetterPadElements(prev => [...prev, newElement]);
+                                            } else if (value === 'email') {
+                                                const newElement: CardElement = {
+                                                    id: Date.now().toString(),
+                                                    type: 'text',
+                                                    content: `✉️ ${letterPadData.email || 'Email'}`,
+                                                    position: { x: 50, y: 140 },
+                                                    size: { width: 200, height: 20 },
+                                                    style: { fontSize: 12, color: letterPadData.textColor },
+                                                    side: 'front'
+                                                };
+                                                setLetterPadElements(prev => [...prev, newElement]);
+                                            } else if (value === 'website') {
+                                                const newElement: CardElement = {
+                                                    id: Date.now().toString(),
+                                                    type: 'text',
+                                                    content: `🌐 ${letterPadData.website || 'Website'}`,
+                                                    position: { x: 50, y: 160 },
+                                                    size: { width: 200, height: 20 },
+                                                    style: { fontSize: 12, color: letterPadData.textColor },
+                                                    side: 'front'
+                                                };
+                                                setLetterPadElements(prev => [...prev, newElement]);
+                                            }
+                                            e.target.value = '';
+                                        }}
+                                        className="w-full p-2 border border-gray-300 rounded text-xs"
+                                        defaultValue=""
+                                    >
+                                        <option value="" disabled>Select quick element...</option>
+                                        <option value="company">+ Company Name</option>
+                                        <option value="address">+ Address</option>
+                                        <option value="phone">+ Phone</option>
+                                        <option value="email">+ Email</option>
+                                        <option value="website">+ Website</option>
+                                    </select>
+                                </div>
+
+                                {/* Current Elements List */}
+                                <div className="space-y-2">
+                                    <h4 className="text-xs font-medium text-gray-600">Current Elements ({letterPadElements.length})</h4>
+                                    {letterPadElements.map((element, index) => (
+                                        <div
+                                            key={element.id}
+                                            className={`p-2 rounded border text-xs cursor-pointer transition-colors ${selectedLetterPadElement === element.id
+                                                ? 'bg-blue-100 border-blue-300'
+                                                : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                                                }`}
+                                            onClick={() => setSelectedLetterPadElement(element.id)}
+                                        >
+                                            <div className="flex justify-between items-center">
+                                                <div className="flex items-center space-x-2">
+                                                    <span className="font-medium">
+                                                        {element.type === 'line' ? '📏' : element.type === 'image' ? '🖼️' : '📝'}
+                                                    </span>
+                                                    <span className="truncate max-w-24">
+                                                        {element.type === 'line' ? 'Line' : element.type === 'image' ? 'Image' : element.content}
+                                                    </span>
+                                                </div>
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setLetterPadElements(prev => prev.filter(el => el.id !== element.id));
+                                                        if (selectedLetterPadElement === element.id) {
+                                                            setSelectedLetterPadElement(null);
+                                                        }
+                                                    }}
+                                                    className="text-red-500 hover:text-red-700 font-bold"
+                                                >
+                                                    ×
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {letterPadElements.length === 0 && (
+                                        <p className="text-xs text-gray-500 italic py-4 text-center">
+                                            No elements added. Add some elements to get started!
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Colors */}
+                            <div className="mb-6">
+                                <h3 className="text-sm font-semibold text-gray-800 mb-3">Colors</h3>
+                                <div className="grid grid-cols-3 gap-3">
+                                    <div>
+                                        <label className="block text-xs text-gray-600 mb-1">Background</label>
+                                        <input
+                                            type="color"
+                                            value={letterPadData.bgColor}
+                                            onChange={(e) => setLetterPadData(prev => ({ ...prev, bgColor: e.target.value }))}
+                                            className="w-full h-10 border border-gray-300 rounded cursor-pointer"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 mb-1">Text</label>
+                                        <input
+                                            type="color"
+                                            value={letterPadData.textColor}
+                                            onChange={(e) => setLetterPadData(prev => ({ ...prev, textColor: e.target.value }))}
+                                            className="w-full h-10 border border-gray-300 rounded cursor-pointer"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-gray-600 mb-1">Accent</label>
+                                        <input
+                                            type="color"
+                                            value={letterPadData.accentColor}
+                                            onChange={(e) => setLetterPadData(prev => ({ ...prev, accentColor: e.target.value }))}
+                                            className="w-full h-10 border border-gray-300 rounded cursor-pointer"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Add Elements */}
+                            <div className="mb-6">
+                                <h3 className="text-sm font-semibold text-gray-800 mb-3">Add Elements</h3>
+                                <div className="grid grid-cols-3 gap-2">
+                                    <button
+                                        onClick={() => {
+                                            const newElement: CardElement = {
+                                                id: Date.now().toString(),
+                                                type: 'text',
+                                                content: 'Sample Text',
+                                                position: { x: 100, y: 300 },
+                                                size: { width: 200, height: 30 },
+                                                style: { fontSize: 14, color: letterPadData.textColor },
+                                                side: 'front'
+                                            };
+                                            setLetterPadElements(prev => [...prev, newElement]);
+                                            setSelectedLetterPadElement(newElement.id);
+                                        }}
+                                        className="p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex flex-col items-center text-sm font-medium shadow-sm"
+                                    >
+                                        <span className="text-lg mb-1">📝</span>
+                                        Text
                                     </button>
                                     <button
-                                        onClick={() => setShowQuote(!showQuote)}
-                                        className="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors flex items-center text-sm shadow-md"
+                                        onClick={() => {
+                                            const newElement: CardElement = {
+                                                id: Date.now().toString(),
+                                                type: 'line',
+                                                content: '',
+                                                position: { x: 50, y: 200 },
+                                                size: { width: 500, height: 2 },
+                                                style: { backgroundColor: letterPadData.accentColor },
+                                                side: 'front'
+                                            };
+                                            setLetterPadElements(prev => [...prev, newElement]);
+                                            setSelectedLetterPadElement(newElement.id);
+                                        }}
+                                        className="p-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex flex-col items-center text-sm font-medium shadow-sm"
                                     >
-                                        <span className="mr-2">💰</span>
-                                        Get Quote
+                                        <span className="text-lg mb-1">📏</span>
+                                        Line
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            const fileInput = document.createElement('input');
+                                            fileInput.type = 'file';
+                                            fileInput.accept = 'image/*';
+                                            fileInput.onchange = (event) => {
+                                                const file = (event.target as HTMLInputElement).files?.[0];
+                                                if (file) {
+                                                    const reader = new FileReader();
+                                                    reader.onload = (e) => {
+                                                        const imageData = e.target?.result as string;
+                                                        const newElement: CardElement = {
+                                                            id: Date.now().toString(),
+                                                            type: 'image',
+                                                            content: file.name,
+                                                            position: { x: 500, y: 50 },
+                                                            size: { width: 100, height: 100 },
+                                                            style: { borderRadius: '4px' },
+                                                            side: 'front',
+                                                            imageData: imageData
+                                                        };
+                                                        setLetterPadElements(prev => [...prev, newElement]);
+                                                        setSelectedLetterPadElement(newElement.id);
+                                                    };
+                                                    reader.readAsDataURL(file);
+                                                }
+                                            };
+                                            fileInput.click();
+                                        }}
+                                        className="p-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors flex flex-col items-center text-sm font-medium shadow-sm"
+                                    >
+                                        <span className="text-lg mb-1">🖼️</span>
+                                        Image
                                     </button>
                                 </div>
+                            </div>
 
-                                {/* Pricing Section */}
+                            {/* Selected Element Editor */}
+                            {selectedLetterPadElement && (
+                                <div className="border border-blue-200 rounded-lg p-3 bg-blue-50">
+                                    {(() => {
+                                        const element = letterPadElements.find(el => el.id === selectedLetterPadElement);
+                                        if (!element) return null;
+                                        return (
+                                            <>
+                                                <div className="flex justify-between items-center mb-3">
+                                                    <h4 className="text-sm font-semibold text-blue-800">
+                                                        ✏️ Editing: {element.type === 'line' ? 'Line' : element.type === 'image' ? 'Image' : element.content.substring(0, 20) + (element.content.length > 20 ? '...' : '')}
+                                                    </h4>
+                                                    <div className="flex space-x-2">
+                                                        <button
+                                                            onClick={() => setSelectedLetterPadElement(null)}
+                                                            className="text-xs text-green-600 hover:text-green-800 bg-green-100 hover:bg-green-200 px-2 py-1 rounded transition-colors font-medium"
+                                                        >
+                                                            ✓ Done
+                                                        </button>
+                                                        <button
+                                                            onClick={() => {
+                                                                setLetterPadElements(prev => prev.filter(el => el.id !== element.id));
+                                                                setSelectedLetterPadElement(null);
+                                                            }}
+                                                            className="text-xs text-red-600 hover:text-red-800 bg-red-100 hover:bg-red-200 px-2 py-1 rounded transition-colors"
+                                                        >
+                                                            🗑️ Delete
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                {element.type === 'text' && (
+                                                    <div className="space-y-3">
+                                                        <div>
+                                                            <label className="block text-xs text-gray-600 mb-1">Text Content</label>
+                                                            <input
+                                                                type="text"
+                                                                value={element.content}
+                                                                onChange={(e) => {
+                                                                    setLetterPadElements(prev =>
+                                                                        prev.map(el =>
+                                                                            el.id === element.id
+                                                                                ? { ...el, content: e.target.value }
+                                                                                : el
+                                                                        )
+                                                                    );
+                                                                }}
+                                                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
+                                                                placeholder="Enter text"
+                                                            />
+                                                        </div>
+                                                        <div className="grid grid-cols-2 gap-2">
+                                                            <div>
+                                                                <label className="block text-xs text-gray-600 mb-1">Color</label>
+                                                                <input
+                                                                    type="color"
+                                                                    value={element.style.color || letterPadData.textColor}
+                                                                    onChange={(e) => {
+                                                                        setLetterPadElements(prev =>
+                                                                            prev.map(el =>
+                                                                                el.id === element.id
+                                                                                    ? { ...el, style: { ...el.style, color: e.target.value } }
+                                                                                    : el
+                                                                            )
+                                                                        );
+                                                                    }}
+                                                                    className="w-full h-8 border border-gray-300 rounded cursor-pointer"
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <label className="block text-xs text-gray-600 mb-1">Font Size</label>
+                                                                <input
+                                                                    type="number"
+                                                                    value={element.style.fontSize || 14}
+                                                                    onChange={(e) => {
+                                                                        setLetterPadElements(prev =>
+                                                                            prev.map(el =>
+                                                                                el.id === element.id
+                                                                                    ? { ...el, style: { ...el.style, fontSize: parseInt(e.target.value) } }
+                                                                                    : el
+                                                                            )
+                                                                        );
+                                                                    }}
+                                                                    className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
+                                                                    min="8"
+                                                                    max="72"
+                                                                />
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Text Formatting Controls */}
+                                                        <div className="grid grid-cols-3 gap-1">
+                                                            <button
+                                                                onClick={() => {
+                                                                    setLetterPadElements(prev =>
+                                                                        prev.map(el =>
+                                                                            el.id === element.id
+                                                                                ? { ...el, style: { ...el.style, fontWeight: el.style.fontWeight === 'bold' ? 'normal' : 'bold' } }
+                                                                                : el
+                                                                        )
+                                                                    );
+                                                                }}
+                                                                className={`p-1 text-xs rounded border ${element.style.fontWeight === 'bold' ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}
+                                                            >
+                                                                Bold
+                                                            </button>
+                                                            <button
+                                                                onClick={() => {
+                                                                    setLetterPadElements(prev =>
+                                                                        prev.map(el =>
+                                                                            el.id === element.id
+                                                                                ? { ...el, style: { ...el.style, fontStyle: el.style.fontStyle === 'italic' ? 'normal' : 'italic' } }
+                                                                                : el
+                                                                        )
+                                                                    );
+                                                                }}
+                                                                className={`p-1 text-xs rounded border ${element.style.fontStyle === 'italic' ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}
+                                                            >
+                                                                Italic
+                                                            </button>
+                                                            <button
+                                                                onClick={() => {
+                                                                    setLetterPadElements(prev =>
+                                                                        prev.map(el =>
+                                                                            el.id === element.id
+                                                                                ? { ...el, style: { ...el.style, textDecoration: el.style.textDecoration === 'underline' ? 'none' : 'underline' } }
+                                                                                : el
+                                                                        )
+                                                                    );
+                                                                }}
+                                                                className={`p-1 text-xs rounded border ${element.style.textDecoration === 'underline' ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}
+                                                            >
+                                                                U
+                                                            </button>
+                                                        </div>
+
+                                                        {/* Text Alignment Controls */}
+                                                        <div className="grid grid-cols-3 gap-1">
+                                                            <button
+                                                                onClick={() => {
+                                                                    setLetterPadElements(prev =>
+                                                                        prev.map(el =>
+                                                                            el.id === element.id
+                                                                                ? { ...el, style: { ...el.style, textAlign: 'left' } }
+                                                                                : el
+                                                                        )
+                                                                    );
+                                                                }}
+                                                                className={`p-1 text-xs rounded border ${element.style.textAlign === 'left' ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}
+                                                            >
+                                                                ⬅
+                                                            </button>
+                                                            <button
+                                                                onClick={() => {
+                                                                    setLetterPadElements(prev =>
+                                                                        prev.map(el =>
+                                                                            el.id === element.id
+                                                                                ? { ...el, style: { ...el.style, textAlign: 'center' } }
+                                                                                : el
+                                                                        )
+                                                                    );
+                                                                }}
+                                                                className={`p-1 text-xs rounded border ${element.style.textAlign === 'center' ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}
+                                                            >
+                                                                ↔
+                                                            </button>
+                                                            <button
+                                                                onClick={() => {
+                                                                    setLetterPadElements(prev =>
+                                                                        prev.map(el =>
+                                                                            el.id === element.id
+                                                                                ? { ...el, style: { ...el.style, textAlign: 'right' } }
+                                                                                : el
+                                                                        )
+                                                                    );
+                                                                }}
+                                                                className={`p-1 text-xs rounded border ${element.style.textAlign === 'right' ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}
+                                                            >
+                                                                ➡
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {element.type === 'line' && (
+                                                    <div className="space-y-3">
+                                                        <div className="grid grid-cols-2 gap-2">
+                                                            <div>
+                                                                <label className="block text-xs text-gray-600 mb-1">Color</label>
+                                                                <input
+                                                                    type="color"
+                                                                    value={element.style.backgroundColor || letterPadData.accentColor}
+                                                                    onChange={(e) => {
+                                                                        setLetterPadElements(prev =>
+                                                                            prev.map(el =>
+                                                                                el.id === element.id
+                                                                                    ? { ...el, style: { ...el.style, backgroundColor: e.target.value } }
+                                                                                    : el
+                                                                            )
+                                                                        );
+                                                                    }}
+                                                                    className="w-full h-8 border border-gray-300 rounded cursor-pointer"
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <label className="block text-xs text-gray-600 mb-1">Height</label>
+                                                                <input
+                                                                    type="number"
+                                                                    value={element.size.height}
+                                                                    onChange={(e) => {
+                                                                        setLetterPadElements(prev =>
+                                                                            prev.map(el =>
+                                                                                el.id === element.id
+                                                                                    ? { ...el, size: { ...el.size, height: parseInt(e.target.value) } }
+                                                                                    : el
+                                                                            )
+                                                                        );
+                                                                    }}
+                                                                    className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
+                                                                    min="1"
+                                                                    max="20"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {(element.type === 'logo' || element.type === 'image') && (
+                                                    <div className="space-y-3">
+                                                        <div>
+                                                            <label className="block text-xs text-gray-600 mb-1">
+                                                                {element.type === 'logo' ? 'Logo Placeholder' : 'Image'}
+                                                            </label>
+                                                            <button
+                                                                onClick={() => {
+                                                                    const fileInput = document.createElement('input');
+                                                                    fileInput.type = 'file';
+                                                                    fileInput.accept = 'image/*';
+                                                                    fileInput.onchange = (event) => {
+                                                                        const file = (event.target as HTMLInputElement).files?.[0];
+                                                                        if (file) {
+                                                                            const reader = new FileReader();
+                                                                            reader.onload = (e) => {
+                                                                                const imageData = e.target?.result as string;
+                                                                                setLetterPadElements(prev =>
+                                                                                    prev.map(el =>
+                                                                                        el.id === element.id
+                                                                                            ? {
+                                                                                                ...el,
+                                                                                                type: 'image',
+                                                                                                content: file.name,
+                                                                                                imageData: imageData,
+                                                                                                style: { borderRadius: '4px' }
+                                                                                            }
+                                                                                            : el
+                                                                                    )
+                                                                                );
+                                                                            };
+                                                                            reader.readAsDataURL(file);
+                                                                        }
+                                                                    };
+                                                                    fileInput.click();
+                                                                }}
+                                                                className="w-full px-3 py-2 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 transition-colors"
+                                                            >
+                                                                {element.imageData ? 'Change Image' : 'Upload Image'}
+                                                            </button>
+                                                        </div>
+                                                        {element.imageData && (
+                                                            <div>
+                                                                <img
+                                                                    src={element.imageData}
+                                                                    alt="Preview"
+                                                                    className="w-full h-20 object-cover rounded border"
+                                                                />
+                                                                <button
+                                                                    onClick={() => {
+                                                                        if (element.id === 'logo_placeholder') {
+                                                                            // Reset to logo placeholder
+                                                                            setLetterPadElements(prev =>
+                                                                                prev.map(el =>
+                                                                                    el.id === element.id
+                                                                                        ? {
+                                                                                            ...el,
+                                                                                            type: 'logo',
+                                                                                            content: 'LOGO',
+                                                                                            imageData: undefined,
+                                                                                            style: {
+                                                                                                fontSize: 12,
+                                                                                                color: letterPadData.accentColor,
+                                                                                                border: `2px solid ${letterPadData.accentColor}`,
+                                                                                                textAlign: 'center',
+                                                                                                lineHeight: '76px',
+                                                                                                backgroundColor: letterPadData.accentColor + '10'
+                                                                                            }
+                                                                                        }
+                                                                                        : el
+                                                                                )
+                                                                            );
+                                                                        } else {
+                                                                            // Remove image data for other elements
+                                                                            setLetterPadElements(prev =>
+                                                                                prev.map(el =>
+                                                                                    el.id === element.id
+                                                                                        ? { ...el, imageData: undefined }
+                                                                                        : el
+                                                                                )
+                                                                            );
+                                                                        }
+                                                                    }}
+                                                                    className="w-full mt-2 px-2 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600 transition-colors"
+                                                                >
+                                                                    Remove Image
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </>
+                                        );
+                                    })()}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Right Panel - Preview */}
+                        <div className="flex-1 bg-gray-50 p-6 overflow-auto">
+                            <div className="max-w-4xl mx-auto">
+                                {/* Header with title and buttons */}
+                                <div className="flex justify-between items-center mb-6">
+                                    <h3 className="text-xl font-bold text-gray-800">Letter Pad Preview</h3>
+
+                                    {/* Action Buttons */}
+                                    <div className="flex space-x-3">
+                                        <button className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center text-sm shadow-md">
+                                            <span className="mr-2">📥</span>
+                                            Download
+                                        </button>
+                                        <button
+                                            onClick={() => setShowQuote(!showQuote)}
+                                            className="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors flex items-center text-sm shadow-md"
+                                        >
+                                            <span className="mr-2">💰</span>
+                                            Get Quote
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Pricing Section - Moved above preview */}
                                 {showQuote && (
-                                    <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                                        <h4 className="text-lg font-semibold text-gray-800 mb-4">Get Your Quote</h4>
+                                    <div className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                                        <h4 className="text-lg font-semibold text-gray-800 mb-4">Get Your Quote - Letter Pads</h4>
 
                                         {/* Horizontal Layout for Quantity and Pricing */}
                                         <div className="grid grid-cols-2 gap-4 mb-4">
@@ -1769,52 +2886,280 @@ const VisitingCardDesigner: React.FC = () => {
                                                         placeholder="100"
                                                         min="1"
                                                     />
-                                                    <button className="relative">
-                                                        <select
-                                                            value={quantity}
-                                                            onChange={(e) => {
-                                                                const value = parseInt(e.target.value);
-                                                                setQuantity(value);
+                                                </div>
+
+                                                {/* Quick Quantity Buttons */}
+                                                <div className="grid grid-cols-3 gap-2">
+                                                    {[100, 250, 500, 1000, 2500, 5000].map((qty) => (
+                                                        <button
+                                                            key={qty}
+                                                            onClick={() => {
+                                                                setQuantity(qty);
                                                                 setCustomQuantity('');
                                                             }}
-                                                            className="opacity-0 absolute inset-0 w-6 h-6 cursor-pointer"
+                                                            className={`px-3 py-1 text-xs rounded border transition-colors ${quantity === qty
+                                                                    ? 'bg-orange-500 text-white border-orange-500'
+                                                                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                                                                }`}
                                                         >
-                                                            <option value={100}>100</option>
-                                                            <option value={200}>200</option>
-                                                            <option value={500}>500</option>
-                                                            <option value={1000}>1000</option>
-                                                        </select>
-                                                        <div className="w-6 h-6 bg-gray-200 hover:bg-gray-300 rounded border border-gray-300 flex items-center justify-center transition-colors">
-                                                            <span className="text-xs text-gray-600">▼</span>
-                                                        </div>
-                                                    </button>
+                                                            {qty}
+                                                        </button>
+                                                    ))}
                                                 </div>
                                             </div>
 
-                                            {/* Right: Pricing Summary */}
-                                            <div className="bg-white p-3 border border-gray-200 rounded">
-                                                <div className="flex justify-between items-center text-sm mb-1">
-                                                    <span className="text-gray-600">{quantity} cards</span>
-                                                    <span className="font-medium">₹{quantity >= 1000 ? '8' : quantity >= 500 ? '10' : quantity >= 200 ? '12' : '15'}/card</span>
-                                                </div>
-                                                <div className="border-t border-gray-200 pt-1 flex justify-between items-center">
-                                                    <span className="text-sm font-semibold text-gray-800">Total:</span>
-                                                    <span className="text-lg font-bold text-orange-600">₹{quantity * (quantity >= 1000 ? 8 : quantity >= 500 ? 10 : quantity >= 200 ? 12 : 15)}</span>
+                                            {/* Right: Pricing Display */}
+                                            <div>
+                                                <div className="bg-white p-3 rounded border">
+                                                    <div className="text-sm text-gray-600 mb-2">Estimated Price</div>
+                                                    <div className="text-2xl font-bold text-orange-600">
+                                                        ₹{(() => {
+                                                            if (quantity <= 100) return (quantity * 8).toLocaleString();
+                                                            if (quantity <= 500) return (quantity * 6).toLocaleString();
+                                                            if (quantity <= 1000) return (quantity * 5).toLocaleString();
+                                                            return (quantity * 4).toLocaleString();
+                                                        })()}
+                                                    </div>
+                                                    <div className="text-xs text-gray-500">
+                                                        ₹{(() => {
+                                                            if (quantity <= 100) return '8.00';
+                                                            if (quantity <= 500) return '6.00';
+                                                            if (quantity <= 1000) return '5.00';
+                                                            return '4.00';
+                                                        })()} per letterpad
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div className="text-center">
-                                            <button className="px-8 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-semibold text-sm shadow-lg">
-                                                Place Order
-                                            </button>
+                                        {/* Contact Information */}
+                                        <div className="bg-orange-50 p-3 rounded border border-orange-200">
+                                            <div className="text-sm font-medium text-orange-800 mb-2">📞 Get Detailed Quote</div>
+                                            <div className="text-sm text-orange-700">
+                                                Call us at <span className="font-semibold">+91 98765 43210</span> or email
+                                                <span className="font-semibold"> info@likhavat.com</span> for custom pricing on large orders.
+                                            </div>
                                         </div>
                                     </div>
                                 )}
+
+                                {/* A4 Preview Container */}
+                                <div className="flex justify-start">
+                                    <div
+                                        ref={letterPadRef}
+                                        className="bg-gray-50 shadow-lg border border-gray-200 relative"
+                                        style={{
+                                            width: '595px', // A4 width in pixels at 72 DPI (8.27 inches)
+                                            minHeight: '842px', // A4 height in pixels at 72 DPI (11.7 inches)
+                                            ...getLetterPadTemplateStyle(letterPadData.template, letterPadData),
+                                            padding: '60px',
+                                            fontFamily: '"Proxima Nova", Arial, sans-serif',
+                                            fontSize: '14px',
+                                            lineHeight: '1.6',
+                                            backgroundColor: '#f8f8f8'
+                                        }}
+                                        onMouseMove={handleLetterPadMouseMove}
+                                        onMouseUp={handleLetterPadMouseUp}
+                                        onMouseLeave={handleLetterPadMouseUp}
+                                        onClick={() => setSelectedLetterPadElement(null)}
+                                    >
+                                        {/* Visual padding container for default positioning */}
+                                        <div className="absolute inset-0 p-16 pointer-events-none" />
+
+                                        {/* Custom Elements */}
+                                        {letterPadElements.map((element) => (
+                                            <div
+                                                key={element.id}
+                                                className={`absolute select-none transition-all duration-200 ${selectedLetterPadElement === element.id ? 'ring-2 ring-blue-500 z-10' : 'z-0'
+                                                    } ${isDraggingLetterPad && selectedLetterPadElement === element.id
+                                                        ? 'opacity-75 cursor-grabbing scale-105'
+                                                        : selectedLetterPadElement === element.id
+                                                            ? 'cursor-grab hover:shadow-lg'
+                                                            : 'cursor-grab hover:shadow-sm hover:scale-105'
+                                                    }`}
+                                                style={{
+                                                    left: `${element.position.x}px`,
+                                                    top: `${element.position.y}px`,
+                                                    width: `${element.size.width}px`,
+                                                    height: `${element.size.height}px`,
+                                                }}
+                                                onMouseDown={(e) => {
+                                                    if (element.type === 'logo' && element.id === 'logo_placeholder' && !element.imageData) {
+                                                        // Handle logo upload
+                                                        const fileInput = document.createElement('input');
+                                                        fileInput.type = 'file';
+                                                        fileInput.accept = 'image/*';
+                                                        fileInput.onchange = (event) => {
+                                                            const file = (event.target as HTMLInputElement).files?.[0];
+                                                            if (file) {
+                                                                const reader = new FileReader();
+                                                                reader.onload = (e) => {
+                                                                    const imageData = e.target?.result as string;
+                                                                    setLetterPadElements(prev =>
+                                                                        prev.map(el =>
+                                                                            el.id === 'logo_placeholder'
+                                                                                ? {
+                                                                                    ...el,
+                                                                                    type: 'image',
+                                                                                    content: file.name,
+                                                                                    imageData: imageData,
+                                                                                    style: { borderRadius: '4px' }
+                                                                                }
+                                                                                : el
+                                                                        )
+                                                                    );
+                                                                };
+                                                                reader.readAsDataURL(file);
+                                                            }
+                                                        };
+                                                        fileInput.click();
+                                                    } else {
+                                                        handleLetterPadMouseDown(e, element);
+                                                    }
+                                                }}
+                                                onClick={(e) => handleLetterPadElementClick(e, element)}
+                                            >
+                                                {renderLetterPadElement(element)}
+
+                                                {selectedLetterPadElement === element.id && (
+                                                    <>
+                                                        {/* Delete button */}
+                                                        <button
+                                                            className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full text-xs opacity-80 hover:opacity-100 transition-opacity z-20 flex items-center justify-center"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                if (element.id === 'logo_placeholder') {
+                                                                    // Reset logo to placeholder
+                                                                    setLetterPadElements(prev =>
+                                                                        prev.map(el =>
+                                                                            el.id === 'logo_placeholder'
+                                                                                ? {
+                                                                                    ...el,
+                                                                                    type: 'logo',
+                                                                                    content: 'LOGO',
+                                                                                    imageData: undefined,
+                                                                                    style: {
+                                                                                        fontSize: 12,
+                                                                                        color: letterPadData.accentColor,
+                                                                                        border: `2px solid ${letterPadData.accentColor}`,
+                                                                                        textAlign: 'center',
+                                                                                        lineHeight: '76px',
+                                                                                        backgroundColor: letterPadData.accentColor + '10'
+                                                                                    }
+                                                                                }
+                                                                                : el
+                                                                        )
+                                                                    );
+                                                                } else {
+                                                                    setLetterPadElements(prev => prev.filter(el => el.id !== element.id));
+                                                                }
+                                                                setSelectedLetterPadElement(null);
+                                                            }}
+                                                        >
+                                                            ×
+                                                        </button>
+                                                        {/* Done button */}
+                                                        <button
+                                                            className="absolute -top-2 -left-2 w-5 h-5 bg-green-500 text-white rounded-full text-xs opacity-80 hover:opacity-100 transition-opacity z-20 flex items-center justify-center"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setSelectedLetterPadElement(null);
+                                                            }}
+                                                        >
+                                                            ✓
+                                                        </button>
+                                                    </>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                )}
+
+                {activeProductTab === 'tshirt' && (
+                    <div className="flex-1 flex overflow-hidden">
+                        {/* Left Panel - Templates */}
+                        <div className="w-80 bg-white border-r border-gray-200 p-4 overflow-y-auto">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-4">Choose T-Shirt Template</h3>
+                            <div className="space-y-3">
+                                <div className="p-8 border-2 border-dashed border-gray-300 rounded-lg text-center text-gray-500">
+                                    <div className="text-4xl mb-2">👕</div>
+                                    <p className="text-sm">T-Shirt templates</p>
+                                    <p className="text-xs">Coming soon...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Center Panel - Controls */}
+                        <div className="w-80 bg-white border-r border-gray-200 p-4 overflow-y-auto">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-4">T-Shirt Controls</h3>
+                            <div className="space-y-4">
+                                <div className="p-6 border-2 border-dashed border-gray-300 rounded-lg text-center text-gray-500">
+                                    <div className="text-3xl mb-2">🎨</div>
+                                    <p className="text-sm">Design controls</p>
+                                    <p className="text-xs">Coming soon...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Right Panel - Preview */}
+                        <div className="flex-1 bg-gray-50 p-6 flex items-center justify-center">
+                            <div className="max-w-md w-full">
+                                <div className="bg-white p-8 rounded-lg shadow-lg border-2 border-gray-200">
+                                    <div className="h-80 flex flex-col items-center justify-center text-gray-400">
+                                        <div className="text-6xl mb-4">👕</div>
+                                        <h3 className="text-xl font-semibold mb-2">T-Shirt Preview</h3>
+                                        <p className="text-center">Your custom t-shirt design will appear here</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {activeProductTab === 'merchandise' && (
+                    <div className="flex-1 flex overflow-hidden">
+                        {/* Left Panel - Templates */}
+                        <div className="w-80 bg-white border-r border-gray-200 p-4 overflow-y-auto">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-4">Choose Merchandise Template</h3>
+                            <div className="space-y-3">
+                                <div className="p-8 border-2 border-dashed border-gray-300 rounded-lg text-center text-gray-500">
+                                    <div className="text-4xl mb-2">🎁</div>
+                                    <p className="text-sm">Merchandise templates</p>
+                                    <p className="text-xs">Coming soon...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Center Panel - Controls */}
+                        <div className="w-80 bg-white border-r border-gray-200 p-4 overflow-y-auto">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-4">Merchandise Controls</h3>
+                            <div className="space-y-4">
+                                <div className="p-6 border-2 border-dashed border-gray-300 rounded-lg text-center text-gray-500">
+                                    <div className="text-3xl mb-2">⚡</div>
+                                    <p className="text-sm">Customization tools</p>
+                                    <p className="text-xs">Coming soon...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Right Panel - Preview */}
+                        <div className="flex-1 bg-gray-50 p-6 flex items-center justify-center">
+                            <div className="max-w-md w-full">
+                                <div className="bg-white p-8 rounded-lg shadow-lg border-2 border-gray-200">
+                                    <div className="h-80 flex flex-col items-center justify-center text-gray-400">
+                                        <div className="text-6xl mb-4">🎁</div>
+                                        <h3 className="text-xl font-semibold mb-2">Merchandise Preview</h3>
+                                        <p className="text-center">Your custom merchandise design will appear here</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

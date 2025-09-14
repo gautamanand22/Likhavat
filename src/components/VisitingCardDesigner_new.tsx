@@ -30,7 +30,7 @@ const VisitingCardDesigner: React.FC = () => {
         name: 'John Doe',
         title: 'Senior Manager',
         company: 'Your Company Name',
-        phone: '+91 98765 43210',
+        phone: '+91 ',
         email: 'john.doe@company.com',
         address: '123 Business Street, City - 400001',
         website: 'www.yourcompany.com',
@@ -663,8 +663,8 @@ const VisitingCardDesigner: React.FC = () => {
                                                 key={style}
                                                 onClick={() => handleInputChange('cornerStyle', style)}
                                                 className={`p-1 rounded border text-xs transition-all ${cardData.cornerStyle === style
-                                                        ? 'bg-blue-500 text-white border-blue-500'
-                                                        : 'bg-gray-50 text-gray-700 border-gray-300 hover:border-blue-400'
+                                                    ? 'bg-blue-500 text-white border-blue-500'
+                                                    : 'bg-gray-50 text-gray-700 border-gray-300 hover:border-blue-400'
                                                     }`}
                                             >
                                                 {style}
@@ -775,8 +775,8 @@ const VisitingCardDesigner: React.FC = () => {
                                 <button
                                     onClick={() => setCurrentView('front')}
                                     className={`px-4 py-2 rounded-full font-medium transition-all duration-300 text-sm ${currentView === 'front'
-                                            ? 'bg-blue-500 text-white shadow-md'
-                                            : 'text-gray-600 hover:text-blue-500'
+                                        ? 'bg-blue-500 text-white shadow-md'
+                                        : 'text-gray-600 hover:text-blue-500'
                                         }`}
                                 >
                                     Front Side
@@ -784,8 +784,8 @@ const VisitingCardDesigner: React.FC = () => {
                                 <button
                                     onClick={() => setCurrentView('back')}
                                     className={`px-4 py-2 rounded-full font-medium transition-all duration-300 text-sm ${currentView === 'back'
-                                            ? 'bg-blue-500 text-white shadow-md'
-                                            : 'text-gray-600 hover:text-blue-500'
+                                        ? 'bg-blue-500 text-white shadow-md'
+                                        : 'text-gray-600 hover:text-blue-500'
                                         }`}
                                 >
                                     Back Side
@@ -842,8 +842,8 @@ const VisitingCardDesigner: React.FC = () => {
                                         key={template.id}
                                         onClick={() => handleInputChange('template', template.id)}
                                         className={`group relative overflow-hidden rounded-lg border-2 transition-all duration-300 aspect-[3/2] ${cardData.template === template.id
-                                                ? 'border-blue-500 shadow-lg ring-2 ring-blue-200'
-                                                : 'border-gray-200 hover:border-blue-300 hover:shadow-md'
+                                            ? 'border-blue-500 shadow-lg ring-2 ring-blue-200'
+                                            : 'border-gray-200 hover:border-blue-300 hover:shadow-md'
                                             }`}
                                     >
                                         <div className="w-full h-full p-1">

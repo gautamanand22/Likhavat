@@ -30,7 +30,7 @@ const VisitingCardDesigner: React.FC = () => {
     name: 'John Doe',
     title: 'Senior Manager',
     company: 'Your Company Name',
-    phone: '+91 98765 43210',
+    phone: '+91 79798 31185',
     email: 'john.doe@company.com',
     address: '123 Business Street, City - 400001',
     website: 'www.yourcompany.com',
@@ -122,7 +122,7 @@ const VisitingCardDesigner: React.FC = () => {
         );
       case 'qr':
         return (
-          <div 
+          <div
             style={{
               ...baseStyle,
               backgroundColor: '#000',
@@ -175,7 +175,7 @@ const VisitingCardDesigner: React.FC = () => {
           ...baseStyle,
           backgroundColor: element.style.backgroundColor || cardData.accentColor
         };
-        
+
         if (element.content === 'circle') {
           shapeStyle.borderRadius = '50%';
         } else if (element.content === 'triangle') {
@@ -194,7 +194,7 @@ const VisitingCardDesigner: React.FC = () => {
             </div>
           );
         }
-        
+
         return <div style={shapeStyle}></div>;
       default:
         return (
@@ -382,13 +382,13 @@ const VisitingCardDesigner: React.FC = () => {
   };
 
   const renderCardContent = (side: 'front' | 'back') => {
-    const textColor = ['gradient', 'dark', 'tech', 'futuristic'].includes(cardData.template) ? 'white' : 
-                     ['vintage', 'nature'].includes(cardData.template) ? '#8b4513' :
-                     cardData.template === 'luxury' ? '#333' : cardData.textColor;
-    
+    const textColor = ['gradient', 'dark', 'tech', 'futuristic'].includes(cardData.template) ? 'white' :
+      ['vintage', 'nature'].includes(cardData.template) ? '#8b4513' :
+        cardData.template === 'luxury' ? '#333' : cardData.textColor;
+
     // Get elements for this side
     const sideElements = cardElements.filter(el => el.side === side);
-    
+
     if (side === 'front') {
       return (
         <div className="h-full flex flex-col justify-between relative">
@@ -415,7 +415,7 @@ const VisitingCardDesigner: React.FC = () => {
               <div className="absolute top-2 right-6 w-1 h-1 bg-current opacity-40 rounded-full"></div>
             </>
           )}
-          
+
           <div className="z-10 relative">
             <h3 className={`${cardData.template === 'bold' ? 'text-2xl' : 'text-xl'} font-bold mb-1`} style={{ color: textColor }}>
               {cardData.name}
@@ -427,7 +427,7 @@ const VisitingCardDesigner: React.FC = () => {
               {cardData.company}
             </p>
           </div>
-          
+
           <div className={`text-xs space-y-1 z-10 relative ${cardData.template === 'futuristic' ? 'font-mono' : ''}`} style={{ color: textColor }}>
             <p className="flex items-center">
               <span className="mr-2">📞</span>
@@ -477,15 +477,15 @@ const VisitingCardDesigner: React.FC = () => {
           {cardData.template === 'tech' && (
             <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, currentColor 10px, currentColor 11px)' }}></div>
           )}
-          
+
           <div className="text-center z-10 relative">
-            <div className={`${cardData.template === 'vintage' ? 'w-20 h-20' : 'w-16 h-16'} rounded-full mx-auto mb-4 flex items-center justify-center text-2xl`} 
-                 style={{ backgroundColor: `${cardData.accentColor}20`, color: cardData.accentColor }}>
-              {cardData.template === 'tech' ? '⚡' : 
-               cardData.template === 'luxury' ? '👑' :
-               cardData.template === 'nature' ? '🌿' :
-               cardData.template === 'vintage' ? '📜' :
-               cardData.template === 'futuristic' ? '🚀' : '🏢'}
+            <div className={`${cardData.template === 'vintage' ? 'w-20 h-20' : 'w-16 h-16'} rounded-full mx-auto mb-4 flex items-center justify-center text-2xl`}
+              style={{ backgroundColor: `${cardData.accentColor}20`, color: cardData.accentColor }}>
+              {cardData.template === 'tech' ? '⚡' :
+                cardData.template === 'luxury' ? '👑' :
+                  cardData.template === 'nature' ? '🌿' :
+                    cardData.template === 'vintage' ? '📜' :
+                      cardData.template === 'futuristic' ? '🚀' : '🏢'}
             </div>
             <h3 className={`${cardData.template === 'bold' ? 'text-xl' : 'text-lg'} font-bold mb-2`} style={{ color: textColor }}>
               {cardData.company}
@@ -496,7 +496,7 @@ const VisitingCardDesigner: React.FC = () => {
               </div>
             )}
           </div>
-          
+
           <div className="z-10 relative">
             <div className={`text-xs space-y-1 mb-4 ${cardData.template === 'futuristic' ? 'font-mono' : ''}`} style={{ color: textColor }}>
               <p className="flex items-center">
@@ -535,13 +535,13 @@ const VisitingCardDesigner: React.FC = () => {
                 {renderElement(element)}
               </div>
             ))}
-            
+
             <div className="text-center">
               <p className="text-xs opacity-70 mb-2" style={{ color: textColor }}>
                 {cardData.template === 'tech' ? 'SCAN QR CODE' : 'Scan for digital contact'}
               </p>
-              <div className={`${cardData.template === 'vintage' ? 'w-16 h-16' : 'w-12 h-12'} border-2 mx-auto grid grid-cols-3 gap-0.5 p-1`} 
-                   style={{ borderColor: textColor, opacity: 0.5 }}>
+              <div className={`${cardData.template === 'vintage' ? 'w-16 h-16' : 'w-12 h-12'} border-2 mx-auto grid grid-cols-3 gap-0.5 p-1`}
+                style={{ borderColor: textColor, opacity: 0.5 }}>
                 {[...Array(9)].map((_, i) => (
                   <div key={i} className={`${Math.random() > 0.5 ? 'bg-current' : ''} rounded-sm`} style={{ opacity: 0.7 }}></div>
                 ))}
@@ -556,7 +556,7 @@ const VisitingCardDesigner: React.FC = () => {
   return (
     <div className="h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 overflow-hidden">
       <div className="h-full flex flex-col">
-        
+
         {/* Header */}
         <div className="text-center py-4 border-b border-gray-200 bg-white/80 backdrop-blur-sm">
           <h1 className="text-2xl font-bold text-gray-800">Professional Visiting Card Designer</h1>
@@ -565,10 +565,10 @@ const VisitingCardDesigner: React.FC = () => {
 
         {/* Main Layout - Single View */}
         <div className="flex-1 grid grid-cols-12 gap-4 p-4 h-full overflow-hidden">
-          
+
           {/* Left Panel - Controls */}
           <div className="col-span-3 space-y-3 overflow-y-auto">
-            
+
             {/* Card Information */}
             <div className="bg-white rounded-lg shadow-md p-3">
               <h3 className="text-sm font-semibold text-gray-800 mb-3 flex items-center">
@@ -664,7 +664,7 @@ const VisitingCardDesigner: React.FC = () => {
                     />
                   </div>
                 </div>
-                
+
                 {/* Corner Style */}
                 <div>
                   <label className="block text-xs text-gray-600 mb-1">Corner Style</label>
@@ -673,11 +673,10 @@ const VisitingCardDesigner: React.FC = () => {
                       <button
                         key={style}
                         onClick={() => handleInputChange('cornerStyle', style)}
-                        className={`p-1 rounded border text-xs transition-all ${
-                          cardData.cornerStyle === style
+                        className={`p-1 rounded border text-xs transition-all ${cardData.cornerStyle === style
                             ? 'bg-blue-500 text-white border-blue-500'
                             : 'bg-gray-50 text-gray-700 border-gray-300 hover:border-blue-400'
-                        }`}
+                          }`}
                       >
                         {style}
                       </button>
@@ -723,7 +722,7 @@ const VisitingCardDesigner: React.FC = () => {
                   Shape
                 </button>
               </div>
-              
+
               {/* Selected Element Properties */}
               {selectedElement && (
                 <div className="p-2 bg-gray-50 rounded border">
@@ -750,7 +749,7 @@ const VisitingCardDesigner: React.FC = () => {
                       <input
                         type="number"
                         value={selectedElement.size.width}
-                        onChange={(e) => updateElement(selectedElement.id, { 
+                        onChange={(e) => updateElement(selectedElement.id, {
                           size: { ...selectedElement.size, width: parseInt(e.target.value) || 80 }
                         })}
                         placeholder="W"
@@ -759,7 +758,7 @@ const VisitingCardDesigner: React.FC = () => {
                       <input
                         type="number"
                         value={selectedElement.size.height}
-                        onChange={(e) => updateElement(selectedElement.id, { 
+                        onChange={(e) => updateElement(selectedElement.id, {
                           size: { ...selectedElement.size, height: parseInt(e.target.value) || 30 }
                         })}
                         placeholder="H"
@@ -780,27 +779,25 @@ const VisitingCardDesigner: React.FC = () => {
 
           {/* Center Panel - Card Preview */}
           <div className="col-span-6 flex flex-col items-center justify-center">
-            
+
             {/* Front/Back Toggle */}
             <div className="mb-4">
               <div className="flex bg-white rounded-full shadow-lg p-1">
                 <button
                   onClick={() => setCurrentView('front')}
-                  className={`px-4 py-2 rounded-full font-medium transition-all duration-300 text-sm ${
-                    currentView === 'front'
+                  className={`px-4 py-2 rounded-full font-medium transition-all duration-300 text-sm ${currentView === 'front'
                       ? 'bg-blue-500 text-white shadow-md'
                       : 'text-gray-600 hover:text-blue-500'
-                  }`}
+                    }`}
                 >
                   Front Side
                 </button>
                 <button
                   onClick={() => setCurrentView('back')}
-                  className={`px-4 py-2 rounded-full font-medium transition-all duration-300 text-sm ${
-                    currentView === 'back'
+                  className={`px-4 py-2 rounded-full font-medium transition-all duration-300 text-sm ${currentView === 'back'
                       ? 'bg-blue-500 text-white shadow-md'
                       : 'text-gray-600 hover:text-blue-500'
-                  }`}
+                    }`}
                 >
                   Back Side
                 </button>
@@ -817,7 +814,7 @@ const VisitingCardDesigner: React.FC = () => {
               >
                 {renderCardContent(currentView)}
               </div>
-              
+
               {/* Card indicator */}
               <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2">
                 <span className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg">
@@ -855,11 +852,10 @@ const VisitingCardDesigner: React.FC = () => {
                   <button
                     key={template.id}
                     onClick={() => handleInputChange('template', template.id)}
-                    className={`group relative overflow-hidden rounded-lg border-2 transition-all duration-300 aspect-[3/2] ${
-                      cardData.template === template.id
+                    className={`group relative overflow-hidden rounded-lg border-2 transition-all duration-300 aspect-[3/2] ${cardData.template === template.id
                         ? 'border-blue-500 shadow-lg ring-2 ring-blue-200'
                         : 'border-gray-200 hover:border-blue-300 hover:shadow-md'
-                    }`}
+                      }`}
                   >
                     <div className="w-full h-full p-1">
                       <div
@@ -898,285 +894,283 @@ const VisitingCardDesigner: React.FC = () => {
       </div>
     </div>
   );
-            
-            <div className="space-y-6">
-              {/* Personal Info Section */}
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                  Personal Information
-                </h3>
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-1">
-                      Full Name
-                    </label>
-                    <input
-                      type="text"
-                      value={cardData.name}
-                      onChange={(e) => handleInputChange('name', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all"
-                      placeholder="Enter your full name"
-                    />
-                  </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-1">
-                      Job Title
-                    </label>
-                    <input
-                      type="text"
-                      value={cardData.title}
-                      onChange={(e) => handleInputChange('title', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all"
-                      placeholder="Your professional title"
-                    />
-                  </div>
+  <div className="space-y-6">
+    {/* Personal Info Section */}
+    <div className="bg-gray-50 rounded-lg p-4">
+      <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+        <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+        Personal Information
+      </h3>
+      <div className="space-y-3">
+        <div>
+          <label className="block text-sm font-medium text-gray-600 mb-1">
+            Full Name
+          </label>
+          <input
+            type="text"
+            value={cardData.name}
+            onChange={(e) => handleInputChange('name', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all"
+            placeholder="Enter your full name"
+          />
+        </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-1">
-                      Company Name
-                    </label>
-                    <input
-                      type="text"
-                      value={cardData.company}
-                      onChange={(e) => handleInputChange('company', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all"
-                      placeholder="Your company or organization"
-                    />
-                  </div>
-                </div>
-              </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-600 mb-1">
+            Job Title
+          </label>
+          <input
+            type="text"
+            value={cardData.title}
+            onChange={(e) => handleInputChange('title', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all"
+            placeholder="Your professional title"
+          />
+        </div>
 
-              {/* Contact Info Section */}
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                  <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                  Contact Information
-                </h3>
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-1">
-                      Phone Number
-                    </label>
-                    <input
-                      type="text"
-                      value={cardData.phone}
-                      onChange={(e) => handleInputChange('phone', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all"
-                      placeholder="+91 98765 43210"
-                    />
-                  </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-600 mb-1">
+            Company Name
+          </label>
+          <input
+            type="text"
+            value={cardData.company}
+            onChange={(e) => handleInputChange('company', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all"
+            placeholder="Your company or organization"
+          />
+        </div>
+      </div>
+    </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-1">
-                      Email Address
-                    </label>
-                    <input
-                      type="email"
-                      value={cardData.email}
-                      onChange={(e) => handleInputChange('email', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all"
-                      placeholder="your.email@company.com"
-                    />
-                  </div>
+    {/* Contact Info Section */}
+    <div className="bg-gray-50 rounded-lg p-4">
+      <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+        <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+        Contact Information
+      </h3>
+      <div className="space-y-3">
+        <div>
+          <label className="block text-sm font-medium text-gray-600 mb-1">
+            Phone Number
+          </label>
+          <input
+            type="text"
+            value={cardData.phone}
+            onChange={(e) => handleInputChange('phone', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all"
+            placeholder="+91 79798 31185"
+          />
+        </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-1">
-                      Address
-                    </label>
-                    <input
-                      type="text"
-                      value={cardData.address}
-                      onChange={(e) => handleInputChange('address', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all"
-                      placeholder="Street, City, PIN Code"
-                    />
-                  </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-600 mb-1">
+            Email Address
+          </label>
+          <input
+            type="email"
+            value={cardData.email}
+            onChange={(e) => handleInputChange('email', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all"
+            placeholder="your.email@company.com"
+          />
+        </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-1">
-                      Website
-                    </label>
-                    <input
-                      type="text"
-                      value={cardData.website}
-                      onChange={(e) => handleInputChange('website', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all"
-                      placeholder="www.yourcompany.com"
-                    />
-                  </div>
-                </div>
-              </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-600 mb-1">
+            Address
+          </label>
+          <input
+            type="text"
+            value={cardData.address}
+            onChange={(e) => handleInputChange('address', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all"
+            placeholder="Street, City, PIN Code"
+          />
+        </div>
 
-              {/* Color Customization Section */}
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                  <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
-                  Color Customization
-                </h3>
-                <div className="grid grid-cols-3 gap-3">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-2">
-                      Background
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="color"
-                        value={cardData.bgColor}
-                        onChange={(e) => handleInputChange('bgColor', e.target.value)}
-                        className="w-full h-10 border-2 border-gray-200 rounded-lg cursor-pointer"
-                      />
-                      <div className="absolute inset-0 rounded-lg pointer-events-none border border-gray-300"></div>
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-2">
-                      Text Color
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="color"
-                        value={cardData.textColor}
-                        onChange={(e) => handleInputChange('textColor', e.target.value)}
-                        className="w-full h-10 border-2 border-gray-200 rounded-lg cursor-pointer"
-                      />
-                      <div className="absolute inset-0 rounded-lg pointer-events-none border border-gray-300"></div>
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-2">
-                      Accent Color
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="color"
-                        value={cardData.accentColor}
-                        onChange={(e) => handleInputChange('accentColor', e.target.value)}
-                        className="w-full h-10 border-2 border-gray-200 rounded-lg cursor-pointer"
-                      />
-                      <div className="absolute inset-0 rounded-lg pointer-events-none border border-gray-300"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-600 mb-1">
+            Website
+          </label>
+          <input
+            type="text"
+            value={cardData.website}
+            onChange={(e) => handleInputChange('website', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all"
+            placeholder="www.yourcompany.com"
+          />
+        </div>
+      </div>
+    </div>
 
-              {/* Corner Style Section */}
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                  Corner Style
-                </h3>
-                <div className="grid grid-cols-3 gap-2">
-                  {(['normal', 'rounded', 'sharp'] as const).map((style) => (
-                    <button
-                      key={style}
-                      onClick={() => handleInputChange('cornerStyle', style)}
-                      className={`p-3 rounded-lg border-2 transition-all duration-200 flex flex-col items-center ${
-                        cardData.cornerStyle === style
-                          ? 'bg-blue-500 text-white border-blue-500'
-                          : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400'
-                      }`}
-                    >
-                      <div className={`w-6 h-6 mb-1 bg-gray-300 ${
-                        style === 'normal' ? 'rounded' : 
-                        style === 'rounded' ? 'rounded-full' : 
-                        'rounded-none'
-                      }`}></div>
-                      <span className="text-xs capitalize">{style}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Elements Section */}
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                  <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                  Add Elements ({currentView === 'back' ? 'Back' : 'Front'})
-                </h3>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    onClick={() => addElement('text')}
-                    className="p-3 bg-white border-2 border-gray-300 rounded-lg hover:border-green-400 transition-all duration-200 flex flex-col items-center"
-                  >
-                    <span className="text-lg mb-1">📝</span>
-                    <span className="text-xs font-medium">Text</span>
-                  </button>
-                  <button
-                    onClick={() => addElement('qr')}
-                    className="p-3 bg-white border-2 border-gray-300 rounded-lg hover:border-green-400 transition-all duration-200 flex flex-col items-center"
-                  >
-                    <span className="text-lg mb-1">📱</span>
-                    <span className="text-xs font-medium">QR Code</span>
-                  </button>
-                  <button
-                    onClick={() => addElement('icon')}
-                    className="p-3 bg-white border-2 border-gray-300 rounded-lg hover:border-green-400 transition-all duration-200 flex flex-col items-center"
-                  >
-                    <span className="text-lg mb-1">🎯</span>
-                    <span className="text-xs font-medium">Icon</span>
-                  </button>
-                  <button
-                    onClick={() => addElement('shape')}
-                    className="p-3 bg-white border-2 border-gray-300 rounded-lg hover:border-green-400 transition-all duration-200 flex flex-col items-center"
-                  >
-                    <span className="text-lg mb-1">🔺</span>
-                    <span className="text-xs font-medium">Shape</span>
-                  </button>
-                </div>
-                
-                {/* Selected Element Properties */}
-                {selectedElement && (
-                  <div className="mt-4 p-3 bg-white rounded-lg border border-gray-200">
-                    <h4 className="text-xs font-medium text-gray-600 mb-2">
-                      Element Properties
-                    </h4>
-                    <div className="space-y-2">
-                      {selectedElement.type === 'text' && (
-                        <input
-                          type="text"
-                          value={selectedElement.content || ''}
-                          onChange={(e) => updateElement(selectedElement.id, { content: e.target.value })}
-                          placeholder="Enter text"
-                          className="w-full p-2 border border-gray-300 rounded text-xs"
-                        />
-                      )}
-                      <div className="flex gap-2">
-                        <input
-                          type="number"
-                          value={selectedElement.size.width}
-                          onChange={(e) => updateElement(selectedElement.id, { 
-                            size: { ...selectedElement.size, width: parseInt(e.target.value) }
-                          })}
-                          placeholder="Width"
-                          className="flex-1 p-2 border border-gray-300 rounded text-xs"
-                        />
-                        <input
-                          type="number"
-                          value={selectedElement.size.height}
-                          onChange={(e) => updateElement(selectedElement.id, { 
-                            size: { ...selectedElement.size, height: parseInt(e.target.value) }
-                          })}
-                          placeholder="Height"
-                          className="flex-1 p-2 border border-gray-300 rounded text-xs"
-                        />
-                      </div>
-                      <button
-                        onClick={() => deleteElement(selectedElement.id)}
-                        className="w-full p-2 bg-red-500 text-white rounded text-xs hover:bg-red-600"
-                      >
-                        Delete Element
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
+    {/* Color Customization Section */}
+    <div className="bg-gray-50 rounded-lg p-4">
+      <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+        <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
+        Color Customization
+      </h3>
+      <div className="grid grid-cols-3 gap-3">
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-2">
+            Background
+          </label>
+          <div className="relative">
+            <input
+              type="color"
+              value={cardData.bgColor}
+              onChange={(e) => handleInputChange('bgColor', e.target.value)}
+              className="w-full h-10 border-2 border-gray-200 rounded-lg cursor-pointer"
+            />
+            <div className="absolute inset-0 rounded-lg pointer-events-none border border-gray-300"></div>
+          </div>
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-2">
+            Text Color
+          </label>
+          <div className="relative">
+            <input
+              type="color"
+              value={cardData.textColor}
+              onChange={(e) => handleInputChange('textColor', e.target.value)}
+              className="w-full h-10 border-2 border-gray-200 rounded-lg cursor-pointer"
+            />
+            <div className="absolute inset-0 rounded-lg pointer-events-none border border-gray-300"></div>
+          </div>
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-2">
+            Accent Color
+          </label>
+          <div className="relative">
+            <input
+              type="color"
+              value={cardData.accentColor}
+              onChange={(e) => handleInputChange('accentColor', e.target.value)}
+              className="w-full h-10 border-2 border-gray-200 rounded-lg cursor-pointer"
+            />
+            <div className="absolute inset-0 rounded-lg pointer-events-none border border-gray-300"></div>
           </div>
         </div>
       </div>
     </div>
+
+    {/* Corner Style Section */}
+    <div className="bg-gray-50 rounded-lg p-4">
+      <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+        <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+        Corner Style
+      </h3>
+      <div className="grid grid-cols-3 gap-2">
+        {(['normal', 'rounded', 'sharp'] as const).map((style) => (
+          <button
+            key={style}
+            onClick={() => handleInputChange('cornerStyle', style)}
+            className={`p-3 rounded-lg border-2 transition-all duration-200 flex flex-col items-center ${cardData.cornerStyle === style
+                ? 'bg-blue-500 text-white border-blue-500'
+                : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400'
+              }`}
+          >
+            <div className={`w-6 h-6 mb-1 bg-gray-300 ${style === 'normal' ? 'rounded' :
+                style === 'rounded' ? 'rounded-full' :
+                  'rounded-none'
+              }`}></div>
+            <span className="text-xs capitalize">{style}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+
+    {/* Elements Section */}
+    <div className="bg-gray-50 rounded-lg p-4">
+      <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+        <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+        Add Elements ({currentView === 'back' ? 'Back' : 'Front'})
+      </h3>
+      <div className="grid grid-cols-2 gap-2">
+        <button
+          onClick={() => addElement('text')}
+          className="p-3 bg-white border-2 border-gray-300 rounded-lg hover:border-green-400 transition-all duration-200 flex flex-col items-center"
+        >
+          <span className="text-lg mb-1">📝</span>
+          <span className="text-xs font-medium">Text</span>
+        </button>
+        <button
+          onClick={() => addElement('qr')}
+          className="p-3 bg-white border-2 border-gray-300 rounded-lg hover:border-green-400 transition-all duration-200 flex flex-col items-center"
+        >
+          <span className="text-lg mb-1">📱</span>
+          <span className="text-xs font-medium">QR Code</span>
+        </button>
+        <button
+          onClick={() => addElement('icon')}
+          className="p-3 bg-white border-2 border-gray-300 rounded-lg hover:border-green-400 transition-all duration-200 flex flex-col items-center"
+        >
+          <span className="text-lg mb-1">🎯</span>
+          <span className="text-xs font-medium">Icon</span>
+        </button>
+        <button
+          onClick={() => addElement('shape')}
+          className="p-3 bg-white border-2 border-gray-300 rounded-lg hover:border-green-400 transition-all duration-200 flex flex-col items-center"
+        >
+          <span className="text-lg mb-1">🔺</span>
+          <span className="text-xs font-medium">Shape</span>
+        </button>
+      </div>
+
+      {/* Selected Element Properties */}
+      {selectedElement && (
+        <div className="mt-4 p-3 bg-white rounded-lg border border-gray-200">
+          <h4 className="text-xs font-medium text-gray-600 mb-2">
+            Element Properties
+          </h4>
+          <div className="space-y-2">
+            {selectedElement.type === 'text' && (
+              <input
+                type="text"
+                value={selectedElement.content || ''}
+                onChange={(e) => updateElement(selectedElement.id, { content: e.target.value })}
+                placeholder="Enter text"
+                className="w-full p-2 border border-gray-300 rounded text-xs"
+              />
+            )}
+            <div className="flex gap-2">
+              <input
+                type="number"
+                value={selectedElement.size.width}
+                onChange={(e) => updateElement(selectedElement.id, {
+                  size: { ...selectedElement.size, width: parseInt(e.target.value) }
+                })}
+                placeholder="Width"
+                className="flex-1 p-2 border border-gray-300 rounded text-xs"
+              />
+              <input
+                type="number"
+                value={selectedElement.size.height}
+                onChange={(e) => updateElement(selectedElement.id, {
+                  size: { ...selectedElement.size, height: parseInt(e.target.value) }
+                })}
+                placeholder="Height"
+                className="flex-1 p-2 border border-gray-300 rounded text-xs"
+              />
+            </div>
+            <button
+              onClick={() => deleteElement(selectedElement.id)}
+              className="w-full p-2 bg-red-500 text-white rounded text-xs hover:bg-red-600"
+            >
+              Delete Element
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+          </div >
+        </div >
+      </div >
+    </div >
   );
 };
 
@@ -1206,10 +1200,10 @@ export default VisitingCardDesigner;
                 </button>
               ))}
             </div>
-          </div>
+          </div >
 
-          {/* Preview Panel */}
-          <div className="xl:col-span-1 bg-white rounded-xl shadow-xl p-6">
+  {/* Preview Panel */ }
+  < div className = "xl:col-span-1 bg-white rounded-xl shadow-xl p-6" >
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-gray-800 flex items-center">
                 <span className="w-3 h-3 bg-green-400 rounded-full mr-3"></span>
@@ -1349,11 +1343,11 @@ export default VisitingCardDesigner;
                 </div>
               </div>
             </div>
-          </div>
-        </div>
+          </div >
+        </div >
 
-        {/* Call to Action */}
-        <div className="mt-16 text-center bg-blue-50 rounded-lg p-8">
+  {/* Call to Action */ }
+  < div className = "mt-16 text-center bg-blue-50 rounded-lg p-8" >
           <h3 className="text-2xl font-bold text-gray-900 mb-4">
             Need Professional Printing?
           </h3>
@@ -1368,11 +1362,11 @@ export default VisitingCardDesigner;
               View Pricing
             </button>
           </div>
-        </div>
-      </div>
+        </div >
+      </div >
 
-      {/* Enhanced Styles */}
-      <style>{`
+  {/* Enhanced Styles */ }
+  < style > {`
         @media print {
           body * {
             visibility: hidden;
@@ -1437,8 +1431,8 @@ export default VisitingCardDesigner;
                       linear-gradient(45deg, #667eea, #764ba2) border-box;
           border: 2px solid transparent;
         }
-      `}</style>
-    </div>
+      `}</style >
+    </div >
   );
 };
 
