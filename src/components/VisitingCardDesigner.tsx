@@ -212,7 +212,225 @@ const VisitingCardDesigner: React.FC = () => {
     // Apply template colors when template changes
     React.useEffect(() => {
         applyTemplateToElements(cardData.template);
+        applyTemplateLayout(cardData.template);
     }, [cardData.template]);
+
+    const applyTemplateLayout = (templateId: string) => {
+        let newLayout: Partial<CardElement>[] = [];
+
+        // Card dimensions: 384px (w-96) x 224px (h-56)
+        // Safe area with padding: 336px x 176px (24px padding on each side)
+        
+        switch (templateId) {
+            case 'modern':
+                newLayout = [
+                    { id: 'name', position: { x: 24, y: 24 }, size: { width: 200, height: 24 }, style: { fontSize: 18, fontWeight: 'bold' } },
+                    { id: 'title', position: { x: 24, y: 50 }, size: { width: 180, height: 18 }, style: { fontSize: 14, color: '#007bff' } },
+                    { id: 'company', position: { x: 24, y: 72 }, size: { width: 220, height: 20 }, style: { fontSize: 16, fontWeight: 'bold' } },
+                    { id: 'phone', position: { x: 24, y: 130 }, size: { width: 160, height: 16 }, style: { fontSize: 12 } },
+                    { id: 'email', position: { x: 24, y: 150 }, size: { width: 200, height: 16 }, style: { fontSize: 12 } },
+                    { id: 'website', position: { x: 24, y: 170 }, size: { width: 180, height: 16 }, style: { fontSize: 12 } }
+                ];
+                break;
+            case 'classic':
+                newLayout = [
+                    { id: 'name', position: { x: 92, y: 30 }, size: { width: 200, height: 24 }, style: { fontSize: 18, fontWeight: 'bold', textAlign: 'center' } },
+                    { id: 'title', position: { x: 102, y: 56 }, size: { width: 180, height: 18 }, style: { fontSize: 14, textAlign: 'center' } },
+                    { id: 'company', position: { x: 82, y: 78 }, size: { width: 220, height: 20 }, style: { fontSize: 16, fontWeight: 'bold', textAlign: 'center' } },
+                    { id: 'phone', position: { x: 92, y: 120 }, size: { width: 200, height: 16 }, style: { fontSize: 12, textAlign: 'center' } },
+                    { id: 'email', position: { x: 72, y: 140 }, size: { width: 240, height: 16 }, style: { fontSize: 12, textAlign: 'center' } },
+                    { id: 'website', position: { x: 82, y: 160 }, size: { width: 220, height: 16 }, style: { fontSize: 12, textAlign: 'center' } }
+                ];
+                break;
+            case 'minimal':
+                newLayout = [
+                    { id: 'name', position: { x: 24, y: 60 }, size: { width: 150, height: 28 }, style: { fontSize: 20, fontWeight: 'bold' } },
+                    { id: 'title', position: { x: 24, y: 92 }, size: { width: 120, height: 18 }, style: { fontSize: 14 } },
+                    { id: 'company', position: { x: 24, y: 114 }, size: { width: 140, height: 18 }, style: { fontSize: 14 } },
+                    { id: 'phone', position: { x: 200, y: 60 }, size: { width: 140, height: 16 }, style: { fontSize: 11, textAlign: 'right' } },
+                    { id: 'email', position: { x: 180, y: 80 }, size: { width: 160, height: 16 }, style: { fontSize: 11, textAlign: 'right' } },
+                    { id: 'website', position: { x: 160, y: 100 }, size: { width: 180, height: 16 }, style: { fontSize: 11, textAlign: 'right' } }
+                ];
+                break;
+            case 'elegant':
+                newLayout = [
+                    { id: 'name', position: { x: 92, y: 35 }, size: { width: 200, height: 24 }, style: { fontSize: 18, fontWeight: 'bold', textAlign: 'center' } },
+                    { id: 'title', position: { x: 102, y: 62 }, size: { width: 180, height: 18 }, style: { fontSize: 14, fontStyle: 'italic', textAlign: 'center' } },
+                    { id: 'company', position: { x: 82, y: 84 }, size: { width: 220, height: 20 }, style: { fontSize: 15, textAlign: 'center' } },
+                    { id: 'phone', position: { x: 24, y: 130 }, size: { width: 160, height: 16 }, style: { fontSize: 11 } },
+                    { id: 'email', position: { x: 24, y: 150 }, size: { width: 200, height: 16 }, style: { fontSize: 11 } },
+                    { id: 'website', position: { x: 24, y: 170 }, size: { width: 180, height: 16 }, style: { fontSize: 11 } }
+                ];
+                break;
+            case 'creative':
+                newLayout = [
+                    { id: 'name', position: { x: 30, y: 25 }, size: { width: 180, height: 28 }, style: { fontSize: 19, fontWeight: 'bold' } },
+                    { id: 'title', position: { x: 35, y: 57 }, size: { width: 150, height: 20 }, style: { fontSize: 14 } },
+                    { id: 'company', position: { x: 25, y: 81 }, size: { width: 200, height: 22 }, style: { fontSize: 16, fontWeight: 'bold' } },
+                    { id: 'phone', position: { x: 180, y: 120 }, size: { width: 160, height: 16 }, style: { fontSize: 12 } },
+                    { id: 'email', position: { x: 160, y: 140 }, size: { width: 180, height: 16 }, style: { fontSize: 12 } },
+                    { id: 'website', position: { x: 140, y: 160 }, size: { width: 200, height: 16 }, style: { fontSize: 12 } }
+                ];
+                break;
+            case 'corporate':
+                newLayout = [
+                    { id: 'name', position: { x: 24, y: 25 }, size: { width: 250, height: 26 }, style: { fontSize: 16, fontWeight: 'bold', letterSpacing: '1px' } },
+                    { id: 'title', position: { x: 24, y: 52 }, size: { width: 200, height: 18 }, style: { fontSize: 13, letterSpacing: '0.5px' } },
+                    { id: 'company', position: { x: 24, y: 74 }, size: { width: 220, height: 20 }, style: { fontSize: 14, fontWeight: 'bold', letterSpacing: '0.5px' } },
+                    { id: 'phone', position: { x: 24, y: 135 }, size: { width: 160, height: 16 }, style: { fontSize: 11 } },
+                    { id: 'email', position: { x: 24, y: 155 }, size: { width: 200, height: 16 }, style: { fontSize: 11 } },
+                    { id: 'website', position: { x: 24, y: 175 }, size: { width: 180, height: 16 }, style: { fontSize: 11 } }
+                ];
+            case 'gradient':
+                newLayout = [
+                    { id: 'name', position: { x: 92, y: 30 }, size: { width: 200, height: 26 }, style: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', color: '#fff' } },
+                    { id: 'title', position: { x: 102, y: 58 }, size: { width: 180, height: 18 }, style: { fontSize: 14, textAlign: 'center', color: '#fff' } },
+                    { id: 'company', position: { x: 82, y: 80 }, size: { width: 220, height: 20 }, style: { fontSize: 15, textAlign: 'center', color: '#fff' } },
+                    { id: 'phone', position: { x: 24, y: 140 }, size: { width: 160, height: 16 }, style: { fontSize: 11, color: '#fff' } },
+                    { id: 'email', position: { x: 24, y: 160 }, size: { width: 200, height: 16 }, style: { fontSize: 11, color: '#fff' } },
+                    { id: 'website', position: { x: 24, y: 180 }, size: { width: 180, height: 16 }, style: { fontSize: 11, color: '#fff' } }
+                ];
+                break;
+            case 'dark':
+                newLayout = [
+                    { id: 'name', position: { x: 24, y: 35 }, size: { width: 200, height: 26 }, style: { fontSize: 17, fontWeight: 'bold', color: '#00ff88' } },
+                    { id: 'title', position: { x: 24, y: 63 }, size: { width: 180, height: 18 }, style: { fontSize: 13, color: '#888' } },
+                    { id: 'company', position: { x: 24, y: 84 }, size: { width: 200, height: 20 }, style: { fontSize: 14, color: '#fff' } },
+                    { id: 'phone', position: { x: 200, y: 130 }, size: { width: 140, height: 16 }, style: { fontSize: 11, color: '#00ff88', textAlign: 'right' } },
+                    { id: 'email', position: { x: 160, y: 150 }, size: { width: 180, height: 16 }, style: { fontSize: 11, color: '#00ff88', textAlign: 'right' } },
+                    { id: 'website', position: { x: 140, y: 170 }, size: { width: 200, height: 16 }, style: { fontSize: 11, color: '#00ff88', textAlign: 'right' } }
+                ];
+                break;
+            case 'colorful':
+                newLayout = [
+                    { id: 'name', position: { x: 40, y: 30 }, size: { width: 180, height: 26 }, style: { fontSize: 18, fontWeight: 'bold', color: '#ff6b6b' } },
+                    { id: 'title', position: { x: 45, y: 58 }, size: { width: 150, height: 18 }, style: { fontSize: 14, color: '#4ecdc4' } },
+                    { id: 'company', position: { x: 35, y: 80 }, size: { width: 200, height: 20 }, style: { fontSize: 15, fontWeight: 'bold', color: '#45b7d1' } },
+                    { id: 'phone', position: { x: 180, y: 120 }, size: { width: 160, height: 16 }, style: { fontSize: 12, color: '#f9ca24' } },
+                    { id: 'email', position: { x: 160, y: 140 }, size: { width: 180, height: 16 }, style: { fontSize: 12, color: '#6c5ce7' } },
+                    { id: 'website', position: { x: 140, y: 160 }, size: { width: 200, height: 16 }, style: { fontSize: 12, color: '#a29bfe' } }
+                ];
+                break;
+            case 'professional':
+                newLayout = [
+                    { id: 'name', position: { x: 24, y: 20 }, size: { width: 280, height: 26 }, style: { fontSize: 16, fontWeight: 'bold', letterSpacing: '2px' } },
+                    { id: 'title', position: { x: 24, y: 47 }, size: { width: 220, height: 18 }, style: { fontSize: 12, letterSpacing: '1px' } },
+                    { id: 'company', position: { x: 24, y: 68 }, size: { width: 240, height: 20 }, style: { fontSize: 13, fontWeight: 'bold' } },
+                    { id: 'phone', position: { x: 24, y: 125 }, size: { width: 160, height: 16 }, style: { fontSize: 10 } },
+                    { id: 'email', position: { x: 24, y: 145 }, size: { width: 200, height: 16 }, style: { fontSize: 10 } },
+                    { id: 'website', position: { x: 24, y: 165 }, size: { width: 180, height: 16 }, style: { fontSize: 10 } }
+                ];
+                break;
+            case 'artistic':
+                newLayout = [
+                    { id: 'name', position: { x: 50, y: 25 }, size: { width: 180, height: 28 }, style: { fontSize: 19, fontWeight: 'bold', color: '#e74c3c' } },
+                    { id: 'title', position: { x: 55, y: 55 }, size: { width: 150, height: 18 }, style: { fontSize: 13, color: '#3498db' } },
+                    { id: 'company', position: { x: 45, y: 77 }, size: { width: 200, height: 20 }, style: { fontSize: 15, color: '#9b59b6' } },
+                    { id: 'phone', position: { x: 140, y: 120 }, size: { width: 180, height: 16 }, style: { fontSize: 11 } },
+                    { id: 'email', position: { x: 120, y: 140 }, size: { width: 200, height: 16 }, style: { fontSize: 11 } },
+                    { id: 'website', position: { x: 130, y: 160 }, size: { width: 190, height: 16 }, style: { fontSize: 11 } }
+                ];
+                break;
+            case 'tech':
+                newLayout = [
+                    { id: 'name', position: { x: 24, y: 30 }, size: { width: 200, height: 26 }, style: { fontSize: 17, fontWeight: 'bold', fontFamily: 'Courier New', color: '#00ff88' } },
+                    { id: 'title', position: { x: 24, y: 58 }, size: { width: 180, height: 18 }, style: { fontSize: 13, fontFamily: 'Courier New', color: '#888' } },
+                    { id: 'company', position: { x: 24, y: 80 }, size: { width: 200, height: 20 }, style: { fontSize: 14, fontFamily: 'Courier New', color: '#fff' } },
+                    { id: 'phone', position: { x: 180, y: 125 }, size: { width: 160, height: 16 }, style: { fontSize: 10, fontFamily: 'Courier New', color: '#00ff88' } },
+                    { id: 'email', position: { x: 160, y: 145 }, size: { width: 180, height: 16 }, style: { fontSize: 10, fontFamily: 'Courier New', color: '#00ff88' } },
+                    { id: 'website', position: { x: 140, y: 165 }, size: { width: 200, height: 16 }, style: { fontSize: 10, fontFamily: 'Courier New', color: '#00ff88' } }
+                ];
+                break;
+            case 'luxury':
+                newLayout = [
+                    { id: 'name', position: { x: 92, y: 40 }, size: { width: 200, height: 26 }, style: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', color: '#8b4513' } },
+                    { id: 'title', position: { x: 102, y: 68 }, size: { width: 180, height: 18 }, style: { fontSize: 14, textAlign: 'center', fontStyle: 'italic', color: '#8b4513' } },
+                    { id: 'company', position: { x: 82, y: 90 }, size: { width: 220, height: 20 }, style: { fontSize: 15, textAlign: 'center', color: '#8b4513' } },
+                    { id: 'phone', position: { x: 40, y: 140 }, size: { width: 160, height: 16 }, style: { fontSize: 11, color: '#8b4513' } },
+                    { id: 'email', position: { x: 40, y: 160 }, size: { width: 200, height: 16 }, style: { fontSize: 11, color: '#8b4513' } },
+                    { id: 'website', position: { x: 40, y: 180 }, size: { width: 180, height: 16 }, style: { fontSize: 11, color: '#8b4513' } }
+                ];
+                break;
+            case 'geometric':
+                newLayout = [
+                    { id: 'name', position: { x: 92, y: 35 }, size: { width: 200, height: 26 }, style: { fontSize: 17, fontWeight: 'bold', textAlign: 'center' } },
+                    { id: 'title', position: { x: 102, y: 63 }, size: { width: 180, height: 18 }, style: { fontSize: 13, textAlign: 'center' } },
+                    { id: 'company', position: { x: 82, y: 85 }, size: { width: 220, height: 20 }, style: { fontSize: 14, textAlign: 'center' } },
+                    { id: 'phone', position: { x: 24, y: 135 }, size: { width: 160, height: 16 }, style: { fontSize: 11 } },
+                    { id: 'email', position: { x: 24, y: 155 }, size: { width: 200, height: 16 }, style: { fontSize: 11 } },
+                    { id: 'website', position: { x: 24, y: 175 }, size: { width: 180, height: 16 }, style: { fontSize: 11 } }
+                ];
+                break;
+            case 'nature':
+                newLayout = [
+                    { id: 'name', position: { x: 30, y: 35 }, size: { width: 180, height: 26 }, style: { fontSize: 18, fontWeight: 'bold', color: '#2d5016' } },
+                    { id: 'title', position: { x: 35, y: 63 }, size: { width: 150, height: 18 }, style: { fontSize: 14, color: '#2d5016' } },
+                    { id: 'company', position: { x: 25, y: 85 }, size: { width: 200, height: 20 }, style: { fontSize: 15, color: '#2d5016' } },
+                    { id: 'phone', position: { x: 160, y: 125 }, size: { width: 160, height: 16 }, style: { fontSize: 12, color: '#2d5016' } },
+                    { id: 'email', position: { x: 140, y: 145 }, size: { width: 180, height: 16 }, style: { fontSize: 12, color: '#2d5016' } },
+                    { id: 'website', position: { x: 130, y: 165 }, size: { width: 190, height: 16 }, style: { fontSize: 12, color: '#2d5016' } }
+                ];
+                break;
+            case 'bold':
+                newLayout = [
+                    { id: 'name', position: { x: 24, y: 25 }, size: { width: 250, height: 30 }, style: { fontSize: 20, fontWeight: 'bold', color: '#fff' } },
+                    { id: 'title', position: { x: 24, y: 57 }, size: { width: 200, height: 22 }, style: { fontSize: 15, fontWeight: 'bold', color: '#ffeb3b' } },
+                    { id: 'company', position: { x: 24, y: 82 }, size: { width: 220, height: 24 }, style: { fontSize: 16, fontWeight: 'bold', color: '#fff' } },
+                    { id: 'phone', position: { x: 200, y: 125 }, size: { width: 140, height: 16 }, style: { fontSize: 12, color: '#ffeb3b', textAlign: 'right' } },
+                    { id: 'email', position: { x: 160, y: 145 }, size: { width: 180, height: 16 }, style: { fontSize: 12, color: '#ffeb3b', textAlign: 'right' } },
+                    { id: 'website', position: { x: 140, y: 165 }, size: { width: 200, height: 16 }, style: { fontSize: 12, color: '#ffeb3b', textAlign: 'right' } }
+                ];
+                break;
+            case 'vintage':
+                newLayout = [
+                    { id: 'name', position: { x: 92, y: 40 }, size: { width: 200, height: 26 }, style: { fontSize: 17, fontWeight: 'bold', textAlign: 'center', color: '#8b4513' } },
+                    { id: 'title', position: { x: 102, y: 68 }, size: { width: 180, height: 18 }, style: { fontSize: 13, textAlign: 'center', fontStyle: 'italic', color: '#8b4513' } },
+                    { id: 'company', position: { x: 82, y: 90 }, size: { width: 220, height: 20 }, style: { fontSize: 14, textAlign: 'center', color: '#8b4513' } },
+                    { id: 'phone', position: { x: 40, y: 135 }, size: { width: 160, height: 16 }, style: { fontSize: 11, color: '#8b4513' } },
+                    { id: 'email', position: { x: 40, y: 155 }, size: { width: 200, height: 16 }, style: { fontSize: 11, color: '#8b4513' } },
+                    { id: 'website', position: { x: 40, y: 175 }, size: { width: 180, height: 16 }, style: { fontSize: 11, color: '#8b4513' } }
+                ];
+                break;
+            case 'futuristic':
+                newLayout = [
+                    { id: 'name', position: { x: 24, y: 25 }, size: { width: 220, height: 28 }, style: { fontSize: 18, fontWeight: 'bold', color: '#00ffff' } },
+                    { id: 'title', position: { x: 29, y: 55 }, size: { width: 180, height: 20 }, style: { fontSize: 14, color: '#ff00ff' } },
+                    { id: 'company', position: { x: 20, y: 78 }, size: { width: 240, height: 22 }, style: { fontSize: 15, color: '#ffff00' } },
+                    { id: 'phone', position: { x: 180, y: 125 }, size: { width: 140, height: 16 }, style: { fontSize: 11, color: '#00ffff' } },
+                    { id: 'email', position: { x: 160, y: 145 }, size: { width: 160, height: 16 }, style: { fontSize: 11, color: '#ff00ff' } },
+                    { id: 'website', position: { x: 150, y: 165 }, size: { width: 170, height: 16 }, style: { fontSize: 11, color: '#ffff00' } }
+                ];
+                break;
+            default:
+                // Keep current positions for other templates
+                return;
+        }
+
+        // Apply the new layout with bounds checking and spacing validation
+        setCardElements(prev => prev.map(element => {
+            const layoutUpdate = newLayout.find(layout => layout.id === element.id);
+            if (layoutUpdate) {
+                // Ensure position and size are within card bounds (384x224)
+                const newElement = {
+                    ...element,
+                    position: layoutUpdate.position || element.position,
+                    size: layoutUpdate.size || element.size,
+                    style: { ...element.style, ...layoutUpdate.style }
+                };
+                
+                // Constrain to card bounds with margin
+                const margin = 4; // 4px margin from edges
+                const maxX = 384 - newElement.size.width - margin;
+                const maxY = 224 - newElement.size.height - margin;
+                
+                newElement.position.x = Math.max(margin, Math.min(newElement.position.x, maxX));
+                newElement.position.y = Math.max(margin, Math.min(newElement.position.y, maxY));
+                
+                return newElement;
+            }
+            return element;
+        }));
+    };
 
     const constrainElementPosition = (element: CardElement, newPosition: { x: number; y: number }) => {
         // Use card area instead of content area for constraints
