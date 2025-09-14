@@ -1,19 +1,18 @@
 // src/components/HeroBanner.tsx
 import React from "react";
-import LazyVideo from "./LazyVideo";
 import video from "../assets/video/banner-video (online-video-cutter.com).mp4.mp4";
 
 const HeroBanner = () => {
   return (
     <section className="relative w-full h-screen overflow-hidden">
       {/* Background video */}
-      <LazyVideo
+      <video
         src={video}
         className="absolute top-0 left-0 w-full h-full object-cover z-0"
         autoPlay
         muted
         loop
-        priority={true}
+        playsInline
       />
 
       {/* Overlay */}

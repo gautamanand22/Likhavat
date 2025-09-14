@@ -6,6 +6,7 @@ export default defineConfig({
   css: { postcss: './postcss.config.js' },
   // Set base to '/' for custom domain deployment
   base: '/',
+  publicDir: 'public',
   build: {
     outDir: 'dist',
     assetsDir: 'assets',

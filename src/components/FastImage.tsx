@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { getQuickOptimizedUrl, getQuickPlaceholder, getQuickResponsiveSrcSet, QuickCDNTransform } from '../services/quickCDN';
 
 interface FastImageProps {
     src: string;
@@ -8,8 +7,6 @@ interface FastImageProps {
     width?: number;
     height?: number;
     priority?: boolean;
-    transforms?: QuickCDNTransform;
-    responsive?: boolean;
 }
 
 const FastImage: React.FC<FastImageProps> = ({
@@ -18,19 +15,11 @@ const FastImage: React.FC<FastImageProps> = ({
     className = '',
     width,
     height,
-    priority = false,
-    transforms = {},
-    responsive = true
+    priority = false
 }) => {
     const [isLoaded, setIsLoaded] = useState(false);
     const [isInView, setIsInView] = useState(priority);
-    const [hasError, setHasError] = useState(false);
     const imgRef = useRef<HTMLImageElement>(null);
-
-    // Get optimized URLs
-    const optimizedSrc = getQuickOptimizedUrl(src, { width, height, quality: 85, format: 'webp', ...transforms });
-    const placeholder = getQuickPlaceholder(src);
-    const srcSet = responsive ? getQuickResponsiveSrcSet(src) : '';
 
     useEffect(() => {
         if (priority) return;
@@ -42,7 +31,7 @@ const FastImage: React.FC<FastImageProps> = ({
                     observer.disconnect();
                 }
             },
-            { threshold: 0.05, rootMargin: '300px' }
+            { threshold: 0.1, rootMargin: '100px' }
         );
 
         if (imgRef.current) {
@@ -56,36 +45,26 @@ const FastImage: React.FC<FastImageProps> = ({
         setIsLoaded(true);
     };
 
-    const handleError = () => {
-        setHasError(true);
-        // Fallback to original if optimized version fails
-        if (imgRef.current && !hasError) {
-            imgRef.current.src = src;
-        }
-    };
-
-    const shouldLoad = isInView || priority;
-    const displaySrc = shouldLoad ? (hasError ? src : optimizedSrc) : placeholder;
+    if (!isInView) {
+        return (
+            <div
+                ref={imgRef}
+                className={`${className} bg-gray-200 animate-pulse`}
+                style={{ width, height }}
+            />
+        );
+    }
 
     return (
-        <div className="relative overflow-hidden">
-            <img
-                ref={imgRef}
-                src={displaySrc}
-                srcSet={shouldLoad && srcSet ? srcSet : undefined}
-                sizes={responsive ? "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" : undefined}
-                alt={alt}
-                className={`${className} transition-all duration-700 ease-out ${
-                    isLoaded ? 'opacity-100 blur-0 scale-100' : 'opacity-60 blur-sm scale-105'
-                }`}
-                width={width}
-                height={height}
-                onLoad={handleLoad}
-                onError={handleError}
-                loading={priority ? 'eager' : 'lazy'}
-                decoding="async"
-            />
-        </div>
+        <img
+            src={src}
+            alt={alt}
+            className={`${className} transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-70'}`}
+            width={width}
+            height={height}
+            onLoad={handleLoad}
+            loading={priority ? 'eager' : 'lazy'}
+        />
     );
 };
 

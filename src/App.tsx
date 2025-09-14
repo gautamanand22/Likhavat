@@ -1,4 +1,4 @@
-import { HashRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Header from "./components/Header";
 import HeroBanner from "./components/HeroBanner";
@@ -11,10 +11,12 @@ import NotFound from "./components/NotFound"; // If you want a 404 page
 import ProcessSection from "./components/ProcessSection";
 import Footer from "./components/Footer";
 import Layout from "./components/Layout";
+import VisitingCardCTA from "./components/VisitingCardCTA";
 import AboutUsPage from "./pages/About";
 import Contact from "./pages/Contact";
 import Portfolio from "./pages/Portfolio";
 import CareersPage from "./pages/Careers";
+import VisitingCardPage from "./pages/VisitingCard";
 
 function HomePage() {
   return (
@@ -25,6 +27,7 @@ function HomePage() {
       <CatalogSection />
       <StatsSection />
       <ProcessSection />
+      <VisitingCardCTA />
       <Footer />
     </>
   );
@@ -42,6 +45,7 @@ function App() {
         <Route path="/contact" element={<Layout><Contact /></Layout>} />
         <Route path="/portfolio" element={<Layout><Portfolio /></Layout>} />
         <Route path='/careers' element={<Layout><CareersPage /></Layout>} />
+        <Route path='/visiting-card-designer' element={<Layout><VisitingCardPage /></Layout>} />
       </Routes>
     </Router>
   );
