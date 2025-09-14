@@ -12,17 +12,18 @@ interface CardData {
     textColor: string;
     accentColor: string;
     template: 'modern' | 'classic' | 'minimal' | 'elegant' | 'creative' | 'corporate' | 'gradient' | 'dark' | 'colorful' | 'professional' | 'artistic' | 'tech' | 'luxury' | 'geometric' | 'nature' | 'bold' | 'vintage' | 'futuristic';
-    cornerStyle: 'normal' | 'rounded' | 'sharp';
+    cornerStyle: 'normal' | 'rounded' | 'sharp' | 'circular';
 }
 
 interface CardElement {
     id: string;
-    type: 'text' | 'qr' | 'logo' | 'icon' | 'shape';
+    type: 'text' | 'qr' | 'logo' | 'icon' | 'shape' | 'image';
     content: string;
     position: { x: number; y: number };
     size: { width: number; height: number };
     style: any;
     side: 'front' | 'back';
+    imageData?: string; // For storing base64 image data
 }
 
 const VisitingCardDesigner: React.FC = () => {
@@ -150,13 +151,41 @@ const VisitingCardDesigner: React.FC = () => {
         setCardData(prev => ({ ...prev, [field]: value }));
     };
 
+    const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const imageData = e.target?.result as string;
+                const newElement: CardElement = {
+                    id: `image_${Date.now()}`,
+                    type: 'image',
+                    content: file.name,
+                    position: { x: 44, y: 44 },
+                    size: { width: 80, height: 60 },
+                    style: { borderRadius: '4px' },
+                    side: currentView,
+                    imageData: imageData
+                };
+                setCardElements(prev => [...prev, newElement]);
+                setSelectedElement(newElement);
+            };
+            reader.readAsDataURL(file);
+        }
+        // Reset the input
+        event.target.value = '';
+    };
+
     const addElement = (type: CardElement['type'], content?: string, customStyle?: Partial<React.CSSProperties>) => {
         const newElement: CardElement = {
             id: `${type}_${Date.now()}`,
             type,
-            content: content || (type === 'text' ? 'New Text' : type === 'qr' ? 'QR Code' : type),
+            content: content || (type === 'text' ? 'New Text' : type === 'qr' ? 'QR Code' : type === 'image' ? 'Image' : type),
             position: { x: 44, y: 44 }, // Default position with visual padding (24px + 20px margin)
-            size: { width: type === 'qr' ? 60 : 100, height: type === 'qr' ? 60 : 30 },
+            size: { 
+                width: type === 'qr' ? 60 : type === 'image' ? 80 : 100, 
+                height: type === 'qr' ? 60 : type === 'image' ? 60 : 30 
+            },
             style: { color: cardData.textColor, fontSize: 14, ...customStyle },
             side: currentView
         };
@@ -595,6 +624,22 @@ const VisitingCardDesigner: React.FC = () => {
                 );
             case 'qr':
                 return renderQRCode();
+            case 'image':
+                return element.imageData ? (
+                    <img
+                        src={element.imageData}
+                        alt={element.content}
+                        className="w-full h-full object-cover"
+                        style={{
+                            borderRadius: element.style.borderRadius || '4px',
+                            filter: element.style.filter || 'none'
+                        }}
+                    />
+                ) : (
+                    <div className="w-full h-full bg-gray-200 border-2 border-dashed border-gray-400 flex items-center justify-center text-gray-500 text-xs">
+                        📷 Image
+                    </div>
+                );
             default:
                 return <div>{element.content}</div>;
         }
@@ -604,7 +649,7 @@ const VisitingCardDesigner: React.FC = () => {
         const baseStyle = {
             backgroundColor: cardData.bgColor,
             color: cardData.textColor,
-            borderRadius: cardData.cornerStyle === 'rounded' ? '12px' : cardData.cornerStyle === 'sharp' ? '0px' : '4px',
+            borderRadius: cardData.cornerStyle === 'rounded' ? '12px' : cardData.cornerStyle === 'sharp' ? '0px' : cardData.cornerStyle === 'circular' ? '50px' : '4px',
         };
 
         switch (cardData.template) {
@@ -1122,44 +1167,53 @@ const VisitingCardDesigner: React.FC = () => {
                             {/* Quick Add Default Elements */}
                             <div className="mb-4">
                                 <h4 className="text-xs font-medium text-gray-600 mb-2">Quick Add</h4>
-                                <div className="grid grid-cols-2 gap-2 text-xs">
-                                    <button
-                                        onClick={() => addElement('text', 'Name', { fontSize: 18, fontWeight: 'bold' })}
-                                        className="p-2 bg-gray-100 hover:bg-gray-200 rounded border text-gray-700"
-                                    >
-                                        + Name
-                                    </button>
-                                    <button
-                                        onClick={() => addElement('text', 'Job Title', { fontSize: 14, color: '#666' })}
-                                        className="p-2 bg-gray-100 hover:bg-gray-200 rounded border text-gray-700"
-                                    >
-                                        + Title
-                                    </button>
-                                    <button
-                                        onClick={() => addElement('text', 'Company Name', { fontSize: 16, fontWeight: 'bold', color: '#007bff' })}
-                                        className="p-2 bg-gray-100 hover:bg-gray-200 rounded border text-gray-700"
-                                    >
-                                        + Company
-                                    </button>
-                                    <button
-                                        onClick={() => addElement('text', '📞 Phone', { fontSize: 12 })}
-                                        className="p-2 bg-gray-100 hover:bg-gray-200 rounded border text-gray-700"
-                                    >
-                                        + Phone
-                                    </button>
-                                    <button
-                                        onClick={() => addElement('text', '✉️ Email', { fontSize: 12 })}
-                                        className="p-2 bg-gray-100 hover:bg-gray-200 rounded border text-gray-700"
-                                    >
-                                        + Email
-                                    </button>
-                                    <button
-                                        onClick={() => addElement('text', '🌐 Website', { fontSize: 12 })}
-                                        className="p-2 bg-gray-100 hover:bg-gray-200 rounded border text-gray-700"
-                                    >
-                                        + Website
-                                    </button>
-                                </div>
+                                <select
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        if (value === 'name') {
+                                            addElement('text', 'Name', { fontSize: 18, fontWeight: 'bold' });
+                                        } else if (value === 'title') {
+                                            addElement('text', 'Job Title', { fontSize: 14, color: '#666' });
+                                        } else if (value === 'company') {
+                                            addElement('text', 'Company Name', { fontSize: 16, fontWeight: 'bold', color: '#007bff' });
+                                        } else if (value === 'phone') {
+                                            addElement('text', '📞 Phone', { fontSize: 12 });
+                                        } else if (value === 'email') {
+                                            addElement('text', '✉️ Email', { fontSize: 12 });
+                                        } else if (value === 'website') {
+                                            addElement('text', '🌐 Website', { fontSize: 12 });
+                                        }
+                                        e.target.value = '';
+                                    }}
+                                    className="w-full p-2 border border-gray-300 rounded text-xs"
+                                    defaultValue=""
+                                >
+                                    <option value="" disabled>Select quick element...</option>
+                                    <option value="name">+ Name</option>
+                                    <option value="title">+ Title</option>
+                                    <option value="company">+ Company</option>
+                                    <option value="phone">+ Phone</option>
+                                    <option value="email">+ Email</option>
+                                    <option value="website">+ Website</option>
+                                </select>
+                            </div>
+
+                            {/* Corner Style */}
+                            <div className="mb-4">
+                                <h4 className="text-xs font-medium text-gray-600 mb-2">Corner Style</h4>
+                                <select
+                                    value={cardData.cornerStyle}
+                                    onChange={(e) => {
+                                        const value = e.target.value as 'normal' | 'rounded' | 'sharp' | 'circular';
+                                        setCardData(prev => ({ ...prev, cornerStyle: value }));
+                                    }}
+                                    className="w-full p-2 border border-gray-300 rounded text-xs"
+                                >
+                                    <option value="normal">Normal</option>
+                                    <option value="rounded">Rounded</option>
+                                    <option value="sharp">Sharp</option>
+                                    <option value="circular">Circular</option>
+                                </select>
                             </div>
 
                             {/* Current Elements List */}
@@ -1177,10 +1231,10 @@ const VisitingCardDesigner: React.FC = () => {
                                         <div className="flex justify-between items-center">
                                             <div className="flex items-center space-x-2">
                                                 <span className="font-medium">
-                                                    {element.type === 'qr' ? '📱' : '📝'}
+                                                    {element.type === 'qr' ? '📱' : element.type === 'image' ? '�️' : '�📝'}
                                                 </span>
                                                 <span className="truncate max-w-24">
-                                                    {element.type === 'qr' ? 'QR Code' : element.content}
+                                                    {element.type === 'qr' ? 'QR Code' : element.type === 'image' ? 'Image' : element.content}
                                                 </span>
                                             </div>
                                             <button
@@ -1240,18 +1294,54 @@ const VisitingCardDesigner: React.FC = () => {
                         {/* Add Elements */}
                         <div className="mb-6">
                             <h3 className="text-sm font-semibold text-gray-800 mb-3">Add Elements</h3>
-                            <div className="grid grid-cols-2 gap-2">
+                            <div className="grid grid-cols-3 gap-2">
                                 <button
                                     onClick={() => addElement('text')}
-                                    className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors text-sm"
+                                    className="p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex flex-col items-center text-sm font-medium shadow-sm"
                                 >
-                                    📝 Text
+                                    <span className="text-lg mb-1">📝</span>
+                                    Text
                                 </button>
                                 <button
                                     onClick={() => addElement('qr')}
-                                    className="p-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors text-sm"
+                                    className="p-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex flex-col items-center text-sm font-medium shadow-sm"
                                 >
-                                    📱 QR Code
+                                    <span className="text-lg mb-1">📱</span>
+                                    QR Code
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        const fileInput = document.createElement('input');
+                                        fileInput.type = 'file';
+                                        fileInput.accept = 'image/*';
+                                        fileInput.onchange = (event) => {
+                                            const file = (event.target as HTMLInputElement).files?.[0];
+                                            if (file) {
+                                                const reader = new FileReader();
+                                                reader.onload = (e) => {
+                                                    const imageData = e.target?.result as string;
+                                                    const newElement: CardElement = {
+                                                        id: `image_${Date.now()}`,
+                                                        type: 'image',
+                                                        content: file.name,
+                                                        position: { x: 44, y: 44 },
+                                                        size: { width: 80, height: 60 },
+                                                        style: { borderRadius: '4px' },
+                                                        side: currentView,
+                                                        imageData: imageData
+                                                    };
+                                                    setCardElements(prev => [...prev, newElement]);
+                                                    setSelectedElement(newElement);
+                                                };
+                                                reader.readAsDataURL(file);
+                                            }
+                                        };
+                                        fileInput.click();
+                                    }}
+                                    className="p-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors flex flex-col items-center text-sm font-medium shadow-sm"
+                                >
+                                    <span className="text-lg mb-1">�️</span>
+                                    Image
                                 </button>
                             </div>
                         </div>
@@ -1261,7 +1351,7 @@ const VisitingCardDesigner: React.FC = () => {
                             <div className="border border-blue-200 rounded-lg p-3 bg-blue-50">
                                 <div className="flex justify-between items-center mb-3">
                                     <h4 className="text-sm font-semibold text-blue-800">
-                                        ✏️ Editing: {selectedElement.type === 'qr' ? 'QR Code' : selectedElement.content.substring(0, 20) + (selectedElement.content.length > 20 ? '...' : '')}
+                                        ✏️ Editing: {selectedElement.type === 'qr' ? 'QR Code' : selectedElement.type === 'image' ? 'Image' : selectedElement.content.substring(0, 20) + (selectedElement.content.length > 20 ? '...' : '')}
                                     </h4>
                                     <div className="flex space-x-2">
                                         <button
@@ -1433,6 +1523,85 @@ const VisitingCardDesigner: React.FC = () => {
                                     </div>
                                 )}
 
+                                {selectedElement.type === 'image' && (
+                                    <div className="space-y-3">
+                                        <div>
+                                            <label className="block text-xs text-gray-600 mb-1">Image</label>
+                                            {selectedElement.imageData ? (
+                                                <div className="space-y-2">
+                                                    <img 
+                                                        src={selectedElement.imageData} 
+                                                        alt="Preview" 
+                                                        className="w-full h-20 object-cover rounded border border-gray-300"
+                                                    />
+                                                    <label className="block w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors text-sm cursor-pointer text-center">
+                                                        🔄 Replace Image
+                                                        <input
+                                                            type="file"
+                                                            accept="image/*"
+                                                            onChange={(e) => {
+                                                                const file = e.target.files?.[0];
+                                                                if (file) {
+                                                                    const reader = new FileReader();
+                                                                    reader.onload = (event) => {
+                                                                        updateElement(selectedElement.id, { 
+                                                                            imageData: event.target?.result as string,
+                                                                            content: file.name 
+                                                                        });
+                                                                    };
+                                                                    reader.readAsDataURL(file);
+                                                                }
+                                                                e.target.value = '';
+                                                            }}
+                                                            className="hidden"
+                                                        />
+                                                    </label>
+                                                </div>
+                                            ) : (
+                                                <label className="block w-full p-4 border-2 border-dashed border-gray-300 rounded text-center cursor-pointer hover:border-blue-400">
+                                                    📷 Click to upload image
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        onChange={(e) => {
+                                                            const file = e.target.files?.[0];
+                                                            if (file) {
+                                                                const reader = new FileReader();
+                                                                reader.onload = (event) => {
+                                                                    updateElement(selectedElement.id, { 
+                                                                        imageData: event.target?.result as string,
+                                                                        content: file.name 
+                                                                    });
+                                                                };
+                                                                reader.readAsDataURL(file);
+                                                            }
+                                                            e.target.value = '';
+                                                        }}
+                                                        className="hidden"
+                                                    />
+                                                </label>
+                                            )}
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs text-gray-600 mb-1">Border Radius</label>
+                                            <input
+                                                type="range"
+                                                min="0"
+                                                max="50"
+                                                value={parseInt(selectedElement.style.borderRadius) || 4}
+                                                onChange={(e) => updateElement(selectedElement.id, { 
+                                                    style: { 
+                                                        ...selectedElement.style, 
+                                                        borderRadius: `${e.target.value}px` 
+                                                    } 
+                                                })}
+                                                className="w-full"
+                                            />
+                                            <span className="text-xs text-gray-500">{parseInt(selectedElement.style.borderRadius) || 4}px</span>
+                                        </div>
+                                    </div>
+                                )}
+
                                 {/* Common positioning controls */}
                                 <div className="mt-3 pt-3 border-t border-gray-200">
                                     <div className="text-xs text-gray-600 mb-2">Position & Size</div>
@@ -1466,7 +1635,7 @@ const VisitingCardDesigner: React.FC = () => {
                                     </div>
                                     
                                     {/* Manual Size Controls for All Elements */}
-                                    {selectedElement.type !== 'qr' && (
+                                    {selectedElement.type !== 'qr' && selectedElement.type !== 'image' && (
                                         <div className="grid grid-cols-2 gap-2 text-xs mt-2">
                                             <div>
                                                 <label className="block text-gray-500 mb-1">Width (px)</label>
