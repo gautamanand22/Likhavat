@@ -55,7 +55,7 @@ const VisitingCardDesigner: React.FC = () => {
             id: 'name',
             type: 'text',
             content: 'John Doe',
-            position: { x: 0, y: 0 },
+            position: { x: 24, y: 24 },
             size: { width: 200, height: 24 },
             style: { fontSize: 18, fontWeight: 'bold', color: '#333333' },
             side: 'front'
@@ -64,7 +64,7 @@ const VisitingCardDesigner: React.FC = () => {
             id: 'title',
             type: 'text',
             content: 'Senior Manager',
-            position: { x: 0, y: 28 },
+            position: { x: 24, y: 52 },
             size: { width: 180, height: 20 },
             style: { fontSize: 14, color: '#666666' },
             side: 'front'
@@ -73,7 +73,7 @@ const VisitingCardDesigner: React.FC = () => {
             id: 'company',
             type: 'text',
             content: 'Your Company Name',
-            position: { x: 0, y: 52 },
+            position: { x: 24, y: 76 },
             size: { width: 220, height: 22 },
             style: { fontSize: 16, fontWeight: 'bold', color: '#007bff' },
             side: 'front'
@@ -82,7 +82,7 @@ const VisitingCardDesigner: React.FC = () => {
             id: 'phone',
             type: 'text',
             content: '📞 +91 98765 43210',
-            position: { x: 0, y: 110 },
+            position: { x: 24, y: 134 },
             size: { width: 200, height: 18 },
             style: { fontSize: 12, color: '#333333' },
             side: 'front'
@@ -91,7 +91,7 @@ const VisitingCardDesigner: React.FC = () => {
             id: 'email',
             type: 'text',
             content: '✉️ john.doe@company.com',
-            position: { x: 0, y: 132 },
+            position: { x: 24, y: 156 },
             size: { width: 250, height: 18 },
             style: { fontSize: 12, color: '#333333' },
             side: 'front'
@@ -100,7 +100,7 @@ const VisitingCardDesigner: React.FC = () => {
             id: 'website',
             type: 'text',
             content: '🌐 www.yourcompany.com',
-            position: { x: 0, y: 154 },
+            position: { x: 24, y: 178 },
             size: { width: 220, height: 18 },
             style: { fontSize: 12, color: '#333333' },
             side: 'front'
@@ -109,7 +109,7 @@ const VisitingCardDesigner: React.FC = () => {
             id: 'company-back',
             type: 'text',
             content: 'Your Company Name',
-            position: { x: 30, y: 40 },
+            position: { x: 54, y: 64 },
             size: { width: 250, height: 24 },
             style: { fontSize: 18, fontWeight: 'bold', color: '#333333' },
             side: 'back'
@@ -118,7 +118,7 @@ const VisitingCardDesigner: React.FC = () => {
             id: 'address',
             type: 'text',
             content: '123 Business Street, City - 400001',
-            position: { x: 30, y: 100 },
+            position: { x: 54, y: 124 },
             size: { width: 270, height: 40 },
             style: { fontSize: 12, color: '#666666' },
             side: 'back'
@@ -155,7 +155,7 @@ const VisitingCardDesigner: React.FC = () => {
             id: `${type}_${Date.now()}`,
             type,
             content: content || (type === 'text' ? 'New Text' : type === 'qr' ? 'QR Code' : type),
-            position: { x: 20, y: 20 }, // Safe position within content area
+            position: { x: 44, y: 44 }, // Default position with visual padding (24px + 20px margin)
             size: { width: type === 'qr' ? 60 : 100, height: type === 'qr' ? 60 : 30 },
             style: { color: cardData.textColor, fontSize: 14, ...customStyle },
             side: currentView
@@ -214,10 +214,42 @@ const VisitingCardDesigner: React.FC = () => {
         applyTemplateToElements(cardData.template);
     }, [cardData.template]);
 
+    const constrainElementPosition = (element: CardElement, newPosition: { x: number; y: number }) => {
+        // Use card area instead of content area for constraints
+        const cardRect = cardRef.current?.getBoundingClientRect();
+        if (!cardRect) {
+            // Fallback: standard business card dimensions (384px x 224px for w-96 h-56)
+            return {
+                x: Math.max(0, Math.min(newPosition.x, 384 - element.size.width)),
+                y: Math.max(0, Math.min(newPosition.y, 224 - element.size.height))
+            };
+        }
+        
+        // Constraint against full card area (no padding since we removed p-6)
+        const maxX = cardRect.width - element.size.width;
+        const maxY = cardRect.height - element.size.height;
+        
+        return {
+            x: Math.max(0, Math.min(newPosition.x, maxX)),
+            y: Math.max(0, Math.min(newPosition.y, maxY))
+        };
+    };
+
     const updateElement = (id: string, updates: Partial<CardElement>) => {
-        setCardElements(prev => prev.map(el => el.id === id ? { ...el, ...updates } : el));
+        const element = cardElements.find(el => el.id === id);
+        if (!element) return;
+
+        // Create updated element with new properties
+        const updatedElement = { ...element, ...updates };
+
+        // Only apply constraints for manual position updates, not during dragging
+        if (updates.position && !isDragging) {
+            updatedElement.position = constrainElementPosition(updatedElement, updatedElement.position);
+        }
+        
+        setCardElements(prev => prev.map(el => el.id === id ? updatedElement : el));
         if (selectedElement?.id === id) {
-            setSelectedElement(prev => prev ? { ...prev, ...updates } : null);
+            setSelectedElement(updatedElement);
         }
     };
 
@@ -236,13 +268,17 @@ const VisitingCardDesigner: React.FC = () => {
         setMouseDownTime(Date.now());
         setDragStartPos({ x: e.clientX, y: e.clientY });
 
-        // Calculate offset relative to element position
+        // Calculate offset relative to element position within the full card area
         const cardRect = cardRef.current?.getBoundingClientRect();
 
         if (cardRect) {
+            // Use full card coordinates (no padding since we removed p-6)
+            const cardX = e.clientX - cardRect.left;
+            const cardY = e.clientY - cardRect.top;
+            
             setDragOffset({
-                x: e.clientX - cardRect.left - element.position.x,
-                y: e.clientY - cardRect.top - element.position.y
+                x: cardX - element.position.x,
+                y: cardY - element.position.y
             });
         }
     };
@@ -262,16 +298,17 @@ const VisitingCardDesigner: React.FC = () => {
         if (!isDragging) return;
 
         const cardRect = cardRef.current.getBoundingClientRect();
-        const newX = e.clientX - cardRect.left - dragOffset.x;
-        const newY = e.clientY - cardRect.top - dragOffset.y;
+        
+        // Calculate position relative to full card area
+        const cardX = e.clientX - cardRect.left;
+        const cardY = e.clientY - cardRect.top;
+        
+        const newX = cardX - dragOffset.x;
+        const newY = cardY - dragOffset.y;
 
-        // Keep element within card bounds (account for 24px padding on all sides)
-        const cardPadding = 24; // p-6 = 24px
-        const maxX = 384 - (cardPadding * 2) - selectedElement.size.width; // Available width minus element width
-        const maxY = 224 - (cardPadding * 2) - selectedElement.size.height; // Available height minus element height
-
-        const constrainedX = Math.max(0, Math.min(newX, maxX));
-        const constrainedY = Math.max(0, Math.min(newY, maxY));
+        // Simple constraint: just ensure the element doesn't go negative or beyond card bounds
+        const constrainedX = Math.max(0, Math.min(newX, cardRect.width - selectedElement.size.width));
+        const constrainedY = Math.max(0, Math.min(newY, cardRect.height - selectedElement.size.height));
 
         updateElement(selectedElement.id, {
             position: { x: constrainedX, y: constrainedY }
@@ -1047,17 +1084,51 @@ const VisitingCardDesigner: React.FC = () => {
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-xs text-gray-600 mb-1">Size</label>
+                                                <label className="block text-xs text-gray-600 mb-1">Font Size</label>
                                                 <input
                                                     type="range"
                                                     min="8"
-                                                    max="24"
+                                                    max="32"
                                                     value={selectedElement.style.fontSize || 16}
                                                     onChange={(e) => updateElement(selectedElement.id, { style: { ...selectedElement.style, fontSize: parseInt(e.target.value) } })}
                                                     className="w-full"
                                                 />
+                                                <span className="text-xs text-gray-500">{selectedElement.style.fontSize || 16}px</span>
                                             </div>
                                         </div>
+                                        
+                                        {/* Element Size Controls */}
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <div>
+                                                <label className="block text-xs text-gray-600 mb-1">Width</label>
+                                                <input
+                                                    type="range"
+                                                    min="50"
+                                                    max="300"
+                                                    value={selectedElement.size.width}
+                                                    onChange={(e) => updateElement(selectedElement.id, {
+                                                        size: { ...selectedElement.size, width: parseInt(e.target.value) }
+                                                    })}
+                                                    className="w-full"
+                                                />
+                                                <span className="text-xs text-gray-500">{selectedElement.size.width}px</span>
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs text-gray-600 mb-1">Height</label>
+                                                <input
+                                                    type="range"
+                                                    min="10"
+                                                    max="100"
+                                                    value={selectedElement.size.height}
+                                                    onChange={(e) => updateElement(selectedElement.id, {
+                                                        size: { ...selectedElement.size, height: parseInt(e.target.value) }
+                                                    })}
+                                                    className="w-full"
+                                                />
+                                                <span className="text-xs text-gray-500">{selectedElement.size.height}px</span>
+                                            </div>
+                                        </div>
+
                                         <div className="grid grid-cols-3 gap-1">
                                             <button
                                                 onClick={() => updateElement(selectedElement.id, { style: { ...selectedElement.style, fontWeight: selectedElement.style.fontWeight === 'bold' ? 'normal' : 'bold' } })}
@@ -1095,22 +1166,21 @@ const VisitingCardDesigner: React.FC = () => {
                                         </div>
                                         <div className="grid grid-cols-2 gap-2">
                                             <div>
-                                                <label className="block text-xs text-gray-600 mb-1">Width</label>
+                                                <label className="block text-xs text-gray-600 mb-1">Size</label>
                                                 <input
                                                     type="range"
                                                     min="40"
-                                                    max="120"
+                                                    max="150"
                                                     value={selectedElement.size.width}
                                                     onChange={(e) => updateElement(selectedElement.id, {
                                                         size: {
-                                                            ...selectedElement.size,
                                                             width: parseInt(e.target.value),
                                                             height: parseInt(e.target.value) // Keep QR code square
                                                         }
                                                     })}
                                                     className="w-full"
                                                 />
-                                                <span className="text-xs text-gray-500">{selectedElement.size.width}px</span>
+                                                <span className="text-xs text-gray-500">{selectedElement.size.width}×{selectedElement.size.height}px</span>
                                             </div>
                                             <div>
                                                 <label className="block text-xs text-gray-600 mb-1">Position</label>
@@ -1118,6 +1188,28 @@ const VisitingCardDesigner: React.FC = () => {
                                                     X: {Math.round(selectedElement.position.x)}px<br />
                                                     Y: {Math.round(selectedElement.position.y)}px
                                                 </div>
+                                            </div>
+                                        </div>
+                                        
+                                        {/* Manual Size Input for QR */}
+                                        <div className="border-t pt-2">
+                                            <label className="block text-xs text-gray-600 mb-1">Manual Size</label>
+                                            <div className="flex space-x-2">
+                                                <input
+                                                    type="number"
+                                                    min="40"
+                                                    max="150"
+                                                    value={selectedElement.size.width}
+                                                    onChange={(e) => {
+                                                        const newSize = parseInt(e.target.value) || 60;
+                                                        updateElement(selectedElement.id, {
+                                                            size: { width: newSize, height: newSize }
+                                                        });
+                                                    }}
+                                                    className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded"
+                                                    placeholder="Size"
+                                                />
+                                                <span className="text-xs text-gray-500 self-center">px</span>
                                             </div>
                                         </div>
                                     </div>
@@ -1132,7 +1224,7 @@ const VisitingCardDesigner: React.FC = () => {
                                             <input
                                                 type="number"
                                                 min="0"
-                                                max="384"
+                                                max="336"
                                                 value={Math.round(selectedElement.position.x)}
                                                 onChange={(e) => updateElement(selectedElement.id, {
                                                     position: { ...selectedElement.position, x: parseInt(e.target.value) || 0 }
@@ -1145,7 +1237,7 @@ const VisitingCardDesigner: React.FC = () => {
                                             <input
                                                 type="number"
                                                 min="0"
-                                                max="224"
+                                                max="176"
                                                 value={Math.round(selectedElement.position.y)}
                                                 onChange={(e) => updateElement(selectedElement.id, {
                                                     position: { ...selectedElement.position, y: parseInt(e.target.value) || 0 }
@@ -1154,6 +1246,38 @@ const VisitingCardDesigner: React.FC = () => {
                                             />
                                         </div>
                                     </div>
+                                    
+                                    {/* Manual Size Controls for All Elements */}
+                                    {selectedElement.type !== 'qr' && (
+                                        <div className="grid grid-cols-2 gap-2 text-xs mt-2">
+                                            <div>
+                                                <label className="block text-gray-500 mb-1">Width (px)</label>
+                                                <input
+                                                    type="number"
+                                                    min="20"
+                                                    max="300"
+                                                    value={selectedElement.size.width}
+                                                    onChange={(e) => updateElement(selectedElement.id, {
+                                                        size: { ...selectedElement.size, width: parseInt(e.target.value) || 100 }
+                                                    })}
+                                                    className="w-full px-1 py-1 border border-gray-300 rounded text-xs"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-gray-500 mb-1">Height (px)</label>
+                                                <input
+                                                    type="number"
+                                                    min="10"
+                                                    max="100"
+                                                    value={selectedElement.size.height}
+                                                    onChange={(e) => updateElement(selectedElement.id, {
+                                                        size: { ...selectedElement.size, height: parseInt(e.target.value) || 30 }
+                                                    })}
+                                                    className="w-full px-1 py-1 border border-gray-300 rounded text-xs"
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         )}
@@ -1201,10 +1325,12 @@ const VisitingCardDesigner: React.FC = () => {
                                 <div className="relative">
                                     <div
                                         ref={cardRef}
-                                        className="w-96 h-56 p-6 shadow-xl transition-all duration-500 relative cursor-pointer select-none border-2 border-gray-200 rounded-lg"
+                                        className="w-96 h-56 shadow-xl transition-all duration-500 relative cursor-pointer select-none border-2 border-gray-200 rounded-lg overflow-hidden"
                                         style={getTemplateStyle()}
                                         onClick={() => setSelectedElement(null)}
                                     >
+                                        {/* Visual padding container for default positioning */}
+                                        <div className="absolute inset-0 p-6 pointer-events-none" />
                                         {renderCardContent(currentView)}
                                     </div>
                                 </div>
