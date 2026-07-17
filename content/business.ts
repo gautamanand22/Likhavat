@@ -1,0 +1,65 @@
+// Single source of truth for business identity (NAP), used across UI + SEO schema.
+// Edit these values to update the entire site.
+
+export const business = {
+  name: "Likhavat Printing Press",
+  shortName: "Likhavat",
+  legalName: "Likhavat Printing Press",
+  hindiName: "लिखावट",
+  tagline: "हर छपाई में, आपकी पहचान",
+  taglineEn: "Your identity, in every print.",
+  shortDesc:
+    "Full-service printing press on Boring Road, Patna — visiting cards, wedding cards, flex banners, pamphlets, doctors' letterheads & prescription pads, bill books, brochures, folders, bags and t-shirts. Offset + digital printing with free design support, WhatsApp proofs and doorstep delivery across Bihar.",
+
+  // Contact — phone is a DEMO placeholder; replace with the shop's real number.
+  phone: "+919876543210",
+  phoneDisplay: "+91 98765 43210",
+  whatsapp: "919876543210", // wa.me number (no +)
+  email: "likhavatprintingpress@gmail.com",
+
+  // Address (NAP — keep identical everywhere & on Google Business Profile).
+  // Confirm exact shop landmark / pin before launch.
+  address: {
+    line1: "Boring Road",
+    city: "Patna",
+    state: "Bihar",
+    pincode: "800001",
+    country: "India",
+    full: "Boring Road, Patna, Bihar 800001, India",
+  },
+
+  // Approx geo (update with exact Google Business Profile pin)
+  geo: { lat: 25.6127, lng: 85.1198 },
+
+  hours: "Open 10 AM – 9 PM · WhatsApp enquiries 24×7",
+  foundedYear: 2009,
+
+  // Compliance / trust — fill actual numbers before launch (shown as labels until then)
+  gstRegistered: true,
+  gstin: "", // e.g. "10XXXXXXXXXXXXZX" — displayed in footer when set
+
+  // Social / citation profiles — fill as the shop creates them (used in sameAs schema)
+  social: {
+    googleBusiness: "",
+    facebook: "",
+    instagram: "",
+    youtube: "",
+    justdial: "",
+    indiamart: "",
+  },
+
+  // Headline stats (editable demo values) — shown in hero, About & counters
+  stats: {
+    yearsExperience: 17,
+    ordersDelivered: 25000,
+    productsOffered: 40,
+    designsProofed: 60000,
+    repeatClients: 4000,
+  },
+
+  // Used for absolute URLs in metadata/sitemap — set the real production domain
+  // before launch (also update robots/sitemap host).
+  siteUrl: "https://likhavatprinting.com",
+} as const;
+
+export type Business = typeof business;

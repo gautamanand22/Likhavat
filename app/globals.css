@@ -1,26 +1,284 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ----------------------------------------------------------------------------
+   Likhavat Printing Press — Design System
+   Palette: printer's ink (plum-black) + warm paper cream + CMYK process accents
+   Type: Fraunces (display serif) · Inter (body) · IBM Plex Mono (specs) · Mukta (Hindi)
+---------------------------------------------------------------------------- */
+
+@theme {
+  /* Brand colors — ink & paper */
+  --color-ink: #17131f;
+  --color-ink-2: #201a2b;
+  --color-ink-3: #2b2338;
+  --color-ink-400: #3d3350;
+
+  --color-paper: #faf7f0;
+  --color-paper-200: #f2ecdf;
+  --color-sand: #e7dfcf;
+
+  /* CMYK process accents */
+  --color-cyan: #00b4d8;
+  --color-magenta: #e23a7f;
+  --color-yellow: #f6b51e;
+  --color-gold: #c9a227;
+
+  --color-wa: #25d366;
+  --color-wa-dark: #1da851;
+
+  --color-muted: #6b6377;
+
+  /* Fonts (CSS vars injected by next/font in layout.tsx) */
+  --font-display: var(--font-fraunces), Georgia, serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+  --font-hindi: var(--font-mukta), system-ui, sans-serif;
+
+  /* Easing */
+  --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Shadows */
+  --shadow-card: 0 1px 2px rgba(23, 19, 31, 0.05), 0 8px 30px rgba(23, 19, 31, 0.08);
+  --shadow-lift: 0 22px 50px -14px rgba(23, 19, 31, 0.3);
+  --shadow-glow-m: 0 0 44px rgba(226, 58, 127, 0.35);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: var(--color-paper);
+    --foreground: var(--color-ink);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* Lenis smooth scroll */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: var(--color-magenta);
+    color: var(--color-paper);
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.06;
+  }
+
+  :lang(hi),
+  .font-hindi {
+    font-family: var(--font-hindi);
+    letter-spacing: 0;
+  }
+
+  /* Accessible focus ring */
+  :focus-visible {
+    outline: 2px solid var(--color-magenta);
+    outline-offset: 2px;
+    border-radius: 4px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  /* Section rhythm */
+  .section-pad {
+    padding-block: clamp(2.75rem, 5.5vw, 5.25rem);
+  }
+  .container-x {
+    width: 100%;
+    max-width: 90rem;
+    margin-inline: auto;
+    padding-inline: clamp(1.25rem, 5vw, 3rem);
+  }
+  @media (min-width: 1728px) {
+    .container-x {
+      max-width: 100rem;
+      padding-inline: clamp(3rem, 6vw, 5rem);
+    }
+  }
+
+  /* Eyebrow label */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-magenta);
+    font-family: var(--font-sans);
+  }
+
+  /* CMYK gradient text — the four-colour press in one headline */
+  .text-gradient-print {
+    background: linear-gradient(98deg, var(--color-yellow) 0%, var(--color-magenta) 52%, var(--color-cyan) 105%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Gold-foil text (wedding cards, premium finishes) */
+  .text-foil {
+    background: linear-gradient(105deg, #8a6d1c 0%, #e6c860 28%, #fdf0b0 50%, #d4af37 72%, #8a6d1c 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Spec numbers */
+  .font-spec {
+    font-family: var(--font-mono);
+    letter-spacing: -0.02em;
+    font-feature-settings: "tnum";
+  }
+
+  /* Glassy card on dark */
+  .glass {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Hairline border card on light */
+  .card-light {
+    background: #ffffff;
+    border: 1px solid rgba(23, 19, 31, 0.08);
+    box-shadow: var(--shadow-card);
+  }
+
+  /* Halftone dot screen — the print texture (use on dark sections) */
+  .halftone {
+    background-image: radial-gradient(rgba(250, 247, 240, 0.07) 1px, transparent 1.6px);
+    background-size: 18px 18px;
+  }
+  /* Denser halftone fading out — for hero corners */
+  .halftone-fade {
+    background-image: radial-gradient(rgba(250, 247, 240, 0.1) 1.2px, transparent 1.8px);
+    background-size: 14px 14px;
+    -webkit-mask-image: radial-gradient(closest-side, black, transparent);
+    mask-image: radial-gradient(closest-side, black, transparent);
+  }
+  /* Halftone for light sections */
+  .halftone-dark {
+    background-image: radial-gradient(rgba(23, 19, 31, 0.06) 1px, transparent 1.6px);
+    background-size: 16px 16px;
+  }
+
+  /* CMYK calibration strip — like the colour bar on a press sheet */
+  .cmyk-strip {
+    background: linear-gradient(
+      to right,
+      var(--color-cyan) 0 25%,
+      var(--color-magenta) 25% 50%,
+      var(--color-yellow) 50% 75%,
+      var(--color-ink) 75% 100%
+    );
+  }
+
+  /* Subtle film grain overlay */
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.5;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E");
+  }
+
+  /* Paper edge — subtle stacked-sheets shadow under light cards */
+  .paper-stack {
+    box-shadow:
+      0 1px 1px rgba(23, 19, 31, 0.06),
+      0 4px 0 -2px #fff,
+      0 5px 1px -2px rgba(23, 19, 31, 0.08),
+      0 8px 0 -4px #fff,
+      0 9px 2px -4px rgba(23, 19, 31, 0.08),
+      0 18px 30px -12px rgba(23, 19, 31, 0.18);
+  }
+
+  /* Marquee for trust strip */
+  .animate-marquee {
+    animation: marquee 36s linear infinite;
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* Soft pulse glow for live indicators */
+  .pulse-dot {
+    position: relative;
+  }
+  .pulse-dot::before {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border-radius: 9999px;
+    background: var(--color-wa);
+    opacity: 0.5;
+    animation: pulseRing 2s var(--ease-premium) infinite;
+  }
+  @keyframes pulseRing {
+    0% { transform: scale(0.8); opacity: 0.6; }
+    100% { transform: scale(2.2); opacity: 0; }
+  }
+
+  /* Ink-roller sheen sweep (used on hover CTAs) */
+  .sheen {
+    position: relative;
+    overflow: hidden;
+  }
+  .sheen::after {
+    content: "";
+    position: absolute;
+    inset: -150% auto -150% -60%;
+    width: 40%;
+    transform: rotate(18deg) translateX(-160%);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+    transition: transform 0.9s var(--ease-premium);
+    pointer-events: none;
+  }
+  .sheen:hover::after {
+    transform: rotate(18deg) translateX(420%);
+  }
+
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
