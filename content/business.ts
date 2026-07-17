@@ -15,7 +15,7 @@ export const business = {
   phone: "+919308592381",
   phoneDisplay: "+91 93085 92381",
   whatsapp: "919308592381", // wa.me number (no +)
-  email: "likhavatprintingpress@gmail.com",
+  email: "rudra.org1@gmail.com",
 
   // Address (NAP — keep identical everywhere & on Google Business Profile).
   // Confirm exact shop landmark / pin before launch.

@@ -122,6 +122,17 @@ export function Footer() {
             {business.gstin && <span className="ml-2 font-spec">GSTIN: {business.gstin}</span>}
           </p>
           <p>{t.footer.demoNote}</p>
+          <p>
+            {t.footer.credit}{" "}
+            <a
+              href="https://nexacoreconsultancy.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-paper/60 transition-colors hover:text-magenta"
+            >
+              NexaCore Consultancy
+            </a>
+          </p>
         </div>
       </div>
     </footer>

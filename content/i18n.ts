@@ -259,6 +259,7 @@ export const dict = {
       allServices: "All services",
       rights: "All rights reserved.",
       demoNote: "Rates shown are indicative; confirm final quotes on WhatsApp.",
+      credit: "Website by",
     },
     popup: {
       title: "Send your design, get a proof today",
@@ -528,6 +529,7 @@ export const dict = {
       allServices: "सभी सेवाएँ",
       rights: "सर्वाधिकार सुरक्षित।",
       demoNote: "दिखाए गए रेट अनुमानित हैं; पक्का कोटेशन व्हाट्सऐप पर लें।",
+      credit: "वेबसाइट:",
     },
     popup: {
       title: "डिज़ाइन भेजिए, आज ही प्रूफ पाइए",
