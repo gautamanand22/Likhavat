@@ -1,163 +1,24 @@
 "use client";
 
 /**
- * HERO — "the composing desk". No stock photography: a dark ink stage with a
- * giant outlined लिखावट watermark and a floating cluster of print artifacts
- * built entirely in CSS (the brand visiting card, a sealed wedding envelope,
- * a prescription pad, a process-ink fan). Artifacts bob on a slow CSS
- * keyframe and parallax with the pointer via framer-motion springs.
- * All copy is server-rendered — the headline is the LCP, no image race.
+ * HERO — "the press floor". No stock photography: a dark ink stage with a
+ * giant outlined लिखावट watermark, editorial type, and — on the right — a
+ * running offset unit (PressRig) that feeds blank sheets through its roller
+ * and turns out printed letterheads and prescription pads on a loop. The rig
+ * gets a whisper of pointer parallax; all copy is server-rendered so the
+ * headline is the LCP.
  */
 
 import { useRef } from "react";
-import {
-  m,
-  useMotionValue,
-  useSpring,
-  useTransform,
-  useReducedMotion,
-  type MotionValue,
-} from "framer-motion";
-import clsx from "clsx";
+import { m, useMotionValue, useSpring, useTransform, useReducedMotion } from "framer-motion";
 import { Phone, ChevronRight, FileCheck, Zap, Truck, ReceiptText } from "lucide-react";
 import { useLang } from "@/components/i18n/LanguageProvider";
 import { waLink, telLink, enquiryMessage } from "@/lib/whatsapp";
 import { AssembledCard } from "@/components/ui/BrandCard";
+import { PressRig } from "@/components/ui/PressRig";
 import { CmykDots } from "@/components/ui/CmykDots";
 
 const chipIcons = [FileCheck, Zap, Truck, ReceiptText];
-
-/** Positioned artifact: pointer-parallax (outer) → rotation → slow bob → art. */
-function Artifact({
-  sx,
-  sy,
-  depth,
-  rotate,
-  bobDelay = "0s",
-  bobDuration = "7s",
-  className,
-  children,
-}: {
-  sx: MotionValue<number>;
-  sy: MotionValue<number>;
-  depth: number;
-  rotate: number;
-  bobDelay?: string;
-  bobDuration?: string;
-  className?: string;
-  children: React.ReactNode;
-}) {
-  const x = useTransform(sx, (v) => v * depth);
-  const y = useTransform(sy, (v) => v * depth * 0.72);
-  return (
-    <m.div
-      className={clsx("pointer-events-none absolute hidden select-none lg:block", className)}
-      style={{ x, y }}
-      aria-hidden
-    >
-      <div className="fade-in" style={{ animationDelay: "0.55s" }}>
-        <div style={{ transform: `rotate(${rotate}deg)` }}>
-          <div
-            className="animate-float"
-            style={{ animationDelay: bobDelay, animationDuration: bobDuration }}
-          >
-            {children}
-          </div>
-        </div>
-      </div>
-    </m.div>
-  );
-}
-
-/* ---------------------------- CSS print artifacts ---------------------------- */
-
-function WeddingEnvelope() {
-  return (
-    <div className="relative aspect-[5/3.4] w-full overflow-hidden rounded-lg bg-[#f7f0e4] shadow-[0_26px_50px_-18px_rgba(0,0,0,0.55)]">
-      {/* flap */}
-      <div
-        className="absolute inset-x-0 top-0 h-[62%] bg-[#efe5d2]"
-        style={{ clipPath: "polygon(0 0, 100% 0, 50% 100%)" }}
-      />
-      <div
-        className="absolute inset-x-0 top-0 h-[62%] border-b border-ink/[0.07]"
-        style={{ clipPath: "polygon(0 0, 100% 0, 50% 100%)" }}
-      />
-      {/* gold wax seal at the flap tip */}
-      <div
-        className="absolute left-1/2 top-[46%] flex h-[26%] w-[16%] -translate-x-1/2 items-center justify-center rounded-full pb-[1%] shadow-[0_4px_10px_rgba(0,0,0,0.25)]"
-        style={{
-          background:
-            "radial-gradient(circle at 35% 30%, #f1dc8e 0%, #d4af37 45%, #8a6d1c 100%)",
-        }}
-      >
-        <span className="font-hindi text-[0.8rem] font-bold text-[#5c470f]">लि</span>
-      </div>
-      {/* stamp + postmark */}
-      <div className="absolute right-[7%] top-[8%] flex h-[24%] w-[13%] items-center justify-center rounded-sm border border-ink/15 bg-white/60">
-        <span className="font-hindi text-[0.55rem] text-ink/50">डाक</span>
-      </div>
-      <span className="absolute right-[13%] top-[14%] h-[22%] w-[13%] rounded-full border border-magenta/30" />
-      {/* address lines */}
-      <span className="absolute bottom-[16%] left-[8%] h-px w-[38%] bg-ink/20" />
-      <span className="absolute bottom-[10%] left-[8%] h-px w-[26%] bg-ink/15" />
-    </div>
-  );
-}
-
-function RxPad() {
-  return (
-    <div className="relative aspect-[3/3.9] w-full overflow-hidden rounded-md bg-white shadow-[0_24px_46px_-18px_rgba(0,0,0,0.55)]">
-      {/* clinic header */}
-      <div className="absolute inset-x-0 top-0 flex h-[21%] flex-col justify-center bg-ink px-[9%]">
-        <p className="text-[0.52rem] font-bold tracking-wide text-paper">Dr. Anjali Sinha</p>
-        <p className="mt-[1%] font-spec text-[0.4rem] font-medium uppercase tracking-[0.16em] text-paper/55">
-          MBBS · Reg 40712 · Patna
-        </p>
-      </div>
-      <span className="absolute left-[9%] top-[26%] font-display text-[1.6rem] font-semibold italic leading-none text-magenta">
-        ℞
-      </span>
-      {[46, 57, 68, 79].map((top, i) => (
-        <span
-          key={top}
-          className="absolute left-[9%] h-px bg-ink/12"
-          style={{ top: `${top}%`, width: `${74 - i * 9}%` }}
-        />
-      ))}
-      <span className="absolute bottom-[4%] right-[8%] font-spec text-[0.38rem] font-semibold uppercase tracking-[0.2em] text-ink/35">
-        100 leaves
-      </span>
-    </div>
-  );
-}
-
-function InkFan() {
-  const chips = [
-    { bg: "var(--color-cyan)", label: "C · 100", rot: -26 },
-    { bg: "var(--color-magenta)", label: "M · 100", rot: -9 },
-    { bg: "var(--color-yellow)", label: "Y · 100", rot: 8 },
-    { bg: "var(--color-ink)", label: "K · 100", rot: 25 },
-  ];
-  return (
-    <div className="relative h-32 w-36">
-      {chips.map((c) => (
-        <div
-          key={c.label}
-          className="absolute bottom-0 left-1/2 h-[6.4rem] w-[3.1rem] origin-[50%_115%] overflow-hidden rounded-md bg-white p-[0.22rem] shadow-[0_16px_32px_-14px_rgba(0,0,0,0.6)]"
-          style={{ transform: `translateX(-50%) rotate(${c.rot}deg)` }}
-        >
-          <div className="h-[68%] w-full rounded-[0.25rem]" style={{ background: c.bg }} />
-          <p className="mt-[0.3rem] text-center font-spec text-[0.42rem] font-semibold uppercase tracking-[0.08em] text-ink/70">
-            {c.label}
-          </p>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-/* --------------------------------- Hero --------------------------------- */
 
 export function Hero() {
   const { t } = useLang();
@@ -168,6 +29,8 @@ export function Hero() {
   const my = useMotionValue(0);
   const sx = useSpring(mx, { stiffness: 55, damping: 16, mass: 0.6 });
   const sy = useSpring(my, { stiffness: 55, damping: 16, mass: 0.6 });
+  const rigX = useTransform(sx, (v) => v * -14);
+  const rigY = useTransform(sy, (v) => v * -10);
 
   const onMove = (e: React.MouseEvent) => {
     if (reduce) return;
@@ -196,26 +59,22 @@ export function Hero() {
       />
       {/* outlined watermark */}
       <span
-        className="text-outline-paper pointer-events-none absolute -right-4 top-[6%] hidden select-none font-hindi font-bold leading-none md:block"
+        className="text-outline-paper pointer-events-none absolute -right-4 top-[5%] hidden select-none font-hindi font-bold leading-none md:block"
         style={{ fontSize: "clamp(9rem, 21vw, 19rem)" }}
         aria-hidden
       >
         लिखावट
       </span>
 
-      {/* floating print artifacts */}
-      <Artifact sx={sx} sy={sy} depth={-30} rotate={6} className="right-[4.5%] top-[20%] z-[3] w-[clamp(17rem,23.5vw,22.5rem)] xl:right-[6.5%]" bobDuration="8s">
-        <AssembledCard name={t.press.cardName} role={t.press.cardRole} />
-      </Artifact>
-      <Artifact sx={sx} sy={sy} depth={-48} rotate={-11} className="right-[29%] top-[11%] xl:right-[31%]" bobDelay="1.4s" bobDuration="6.5s">
-        <InkFan />
-      </Artifact>
-      <Artifact sx={sx} sy={sy} depth={38} rotate={-8} className="bottom-[15%] right-[10%] z-[2] w-[clamp(12rem,15vw,15rem)]" bobDelay="0.8s" bobDuration="7.5s">
-        <WeddingEnvelope />
-      </Artifact>
-      <Artifact sx={sx} sy={sy} depth={54} rotate={7} className="bottom-[10%] right-[32.5%] w-[10.2rem]" bobDelay="2.2s" bobDuration="6s">
-        <RxPad />
-      </Artifact>
+      {/* the running press */}
+      <m.div
+        className="pointer-events-none absolute right-[4%] top-1/2 z-[2] hidden w-[clamp(20rem,26vw,24.5rem)] -translate-y-[54%] select-none lg:block"
+        style={{ x: rigX, y: rigY }}
+      >
+        <div className="fade-in" style={{ animationDelay: "0.45s" }}>
+          <PressRig />
+        </div>
+      </m.div>
 
       {/* copy */}
       <div className="container-x relative z-10 flex flex-1 flex-col justify-center pb-8 pt-24">

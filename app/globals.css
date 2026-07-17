@@ -312,6 +312,48 @@
     to { stroke-dashoffset: 0; }
   }
 
+  /* Hero press rig — a sheet feeds through the roller and comes out printed.
+     The sheet translates down while its "blank cover" counter-translates, so
+     the cover's lower edge stays pinned at the roller nip: everything above
+     the nip looks unprinted, everything below is revealed art. 12s cycle;
+     a second sheet runs the same track with animation-delay: -6s. */
+  .press-sheet {
+    animation: pressSheet 12s linear infinite;
+  }
+  @keyframes pressSheet {
+    0% { transform: translateY(-106%); opacity: 1; }
+    38% { transform: translateY(57.5%); opacity: 1; }
+    48% { transform: translateY(57.5%); opacity: 1; }
+    52% { transform: translateY(57.5%); opacity: 0; }
+    52.01% { transform: translateY(-106%); opacity: 0; }
+    56% { transform: translateY(-106%); opacity: 1; }
+    100% { transform: translateY(-106%); opacity: 1; }
+  }
+  .press-cover {
+    animation: pressCover 12s linear infinite;
+  }
+  @keyframes pressCover {
+    0% { transform: translateY(53.3%); }
+    38% { transform: translateY(-0.7%); }
+    52% { transform: translateY(-0.7%); }
+    52.01% { transform: translateY(53.3%); }
+    100% { transform: translateY(53.3%); }
+  }
+  .press-led {
+    animation: ledBlink 2.4s ease-in-out infinite;
+  }
+  @keyframes ledBlink {
+    0%, 100% { opacity: 0.25; }
+    50% { opacity: 1; }
+  }
+  .press-roller-sheen {
+    animation: rollerShift 1.6s linear infinite;
+  }
+  @keyframes rollerShift {
+    from { background-position: 0 0; }
+    to { background-position: 26px 0; }
+  }
+
   /* Print-table ruler ticks (proof stage of the press showcase) */
   .ruler-x {
     background-image: repeating-linear-gradient(

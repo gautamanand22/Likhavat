@@ -7,7 +7,39 @@ import { business } from "@/content/business";
  * ink, so the press showcase can lay them down one by one. Sizes use
  * container-query units: wrap the card in an element with
  * `container-type: inline-size` (AssembledCard does this itself).
+ *
+ * The brand mark is the site logo itself — ink tile, knocked-out लि, CMYK
+ * strip along its base — so the logo literally assembles plate by plate:
+ * C, M and Y each drop their strip segment, K brings the tile and type.
  */
+
+/* Logo tile geometry (% of card box) — shared across plates */
+const TILE = { left: 7, top: 12, w: 13.5, h: 21.5, stripH: 3.2 };
+const SEG_W = TILE.w / 4;
+const STRIP_TOP = TILE.top + TILE.h - TILE.stripH;
+
+function StripSeg({
+  i,
+  className,
+  style,
+}: {
+  i: number;
+  className: string;
+  style?: React.CSSProperties;
+}) {
+  return (
+    <span
+      className={clsx("absolute", className)}
+      style={{
+        left: `${TILE.left + SEG_W * i}%`,
+        top: `${STRIP_TOP}%`,
+        width: `${SEG_W}%`,
+        height: `${TILE.stripH}%`,
+        ...style,
+      }}
+    />
+  );
+}
 
 export function PlateCyan() {
   return (
@@ -15,7 +47,7 @@ export function PlateCyan() {
       {/* fine concentric arcs bleeding off the right edge
           (cqw only — inline-size containment doesn't resolve cqh; card
           height = 62.8cqw at the 86:54 aspect) */}
-      {[85, 65, 46].map((size, i) => (
+      {[85, 46].map((size, i) => (
         <span
           key={size}
           className="absolute rounded-full border border-cyan"
@@ -24,7 +56,7 @@ export function PlateCyan() {
             height: `${size}cqw`,
             right: `${-size / 2.55}cqw`,
             top: `${31.4 - size / 2}cqw`,
-            opacity: 0.5 - i * 0.1,
+            opacity: 0.5 - i * 0.14,
             borderWidth: "1.5px",
           }}
         />
@@ -35,6 +67,8 @@ export function PlateCyan() {
           <span key={i} className="block h-[0.9cqw] w-[0.9cqw] rounded-full bg-cyan/70" />
         ))}
       </span>
+      {/* logo strip — cyan segment */}
+      <StripSeg i={0} className="bg-cyan" style={{ borderBottomLeftRadius: "2.4cqw" }} />
     </div>
   );
 }
@@ -42,13 +76,20 @@ export function PlateCyan() {
 export function PlateMagenta() {
   return (
     <div className="absolute inset-0" aria-hidden>
-      {/* the लि tile */}
-      <div
-        className="absolute left-[7%] top-[12%] flex aspect-square w-[13.5%] items-center justify-center rounded-[18%] pb-[0.6%]"
-        style={{ background: "linear-gradient(135deg, #e23a7f 0%, #b02a63 100%)" }}
-      >
-        <span className="font-hindi text-[4.6cqw] font-bold leading-none text-white">लि</span>
-      </div>
+      {/* the middle arc runs magenta — a quiet two-ink mix on the right edge */}
+      <span
+        className="absolute rounded-full border border-magenta"
+        style={{
+          width: "65cqw",
+          height: "65cqw",
+          right: `${-65 / 2.55}cqw`,
+          top: `${31.4 - 65 / 2}cqw`,
+          opacity: 0.4,
+          borderWidth: "1.5px",
+        }}
+      />
+      {/* logo strip — magenta segment */}
+      <StripSeg i={1} className="bg-magenta" />
     </div>
   );
 }
@@ -66,6 +107,8 @@ export function PlateYellow() {
       />
       {/* underline beneath the name — the rule the foil later covers */}
       <div className="absolute left-[7%] top-[60.5%] h-[1.3%] w-[21%] rounded-full bg-yellow/85" />
+      {/* logo strip — yellow segment */}
+      <StripSeg i={2} className="bg-yellow" />
     </div>
   );
 }
@@ -73,8 +116,34 @@ export function PlateYellow() {
 export function PlateKey({ name, role }: { name: string; role: string }) {
   return (
     <div className="absolute inset-0 text-ink" aria-hidden>
-      {/* hairline ring behind the tile */}
-      <span className="absolute left-[5.6%] top-[9.5%] aspect-square w-[16.3%] rounded-[20%] border border-ink/15" />
+      {/* the logo tile — ink block above the CMYK strip row, so the C/M/Y
+          segments (printed by their own plates) stay visible beneath it */}
+      <div
+        className="absolute flex items-center justify-center bg-ink"
+        style={{
+          left: `${TILE.left}%`,
+          top: `${TILE.top}%`,
+          width: `${TILE.w}%`,
+          height: `${TILE.h - TILE.stripH}%`,
+          borderRadius: "2.4cqw 2.4cqw 0 0",
+        }}
+      >
+        <span className="font-hindi text-[4.4cqw] font-bold leading-none text-[#fffdf8]">
+          लि
+        </span>
+      </div>
+      {/* knockout (unprinted) fourth strip segment */}
+      <StripSeg i={3} className="bg-[#fffdf8]" style={{ borderBottomRightRadius: "2.4cqw" }} />
+      {/* hairline ring framing the tile */}
+      <span
+        className="absolute rounded-[20%] border border-ink/15"
+        style={{
+          left: `${TILE.left - 1.4}%`,
+          top: `${TILE.top - 2.3}%`,
+          width: `${TILE.w + 2.8}%`,
+          height: `${TILE.h + 4.6}%`,
+        }}
+      />
 
       {/* brand block, top right */}
       <div className="absolute right-[7%] top-[13%] text-right">
