@@ -1,103 +1,271 @@
 "use client";
 
-import { useEffect, useState } from "react";
+/**
+ * HERO — "the composing desk". No stock photography: a dark ink stage with a
+ * giant outlined लिखावट watermark and a floating cluster of print artifacts
+ * built entirely in CSS (the brand visiting card, a sealed wedding envelope,
+ * a prescription pad, a process-ink fan). Artifacts bob on a slow CSS
+ * keyframe and parallax with the pointer via framer-motion springs.
+ * All copy is server-rendered — the headline is the LCP, no image race.
+ */
+
+import { useRef } from "react";
+import {
+  m,
+  useMotionValue,
+  useSpring,
+  useTransform,
+  useReducedMotion,
+  type MotionValue,
+} from "framer-motion";
+import clsx from "clsx";
 import { Phone, ChevronRight, FileCheck, Zap, Truck, ReceiptText } from "lucide-react";
 import { useLang } from "@/components/i18n/LanguageProvider";
-import { business } from "@/content/business";
-import { productById } from "@/content/products";
 import { waLink, telLink, enquiryMessage } from "@/lib/whatsapp";
+import { AssembledCard } from "@/components/ui/BrandCard";
+import { CmykDots } from "@/components/ui/CmykDots";
 
 const chipIcons = [FileCheck, Zap, Truck, ReceiptText];
 
-/** Rotating backdrops: the press itself, then the work it turns out. */
-const slides = [
-  { id: "press", image: "/images/products/press-hero.jpg" },
-  { id: "visiting-cards", image: "/images/products/visiting-cards.jpg" },
-  { id: "wedding-cards", image: "/images/products/wedding-cards.jpg" },
-  { id: "flex-banner", image: "/images/products/flex-banner.jpg" },
-  { id: "tshirts", image: "/images/products/tshirt-print.jpg" },
-] as const;
+/** Positioned artifact: pointer-parallax (outer) → rotation → slow bob → art. */
+function Artifact({
+  sx,
+  sy,
+  depth,
+  rotate,
+  bobDelay = "0s",
+  bobDuration = "7s",
+  className,
+  children,
+}: {
+  sx: MotionValue<number>;
+  sy: MotionValue<number>;
+  depth: number;
+  rotate: number;
+  bobDelay?: string;
+  bobDuration?: string;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  const x = useTransform(sx, (v) => v * depth);
+  const y = useTransform(sy, (v) => v * depth * 0.72);
+  return (
+    <m.div
+      className={clsx("pointer-events-none absolute hidden select-none lg:block", className)}
+      style={{ x, y }}
+      aria-hidden
+    >
+      <div className="fade-in" style={{ animationDelay: "0.55s" }}>
+        <div style={{ transform: `rotate(${rotate}deg)` }}>
+          <div
+            className="animate-float"
+            style={{ animationDelay: bobDelay, animationDuration: bobDuration }}
+          >
+            {children}
+          </div>
+        </div>
+      </div>
+    </m.div>
+  );
+}
+
+/* ---------------------------- CSS print artifacts ---------------------------- */
+
+function WeddingEnvelope() {
+  return (
+    <div className="relative aspect-[5/3.4] w-full overflow-hidden rounded-lg bg-[#f7f0e4] shadow-[0_26px_50px_-18px_rgba(0,0,0,0.55)]">
+      {/* flap */}
+      <div
+        className="absolute inset-x-0 top-0 h-[62%] bg-[#efe5d2]"
+        style={{ clipPath: "polygon(0 0, 100% 0, 50% 100%)" }}
+      />
+      <div
+        className="absolute inset-x-0 top-0 h-[62%] border-b border-ink/[0.07]"
+        style={{ clipPath: "polygon(0 0, 100% 0, 50% 100%)" }}
+      />
+      {/* gold wax seal at the flap tip */}
+      <div
+        className="absolute left-1/2 top-[46%] flex h-[26%] w-[16%] -translate-x-1/2 items-center justify-center rounded-full pb-[1%] shadow-[0_4px_10px_rgba(0,0,0,0.25)]"
+        style={{
+          background:
+            "radial-gradient(circle at 35% 30%, #f1dc8e 0%, #d4af37 45%, #8a6d1c 100%)",
+        }}
+      >
+        <span className="font-hindi text-[0.8rem] font-bold text-[#5c470f]">लि</span>
+      </div>
+      {/* stamp + postmark */}
+      <div className="absolute right-[7%] top-[8%] flex h-[24%] w-[13%] items-center justify-center rounded-sm border border-ink/15 bg-white/60">
+        <span className="font-hindi text-[0.55rem] text-ink/50">डाक</span>
+      </div>
+      <span className="absolute right-[13%] top-[14%] h-[22%] w-[13%] rounded-full border border-magenta/30" />
+      {/* address lines */}
+      <span className="absolute bottom-[16%] left-[8%] h-px w-[38%] bg-ink/20" />
+      <span className="absolute bottom-[10%] left-[8%] h-px w-[26%] bg-ink/15" />
+    </div>
+  );
+}
+
+function RxPad() {
+  return (
+    <div className="relative aspect-[3/3.9] w-full overflow-hidden rounded-md bg-white shadow-[0_24px_46px_-18px_rgba(0,0,0,0.55)]">
+      {/* clinic header */}
+      <div className="absolute inset-x-0 top-0 flex h-[21%] flex-col justify-center bg-ink px-[9%]">
+        <p className="text-[0.52rem] font-bold tracking-wide text-paper">Dr. Anjali Sinha</p>
+        <p className="mt-[1%] font-spec text-[0.4rem] font-medium uppercase tracking-[0.16em] text-paper/55">
+          MBBS · Reg 40712 · Patna
+        </p>
+      </div>
+      <span className="absolute left-[9%] top-[26%] font-display text-[1.6rem] font-semibold italic leading-none text-magenta">
+        ℞
+      </span>
+      {[46, 57, 68, 79].map((top, i) => (
+        <span
+          key={top}
+          className="absolute left-[9%] h-px bg-ink/12"
+          style={{ top: `${top}%`, width: `${74 - i * 9}%` }}
+        />
+      ))}
+      <span className="absolute bottom-[4%] right-[8%] font-spec text-[0.38rem] font-semibold uppercase tracking-[0.2em] text-ink/35">
+        100 leaves
+      </span>
+    </div>
+  );
+}
+
+function InkFan() {
+  const chips = [
+    { bg: "var(--color-cyan)", label: "C · 100", rot: -26 },
+    { bg: "var(--color-magenta)", label: "M · 100", rot: -9 },
+    { bg: "var(--color-yellow)", label: "Y · 100", rot: 8 },
+    { bg: "var(--color-ink)", label: "K · 100", rot: 25 },
+  ];
+  return (
+    <div className="relative h-32 w-36">
+      {chips.map((c) => (
+        <div
+          key={c.label}
+          className="absolute bottom-0 left-1/2 h-[6.4rem] w-[3.1rem] origin-[50%_115%] overflow-hidden rounded-md bg-white p-[0.22rem] shadow-[0_16px_32px_-14px_rgba(0,0,0,0.6)]"
+          style={{ transform: `translateX(-50%) rotate(${c.rot}deg)` }}
+        >
+          <div className="h-[68%] w-full rounded-[0.25rem]" style={{ background: c.bg }} />
+          <p className="mt-[0.3rem] text-center font-spec text-[0.42rem] font-semibold uppercase tracking-[0.08em] text-ink/70">
+            {c.label}
+          </p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* --------------------------------- Hero --------------------------------- */
 
 export function Hero() {
   const { t } = useLang();
-  const [i, setI] = useState(0);
+  const ref = useRef<HTMLElement>(null);
+  const reduce = useReducedMotion();
 
-  useEffect(() => {
-    const id = setInterval(() => setI((p) => (p + 1) % slides.length), 4500);
-    return () => clearInterval(id);
-  }, []);
+  const mx = useMotionValue(0);
+  const my = useMotionValue(0);
+  const sx = useSpring(mx, { stiffness: 55, damping: 16, mass: 0.6 });
+  const sy = useSpring(my, { stiffness: 55, damping: 16, mass: 0.6 });
 
-  const slide = slides[i];
-  const product = slide.id === "press" ? null : productById(slide.id);
-  const nextIdx = (i + 1) % slides.length;
+  const onMove = (e: React.MouseEvent) => {
+    if (reduce) return;
+    const r = ref.current?.getBoundingClientRect();
+    if (!r) return;
+    mx.set(((e.clientX - r.left) / r.width - 0.5) * 2);
+    my.set(((e.clientY - r.top) / r.height - 0.5) * 2);
+  };
 
   return (
-    <section className="relative h-[100svh] max-h-[54rem] min-h-[38rem] w-full overflow-hidden bg-ink text-paper">
-      {/* Full-bleed background — only the current + next image are in the DOM
-          so the browser downloads at most two full photos (protects LCP). */}
-      <div className="absolute inset-0">
-        {slides.map((s, idx) => {
-          if (idx !== i && idx !== nextIdx) return null;
-          const sm = s.image.replace(/\.jpg$/, "-sm.jpg");
-          return (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={s.id}
-              src={s.image}
-              srcSet={`${sm} 640w, ${s.image} 1400w`}
-              sizes="100vw"
-              alt={idx === 0 ? `Offset printing press at ${business.name}, Boring Road, Patna` : ""}
-              fetchPriority={idx === 0 ? "high" : "low"}
-              loading={idx === 0 ? "eager" : "lazy"}
-              decoding="async"
-              className="absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
-              style={{ opacity: idx === i ? 1 : 0 }}
-            />
-          );
-        })}
-      </div>
+    <section
+      ref={ref}
+      onMouseMove={onMove}
+      className="grain relative flex min-h-[100svh] w-full flex-col overflow-hidden bg-ink text-paper lg:max-h-[56rem] lg:min-h-[42rem]"
+    >
+      {/* stage dressing */}
+      <div className="halftone pointer-events-none absolute inset-0" />
+      <div className="pointer-events-none absolute -right-40 -top-24 h-[34rem] w-[34rem] rounded-full bg-magenta/[0.13] blur-[140px]" />
+      <div className="pointer-events-none absolute -bottom-32 -left-32 h-[30rem] w-[30rem] rounded-full bg-cyan/[0.1] blur-[140px]" />
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 60% 45% at 32% 38%, rgba(250,247,240,0.05), transparent 70%)",
+        }}
+      />
+      {/* outlined watermark */}
+      <span
+        className="text-outline-paper pointer-events-none absolute -right-4 top-[6%] hidden select-none font-hindi font-bold leading-none md:block"
+        style={{ fontSize: "clamp(9rem, 21vw, 19rem)" }}
+        aria-hidden
+      >
+        लिखावट
+      </span>
 
-      {/* Legibility overlays + halftone texture */}
-      <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/85 to-ink/25" />
-      <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/35 to-ink/55" />
-      <div className="halftone pointer-events-none absolute inset-0 opacity-70" />
-      <div className="pointer-events-none absolute -right-32 top-1/4 h-[32rem] w-[32rem] rounded-full bg-magenta/15 blur-[130px]" />
+      {/* floating print artifacts */}
+      <Artifact sx={sx} sy={sy} depth={-30} rotate={6} className="right-[4.5%] top-[20%] z-[3] w-[clamp(17rem,23.5vw,22.5rem)] xl:right-[6.5%]" bobDuration="8s">
+        <AssembledCard name={t.press.cardName} role={t.press.cardRole} />
+      </Artifact>
+      <Artifact sx={sx} sy={sy} depth={-48} rotate={-11} className="right-[29%] top-[11%] xl:right-[31%]" bobDelay="1.4s" bobDuration="6.5s">
+        <InkFan />
+      </Artifact>
+      <Artifact sx={sx} sy={sy} depth={38} rotate={-8} className="bottom-[15%] right-[10%] z-[2] w-[clamp(12rem,15vw,15rem)]" bobDelay="0.8s" bobDuration="7.5s">
+        <WeddingEnvelope />
+      </Artifact>
+      <Artifact sx={sx} sy={sy} depth={54} rotate={7} className="bottom-[10%] right-[32.5%] w-[10.2rem]" bobDelay="2.2s" bobDuration="6s">
+        <RxPad />
+      </Artifact>
 
-      {/* Content — static (renders instantly in HTML, no JS required for LCP) */}
-      <div className="container-x relative z-10 flex h-full flex-col pb-6 pt-24 sm:pb-8">
-        <div className="flex max-w-3xl flex-1 flex-col justify-center 2xl:max-w-4xl">
-          <div className="mb-5 flex flex-col items-start gap-2.5 text-sm sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-3">
+      {/* copy */}
+      <div className="container-x relative z-10 flex flex-1 flex-col justify-center pb-8 pt-24">
+        <div className="max-w-3xl 2xl:max-w-4xl">
+          <div className="rise-in flex flex-col items-start gap-2.5 text-sm sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-3" style={{ animationDelay: "0.05s" }}>
             <span className="inline-flex items-center gap-2 rounded-full bg-paper/10 px-3 py-1.5 backdrop-blur-sm">
-              <span className="flex gap-1">
-                <span className="h-2 w-2 rounded-full bg-cyan" />
-                <span className="h-2 w-2 rounded-full bg-magenta" />
-                <span className="h-2 w-2 rounded-full bg-yellow" />
-              </span>
+              <CmykDots size={6} />
               <span className="text-[0.7rem] font-bold uppercase tracking-[0.14em] text-paper/90">
                 {t.hero.badge}
               </span>
             </span>
-            <span className="text-[0.62rem] font-bold uppercase tracking-[0.16em] text-paper/55 sm:text-[0.68rem] sm:tracking-[0.22em]">
-              {t.hero.trustNote}
-            </span>
           </div>
 
-          <h1 className="font-display font-semibold leading-[1.05] tracking-[-0.02em] text-[2.15rem] [overflow-wrap:break-word] sm:text-[3.1rem] sm:leading-[1.02] lg:text-[4.1rem]">
+          <h1
+            className="rise-in mt-5 font-display font-semibold leading-[1.04] tracking-[-0.02em] text-[2.3rem] [overflow-wrap:break-word] sm:text-[3.4rem] sm:leading-[1.01] lg:text-[4rem] xl:text-[4.6rem]"
+            style={{ animationDelay: "0.1s" }}
+          >
             {t.hero.titleA}
             <br />
-            <span className="text-gradient-print italic">{t.hero.titleB}</span>
+            <span className="relative inline-block">
+              <span className="text-gradient-print italic">{t.hero.titleB}</span>
+              <svg
+                viewBox="0 0 220 14"
+                className="absolute -bottom-2 left-0 w-[86%] sm:-bottom-3"
+                fill="none"
+                aria-hidden
+              >
+                <path
+                  d="M3 10.5 C 55 3.5, 150 12.5, 217 5.5"
+                  stroke="var(--color-yellow)"
+                  strokeOpacity="0.75"
+                  strokeWidth="2.6"
+                  strokeLinecap="round"
+                  pathLength="1"
+                  className="draw-swash"
+                />
+              </svg>
+            </span>
           </h1>
 
-          <p className="font-hindi mt-3 flex items-center gap-2 text-base text-yellow/90 sm:text-lg">
+          <p className="font-hindi rise-in mt-5 flex items-center gap-2 text-base text-yellow/90 sm:text-lg" style={{ animationDelay: "0.2s" }}>
             <span className="h-px w-6 bg-yellow/50" />
             {t.hero.tagline}
           </p>
 
-          <p className="mt-4 hidden max-w-xl text-[0.98rem] leading-relaxed text-paper/75 sm:block">
+          <p className="rise-in mt-4 max-w-xl text-[0.98rem] leading-relaxed text-paper/72" style={{ animationDelay: "0.28s" }}>
             {t.hero.subtitle}
           </p>
 
-          <div className="mt-6 flex flex-wrap items-center gap-3">
+          <div className="rise-in mt-7 flex flex-wrap items-center gap-3" style={{ animationDelay: "0.36s" }}>
             <a
               href={waLink(enquiryMessage())}
               target="_blank"
@@ -115,10 +283,15 @@ export function Hero() {
               {t.hero.callNow}
             </a>
           </div>
+
+          {/* the show-card, hand-placed on small screens */}
+          <div className="fade-in mt-10 w-60 rotate-[-5deg] sm:w-64 lg:hidden" style={{ animationDelay: "0.5s" }} aria-hidden>
+            <AssembledCard name={t.press.cardName} role={t.press.cardRole} />
+          </div>
         </div>
 
-        {/* Bottom bar: feature strip + product switcher */}
-        <div className="mt-7 flex flex-col gap-4 border-t border-paper/12 pt-4 lg:flex-row lg:items-center lg:justify-between">
+        {/* bottom bar */}
+        <div className="rise-in mt-10 flex flex-col gap-4 border-t border-paper/12 pt-4 lg:mt-7 lg:flex-row lg:items-center lg:justify-between" style={{ animationDelay: "0.5s" }}>
           <ul className="flex flex-wrap items-center gap-x-5 gap-y-2">
             {t.hero.chips.map((c, idx) => {
               const Icon = chipIcons[idx] ?? Zap;
@@ -133,45 +306,10 @@ export function Hero() {
               );
             })}
           </ul>
-
-          <div className="flex items-center gap-3">
-            <div className="hidden w-[13rem] shrink-0 overflow-hidden text-right sm:block">
-              <p className="truncate font-display text-sm font-bold text-paper">
-                {product ? product.name : business.name}
-              </p>
-              <p className="truncate text-xs text-paper/60">
-                {product ? (
-                  <>
-                    {t.hero.fromLabel}{" "}
-                    <span className="font-spec font-bold text-yellow">{product.price.amount}</span>{" "}
-                    {product.price.unit}
-                  </>
-                ) : (
-                  <span className="font-semibold text-yellow">{business.taglineEn}</span>
-                )}
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-2 sm:flex-nowrap">
-              {slides.map((s, idx) => (
-                <button
-                  key={s.id}
-                  onClick={() => setI(idx)}
-                  aria-label={`Show ${s.id === "press" ? business.name : productById(s.id).name}`}
-                  className={`relative h-10 w-14 shrink-0 overflow-hidden rounded-xl border-2 transition-all duration-300 sm:h-11 sm:w-16 ${
-                    idx === i ? "border-magenta opacity-100" : "border-paper/15 opacity-55 hover:opacity-90"
-                  }`}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={s.image.replace(/\.jpg$/, "-sm.jpg")}
-                    alt=""
-                    loading="lazy"
-                    className="absolute inset-0 h-full w-full object-cover"
-                  />
-                </button>
-              ))}
-            </div>
-          </div>
+          <p className="inline-flex items-center gap-3 text-[0.68rem] font-bold uppercase tracking-[0.2em] text-paper/50">
+            {t.hero.trustNote}
+            <CmykDots size={5} />
+          </p>
         </div>
       </div>
     </section>

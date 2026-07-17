@@ -270,6 +270,63 @@
 
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* Slow bob for floating print artifacts in the hero */
+  .animate-float {
+    animation: floatY 7s ease-in-out infinite;
+  }
+  @keyframes floatY {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-14px); }
+  }
+
+  /* Load-in entrances (CSS-only so they run before JS hydrates) */
+  .rise-in {
+    animation: riseIn 0.85s var(--ease-premium) both;
+  }
+  @keyframes riseIn {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in {
+    animation: fadeIn 1s ease-out both;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* Giant outlined Devanagari watermark */
+  .text-outline-paper {
+    color: transparent;
+    -webkit-text-stroke: 1.5px rgba(250, 247, 240, 0.07);
+  }
+
+  /* Hand-drawn swash underline — draws itself in on load */
+  .draw-swash {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: drawSwash 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.5s forwards;
+  }
+  @keyframes drawSwash {
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* Print-table ruler ticks (proof stage of the press showcase) */
+  .ruler-x {
+    background-image: repeating-linear-gradient(
+      90deg,
+      rgba(250, 247, 240, 0.45) 0 1px,
+      transparent 1px 12.5%
+    );
+  }
+  .ruler-y {
+    background-image: repeating-linear-gradient(
+      180deg,
+      rgba(250, 247, 240, 0.45) 0 1px,
+      transparent 1px 12.5%
+    );
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

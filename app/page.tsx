@@ -17,15 +17,7 @@ import { homeFaqs } from "@/content/faqs";
 export default function Home() {
   return (
     <>
-      {/* Preload the LCP hero image (responsive) so it starts downloading immediately */}
-      <link
-        rel="preload"
-        as="image"
-        href="/images/products/press-hero.jpg"
-        imageSrcSet="/images/products/press-hero-sm.jpg 640w, /images/products/press-hero.jpg 1400w"
-        imageSizes="100vw"
-        fetchPriority="high"
-      />
+      {/* Hero is pure CSS/type — the headline itself is the LCP, no image race */}
       <JsonLd data={faqSchema(homeFaqs)} />
       <Hero />
       <TrustBar />
