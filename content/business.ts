@@ -11,10 +11,10 @@ export const business = {
   shortDesc:
     "Full-service printing press on Boring Road, Patna — visiting cards, wedding cards, flex banners, pamphlets, doctors' letterheads & prescription pads, bill books, brochures, folders, bags and t-shirts. Offset + digital printing with free design support, WhatsApp proofs and doorstep delivery across Bihar.",
 
-  // Contact — phone is a DEMO placeholder; replace with the shop's real number.
-  phone: "+919876543210",
-  phoneDisplay: "+91 98765 43210",
-  whatsapp: "919876543210", // wa.me number (no +)
+  // Contact
+  phone: "+919308592381",
+  phoneDisplay: "+91 93085 92381",
+  whatsapp: "919308592381", // wa.me number (no +)
   email: "likhavatprintingpress@gmail.com",
 
   // Address (NAP — keep identical everywhere & on Google Business Profile).

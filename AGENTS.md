@@ -41,7 +41,6 @@ prescription pads, bill books, brochures, bags, t-shirts).
 
 ## Before launch
 
-- Replace demo phone number in `content/business.ts` (placeholder!).
 - Confirm rates in `content/products.ts` + `services.ts` (indicative 2025-26
   Patna market values from research).
 - Confirm email, GSTIN, foundedYear/stats; swap demo testimonials for real
