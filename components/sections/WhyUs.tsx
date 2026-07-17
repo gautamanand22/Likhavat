@@ -18,10 +18,13 @@ export function WhyUs() {
         <SectionHeading eyebrow={t.why.eyebrow} heading={t.why.heading} sub={t.why.sub} />
 
         <RevealGroup className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {/* Index keys, deliberately: keying by translated title would remount
+              these inside an already-fired one-shot RevealGroup on language
+              toggle, leaving them stuck in the hidden variant. */}
           {t.why.items.map((item, i) => {
             const Icon = icons[i];
             return (
-              <RevealItem key={item.title}>
+              <RevealItem key={i}>
                 <div className="card-light group h-full rounded-3xl p-6 transition-all duration-500 hover:-translate-y-1 hover:shadow-[var(--shadow-lift)]">
                   <span className="grid h-12 w-12 place-items-center rounded-2xl bg-ink transition-transform duration-500 group-hover:-rotate-6">
                     <Icon className={`h-5 w-5 ${accents[i]}`} />

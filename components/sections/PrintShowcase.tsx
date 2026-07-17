@@ -72,8 +72,8 @@ function DesignWireframe() {
   return (
     <div className="absolute inset-0" aria-hidden>
       <div className={clsx(box, "left-[7%] top-[12%] h-[21.5%] w-[13.5%]")} />
-      <div className={clsx(box, "right-[7%] top-[13%] h-[13%] w-[27%]")} />
-      <div className={clsx(box, "left-[7%] top-[41%] h-[14%] w-[44%]")} />
+      <div className={clsx(box, "right-[7%] top-[13%] h-[13%] w-[24%]")} />
+      <div className={clsx(box, "left-[7%] top-[41%] h-[14%] w-[62%]")} />
       <div className={clsx(box, "left-[7%] top-[60.5%] h-[1.4%] w-[21%] border-yellow/50")} />
       <div className={clsx(box, "bottom-[8%] left-[7%] h-[7%] w-[58%]")} />
       <div

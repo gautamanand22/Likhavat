@@ -23,10 +23,12 @@ export function HowItWorks() {
         <RevealGroup className="relative mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4" stagger={0.1}>
           {/* connecting rule (desktop) */}
           <div className="cmyk-strip absolute left-[12%] right-[12%] top-9 hidden h-px opacity-30 lg:block" aria-hidden />
+          {/* Index keys — translated-title keys would remount items hidden
+              inside the already-fired RevealGroup on language toggle. */}
           {t.how.steps.map((step, i) => {
             const Icon = icons[i];
             return (
-              <RevealItem key={step.title}>
+              <RevealItem key={i}>
                 <div className="relative flex h-full flex-col items-center rounded-3xl bg-white p-6 text-center shadow-[var(--shadow-card)] ring-1 ring-ink/[0.06]">
                   <div className="relative">
                     <span className="grid h-[4.5rem] w-[4.5rem] place-items-center rounded-2xl bg-ink text-paper shadow-lg">

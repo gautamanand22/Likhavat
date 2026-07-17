@@ -13,6 +13,9 @@ import { business } from "@/content/business";
  * C, M and Y each drop their strip segment, K brings the tile and type.
  */
 
+/** Bare domain for the card's contact line. */
+const siteHost = business.siteUrl.replace(/^https?:\/\//, "");
+
 /* Logo tile geometry (% of card box) — shared across plates */
 const TILE = { left: 7, top: 12, w: 13.5, h: 21.5, stripH: 3.2 };
 const SEG_W = TILE.w / 4;
@@ -145,22 +148,22 @@ export function PlateKey({ name, role }: { name: string; role: string }) {
         }}
       />
 
-      {/* brand block, top right */}
+      {/* establishment block, top right */}
       <div className="absolute right-[7%] top-[13%] text-right">
         <p className="font-spec text-[2.2cqw] font-semibold uppercase tracking-[0.32em] text-ink/80">
-          {business.shortName}
+          Est. {business.foundedYear}
         </p>
         <p className="mt-[0.35em] font-spec text-[1.55cqw] font-medium uppercase tracking-[0.3em] text-ink/45">
-          Printing Press
+          {business.address.line1} · {business.address.city}
         </p>
       </div>
 
-      {/* name & role */}
+      {/* the press's own name & trade line */}
       <div className="absolute left-[7%] top-[41%]">
-        <p className="font-display text-[6.4cqw] font-semibold leading-none tracking-[-0.01em]">
+        <p className="whitespace-nowrap font-display text-[5.4cqw] font-semibold leading-none tracking-[-0.01em]">
           {name}
         </p>
-        <p className="mt-[4.5%] font-spec text-[2cqw] font-medium uppercase tracking-[0.3em] text-ink/50">
+        <p className="mt-[4.5%] font-spec text-[1.95cqw] font-medium uppercase tracking-[0.26em] text-ink/50">
           {role}
         </p>
       </div>
@@ -171,8 +174,8 @@ export function PlateKey({ name, role }: { name: string; role: string }) {
         <span className="font-spec text-[2.3cqw] font-semibold tracking-[0.02em] text-ink/75">
           {business.phoneDisplay}
         </span>
-        <span className="mr-[7%] font-spec text-[1.9cqw] font-medium uppercase tracking-[0.14em] text-ink/45">
-          {business.address.line1} · {business.address.city}
+        <span className="mr-[7%] font-spec text-[1.9cqw] font-medium lowercase tracking-[0.14em] text-ink/45">
+          {siteHost}
         </span>
       </div>
     </div>

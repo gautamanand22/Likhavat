@@ -75,9 +75,8 @@ export const dict = {
         },
       ],
       scrollHint: "Scroll",
-      cardName: "Gautam Anand",
-      cardRole: "Founder & Director",
-      cardBiz: "Your Business Name",
+      cardName: "Likhavat Printing Press",
+      cardRole: "Offset · Digital · Flex printing",
     },
     spotlight: {
       eyebrow: "Who we print for",
@@ -345,9 +344,8 @@ export const dict = {
         },
       ],
       scrollHint: "स्क्रॉल करें",
-      cardName: "गौतम आनंद",
-      cardRole: "संस्थापक",
-      cardBiz: "आपके धंधे का नाम",
+      cardName: "लिखावट प्रिंटिंग प्रेस",
+      cardRole: "ऑफसेट · डिजिटल · फ्लेक्स छपाई",
     },
     spotlight: {
       eyebrow: "हम किनके लिए छापते हैं",
