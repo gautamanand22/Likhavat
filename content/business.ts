@@ -28,8 +28,8 @@ export const business = {
     full: "Boring Road, Patna, Bihar 800001, India",
   },
 
-  // Approx geo (update with exact Google Business Profile pin)
-  geo: { lat: 25.6127, lng: 85.1198 },
+  // Exact Google Business Profile pin (maps.google.com listing)
+  geo: { lat: 25.6185229, lng: 85.1213753 },
 
   hours: "Open 10 AM – 9 PM · WhatsApp enquiries 24×7",
   foundedYear: 2009,
@@ -40,7 +40,8 @@ export const business = {
 
   // Social / citation profiles — fill as the shop creates them (used in sameAs schema)
   social: {
-    googleBusiness: "",
+    // Canonical Google Maps listing (CID link, stable across URL formats)
+    googleBusiness: "https://maps.google.com/?cid=239208851823602192",
     facebook: "",
     instagram: "",
     youtube: "",

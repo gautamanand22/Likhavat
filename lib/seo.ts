@@ -88,6 +88,7 @@ export function localBusinessSchema() {
       latitude: business.geo.lat,
       longitude: business.geo.lng,
     },
+    hasMap: business.social.googleBusiness || undefined,
     areaServed: [
       ...BIHAR_CITIES.map((name) => ({ "@type": "City", name })),
       { "@type": "State", name: "Bihar" },

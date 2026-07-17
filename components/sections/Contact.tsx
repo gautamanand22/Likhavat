@@ -8,9 +8,12 @@ import { waLink, telLink, enquiryMessage } from "@/lib/whatsapp";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Motion";
 
-const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-  `${business.name}, ${business.address.full}`,
-)}`;
+// Canonical Google Business listing (falls back to a name search if unset)
+const mapsUrl =
+  business.social.googleBusiness ||
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+    `${business.name}, ${business.address.full}`,
+  )}`;
 
 const inputCls =
   "w-full rounded-xl border border-ink/12 bg-white px-4 py-3 text-sm text-ink placeholder:text-muted/70 focus:border-magenta focus:outline-none focus:ring-2 focus:ring-magenta/20 transition-shadow";
@@ -150,7 +153,9 @@ export function Contact() {
             <div className="card-light overflow-hidden rounded-3xl">
               <iframe
                 title={`${business.name} on Google Maps`}
-                src={`https://www.google.com/maps?q=${encodeURIComponent(business.address.full)}&z=15&output=embed`}
+                src={`https://www.google.com/maps?q=${encodeURIComponent(
+                  `${business.name}, ${business.address.line1}, ${business.address.city}`,
+                )}&ll=${business.geo.lat},${business.geo.lng}&z=16&output=embed`}
                 className="h-56 w-full border-0"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
