@@ -28,13 +28,24 @@ prescription pads, bill books, brochures, bags, t-shirts).
   (640px) pairs consumed by `components/ui/Photo.tsx` srcsets. Sources &
   licences in `IMAGE-CREDITS.md`.
 
+## Deployment & SEO
+
+- Deploys via `.github/workflows/deploy.yml` → GitHub Pages (Actions source)
+  at https://likhavatprintingpress.com (custom domain in repo Pages settings;
+  `public/CNAME` + `.nojekyll` ship in the export as safety nets).
+- SEO surface: sitemap/robots (AI crawlers explicitly allowed) + JSON-LD
+  (LocalBusiness with OfferCatalog & Bihar-city areaServed, Service, FAQ,
+  Breadcrumb) + `public/llms.txt` for answer engines + geo meta + manifest.
+- After adding the site to Google Search Console, paste the verification
+  token into `googleSiteVerification` in `content/business.ts`.
+
 ## Before launch
 
 - Replace demo phone number in `content/business.ts` (placeholder!).
 - Confirm rates in `content/products.ts` + `services.ts` (indicative 2025-26
   Patna market values from research).
-- Set real `siteUrl`, email, GSTIN, foundedYear/stats, and swap demo
-  testimonials for real Google reviews.
+- Confirm email, GSTIN, foundedYear/stats; swap demo testimonials for real
+  Google reviews.
 
 ## Commands
 

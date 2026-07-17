@@ -57,9 +57,12 @@ export const business = {
     repeatClients: 4000,
   },
 
-  // Used for absolute URLs in metadata/sitemap — set the real production domain
-  // before launch (also update robots/sitemap host).
-  siteUrl: "https://likhavatprinting.com",
+  // Production domain (GitHub Pages custom domain on gautamanand22/Likhavat).
+  siteUrl: "https://likhavatprintingpress.com",
+
+  // Paste the Google Search Console verification token here after adding the
+  // property (Settings → Ownership verification → HTML tag → content="...").
+  googleSiteVerification: "",
 } as const;
 
 export type Business = typeof business;

@@ -45,11 +45,22 @@ export const metadata: Metadata = {
   metadataBase: new URL(business.siteUrl),
   title: {
     default:
-      "Printing Press in Patna | Visiting Cards, Wedding Cards, Flex & More | Likhavat Printing Press, Boring Road",
+      "Likhavat Printing Press, Boring Road Patna | Visiting Cards, Wedding Cards, Flex & All Printing",
     template: "%s | Likhavat Printing Press",
   },
   description: business.shortDesc,
   applicationName: business.name,
+  category: "Printing services",
+  ...(business.googleSiteVerification
+    ? { verification: { google: business.googleSiteVerification } }
+    : {}),
+  // Geo hints for local/AI engines (Google ignores these; others don't).
+  other: {
+    "geo.region": "IN-BR",
+    "geo.placename": "Patna, Bihar",
+    "geo.position": `${business.geo.lat};${business.geo.lng}`,
+    ICBM: `${business.geo.lat}, ${business.geo.lng}`,
+  },
   keywords: [
     "printing press in patna",
     "printing press boring road patna",
